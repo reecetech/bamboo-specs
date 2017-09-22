@@ -8,7 +8,6 @@ public class ReecePlan {
     private String projectName;
     private String planKey;
     private String planName;
-    private List<ReecePermission> permissions;
 
     public String getBambooServer() {
         return bambooServer;
@@ -48,13 +47,5 @@ public class ReecePlan {
 
     public void setPlanName(String planName) {
         this.planName = planName;
-    }
-
-    public List<ReecePermission> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(List<ReecePermission> permissions) {
-        this.permissions = permissions;
     }
 }
