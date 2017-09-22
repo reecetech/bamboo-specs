@@ -1,0 +1,10 @@
+bambooServer: https://bamboo.reecenet.org/bamboo
+permissions:
+-
+  projects: [BST-ST]
+  users: [thumca, joneri, yaps, shahh, poultonj]
+  permissions: [VIEW, EDIT, BUILD, CLONE, ADMIN]
+-
+  projects: [BST-ST]
+  users: [vergarae, dooleyj]
+  permissions: [VIEW]

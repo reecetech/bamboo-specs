@@ -13,7 +13,7 @@ public class PlanSpecTest {
         Plan plan = new Plan(new Project().key(new BambooKey("BST")).name("Bamboo Spec Testing"),
                 "Spec Testing", new BambooKey("ST"));
 
-        plan = new PlanSpec().createPlan(plan);
+        plan = new PlanControl().createPlan(plan);
 
         EntityPropertiesBuilders.build(plan);
     }

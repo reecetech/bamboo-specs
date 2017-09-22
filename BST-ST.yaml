@@ -1,0 +1,5 @@
+bambooServer: https://bamboo.reecenet.org/bamboo
+projectKey: BST
+projectName: Bamboo Spec Testing
+planKey: ST
+planName: Spec Testing

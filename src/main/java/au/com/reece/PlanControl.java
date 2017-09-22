@@ -4,77 +4,59 @@
 package au.com.reece;
 
 import com.atlassian.bamboo.specs.api.BambooSpec;
-import com.atlassian.bamboo.specs.api.builders.AtlassianModule;
 import com.atlassian.bamboo.specs.api.builders.BambooKey;
-import com.atlassian.bamboo.specs.api.builders.BambooOid;
-import com.atlassian.bamboo.specs.api.builders.notification.AnyNotificationRecipient;
-import com.atlassian.bamboo.specs.api.builders.notification.Notification;
-import com.atlassian.bamboo.specs.api.builders.permission.PermissionType;
-import com.atlassian.bamboo.specs.api.builders.permission.Permissions;
-import com.atlassian.bamboo.specs.api.builders.permission.PlanPermissions;
 import com.atlassian.bamboo.specs.api.builders.plan.Job;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
-import com.atlassian.bamboo.specs.api.builders.plan.PlanIdentifier;
 import com.atlassian.bamboo.specs.api.builders.plan.Stage;
 import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
-import com.atlassian.bamboo.specs.api.builders.plan.branches.BranchCleanup;
-import com.atlassian.bamboo.specs.api.builders.plan.branches.PlanBranchManagement;
-import com.atlassian.bamboo.specs.api.builders.plan.configuration.AllOtherPluginsConfiguration;
 import com.atlassian.bamboo.specs.api.builders.plan.configuration.ConcurrentBuilds;
-import com.atlassian.bamboo.specs.api.builders.plan.dependencies.Dependencies;
-import com.atlassian.bamboo.specs.api.builders.plan.dependencies.DependenciesConfiguration;
 import com.atlassian.bamboo.specs.api.builders.project.Project;
 import com.atlassian.bamboo.specs.api.builders.requirement.Requirement;
-import com.atlassian.bamboo.specs.builders.notification.PlanCompletedNotification;
 import com.atlassian.bamboo.specs.builders.task.CheckoutItem;
 import com.atlassian.bamboo.specs.builders.task.ScriptTask;
 import com.atlassian.bamboo.specs.builders.task.TestParserTask;
 import com.atlassian.bamboo.specs.builders.task.VcsCheckoutTask;
-import com.atlassian.bamboo.specs.builders.trigger.RepositoryPollingTrigger;
 import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
 import com.atlassian.bamboo.specs.util.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Plan configuration for Bamboo.
  * Learn more on: <a href="https://confluence.atlassian.com/display/BAMBOO/Bamboo+Specs">https://confluence.atlassian.com/display/BAMBOO/Bamboo+Specs</a>
  */
 @BambooSpec
-public class PlanSpec {
+public class PlanControl {
 
     /**
      * Run main to publish plan on Bamboo
      */
-    public static void main(final String[] args) throws Exception {
-        UserPasswordCredentials adminUser = new FileUserPasswordCredentials("./.credentials");
+    void run(UserPasswordCredentials adminUser, File yamlFile) {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        ReecePlan yamlPlan = null;
+        try {
+            yamlPlan = mapper.readValue(yamlFile, ReecePlan.class);
+        } catch (IOException e) {
+            System.out.println("Error reading YAML file");
+            e.printStackTrace();
+            return;
+        }
 
-//        BambooServer bambooServer = new BambooServer("http://localhost:8080/", adminUser);
-        BambooServer bambooServer = new BambooServer("https://bamboo.reecenet.org/bamboo", adminUser);
+        BambooServer bambooServer = new BambooServer(yamlPlan.getBambooServer(), adminUser);
 
-        Plan plan = new Plan(new Project().key(new BambooKey("BST")).name("Bamboo Spec Testing"),
-            "Spec Testing", new BambooKey("ST"));
+        PlanControl spec = new PlanControl();
 
-        plan = new PlanSpec().createPlan(plan);
+        Project project = new Project().key(yamlPlan.getProjectKey()).name(yamlPlan.getProjectKey());
+        Plan plan = new Plan(project, yamlPlan.getPlanName(), yamlPlan.getPlanKey());
+
+//        plan = spec.createPlan(plan);
 
 //        bambooServer.publish(plan);
-
-        PlanPermissions planPermission = new PlanSpec().createPlanPermission(plan.getIdentifier());
-
-        bambooServer.publish(planPermission);
     }
 
-    private PlanPermissions createPlanPermission(PlanIdentifier planIdentifier) {
-        return new PlanPermissions(new PlanIdentifier("BST", "ST"))
-                .permissions(new Permissions()
-                        .userPermissions("yaps", PermissionType.VIEW, PermissionType.EDIT, PermissionType.BUILD, PermissionType.CLONE, PermissionType.ADMIN)
-                        .userPermissions("thumca", PermissionType.VIEW, PermissionType.EDIT, PermissionType.BUILD, PermissionType.CLONE, PermissionType.ADMIN)
-                        .userPermissions("shahh", PermissionType.VIEW, PermissionType.EDIT, PermissionType.BUILD, PermissionType.CLONE, PermissionType.ADMIN)
-                        .userPermissions("vergarae", PermissionType.VIEW, PermissionType.EDIT, PermissionType.BUILD, PermissionType.CLONE, PermissionType.ADMIN)
-                        .userPermissions("dooleyj", PermissionType.EDIT, PermissionType.VIEW, PermissionType.ADMIN, PermissionType.CLONE, PermissionType.BUILD)
-                        .userPermissions("poultonj", PermissionType.VIEW, PermissionType.EDIT, PermissionType.BUILD, PermissionType.CLONE, PermissionType.ADMIN)
-                        .userPermissions("joneri", PermissionType.VIEW, PermissionType.EDIT, PermissionType.BUILD, PermissionType.CLONE, PermissionType.ADMIN)
-                        .loggedInUserPermissions(PermissionType.VIEW)
-                        .anonymousUserPermissionView());
-    }
 
     Plan createPlan(Plan plan) {
         return plan.description("This is a test plan for bamboo specs")
