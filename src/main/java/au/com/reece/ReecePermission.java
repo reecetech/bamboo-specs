@@ -1,11 +1,13 @@
 package au.com.reece;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReecePermission {
-    private List<String> projects;
-    private List<String> users;
-    private List<String> permissions;
+    private List<String> projects = new ArrayList<>();
+    private List<String> users = new ArrayList<>();
+    private List<String> groups = new ArrayList<>();
+    private List<String> permissions = new ArrayList<>();
 
     public List<String> getProjects() {
         return projects;
@@ -21,6 +23,14 @@ public class ReecePermission {
 
     public void setUsers(List<String> users) {
         this.users = users;
+    }
+
+    public List<String> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<String> groups) {
+        this.groups = groups;
     }
 
     public List<String> getPermissions() {

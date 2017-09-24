@@ -6,7 +6,7 @@ Create a permissions.yaml file:
     permissions:
     -
       projects: [BST-ST, SPAM-IT]
-      users: [thumca, joneri, yaps, shahh, poultonj]
+      groups: [Cyborg_Team]
       permissions: [VIEW, EDIT, BUILD, CLONE, ADMIN]
     -
       projects: [BST-ST]
@@ -27,3 +27,5 @@ Each permission will be applied to each user in each project for a
 given permissions entry. So for the second group above, the VIEW
 permission will be granted to vergarae and dooleyj in the
 BST-ST plan.
+
+

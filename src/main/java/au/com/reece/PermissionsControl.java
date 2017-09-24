@@ -46,16 +46,32 @@ public class PermissionsControl {
 
         Permissions permissions = new Permissions();
         for (ReecePermission p: permissionList) {
-            List<PermissionType> values = new ArrayList<PermissionType>();
             for (String idString: p.getProjects()) {
                 String[] parts = idString.split("-");
                 PlanIdentifier id = new PlanIdentifier(parts[0], parts[1]);
+
+                // Ensure our admin user always has admin permission
+                PermissionType[] isAdmin = {PermissionType.ADMIN};
+                permissions.userPermissions(adminUser.getUsername(), isAdmin);
+
+                // Set user permissions first
                 for (String user : p.getUsers()) {
+                    List<PermissionType> values = new ArrayList<PermissionType>();
                     for (String perm : p.getPermissions()) {
                         values.add(PermissionType.valueOf(perm));
                     }
                     permissions.userPermissions(user, values.toArray(new PermissionType[values.size()]));
                 }
+
+                // Now set group permissions
+                for (String group : p.getGroups()) {
+                    List<PermissionType> values = new ArrayList<PermissionType>();
+                    for (String perm : p.getPermissions()) {
+                        values.add(PermissionType.valueOf(perm));
+                    }
+                    permissions.groupPermissions(group, values.toArray(new PermissionType[values.size()]));
+                }
+                // Everyone gets view access
                 permissions.loggedInUserPermissions(PermissionType.VIEW).anonymousUserPermissionView();
                 bambooServer.publish(new PlanPermissions(id).permissions(permissions));
             }
