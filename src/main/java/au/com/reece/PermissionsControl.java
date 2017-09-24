@@ -31,7 +31,7 @@ public class PermissionsControl {
     void run(UserPasswordCredentials adminUser, File yamlFile) {
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        ReecePermissions yamlPlan = null;
+        ReecePermissions yamlPlan;
         try {
             yamlPlan = mapper.readValue(yamlFile, ReecePermissions.class);
         } catch (IOException e) {
@@ -56,7 +56,7 @@ public class PermissionsControl {
 
                 // Set user permissions first
                 for (String user : p.getUsers()) {
-                    List<PermissionType> values = new ArrayList<PermissionType>();
+                    List<PermissionType> values = new ArrayList<>();
                     for (String perm : p.getPermissions()) {
                         values.add(PermissionType.valueOf(perm));
                     }
@@ -65,7 +65,7 @@ public class PermissionsControl {
 
                 // Now set group permissions
                 for (String group : p.getGroups()) {
-                    List<PermissionType> values = new ArrayList<PermissionType>();
+                    List<PermissionType> values = new ArrayList<>();
                     for (String perm : p.getPermissions()) {
                         values.add(PermissionType.valueOf(perm));
                     }
