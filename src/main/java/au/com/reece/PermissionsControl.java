@@ -51,8 +51,7 @@ public class PermissionsControl {
                 PlanIdentifier id = new PlanIdentifier(parts[0], parts[1]);
 
                 // Ensure our admin user always has admin permission
-                PermissionType[] isAdmin = {PermissionType.ADMIN};
-                permissions.userPermissions(adminUser.getUsername(), isAdmin);
+                permissions.userPermissions(adminUser.getUsername(), PermissionType.ADMIN);
 
                 // Set user permissions first
                 for (String user : p.getUsers()) {
