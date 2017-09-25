@@ -9,8 +9,6 @@ import com.atlassian.bamboo.specs.api.builders.plan.Job;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
 import com.atlassian.bamboo.specs.api.builders.plan.Stage;
 import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
-import com.atlassian.bamboo.specs.api.builders.plan.configuration.ConcurrentBuilds;
-import com.atlassian.bamboo.specs.api.builders.project.Project;
 import com.atlassian.bamboo.specs.api.builders.requirement.Requirement;
 import com.atlassian.bamboo.specs.builders.task.CheckoutItem;
 import com.atlassian.bamboo.specs.builders.task.ScriptTask;
@@ -36,7 +34,7 @@ public class PlanControl {
      */
     void run(UserPasswordCredentials adminUser, File yamlFile) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        ReecePlan yamlPlan = null;
+        ReecePlan yamlPlan;
         try {
             yamlPlan = mapper.readValue(yamlFile, ReecePlan.class);
         } catch (IOException e) {
@@ -47,22 +45,11 @@ public class PlanControl {
 
         BambooServer bambooServer = new BambooServer(yamlPlan.getBambooServer(), adminUser);
 
-        PlanControl spec = new PlanControl();
-
-        Project project = new Project().key(yamlPlan.getProjectKey()).name(yamlPlan.getProjectKey());
-        Plan plan = new Plan(project, yamlPlan.getPlanName(), yamlPlan.getPlanKey());
-
-//        plan = spec.createPlan(plan);
-
-//        bambooServer.publish(plan);
+        bambooServer.publish(yamlPlan.getPlan());
     }
 
-
     Plan createPlan(Plan plan) {
-        return plan.description("This is a test plan for bamboo specs")
-                .pluginConfigurations(new ConcurrentBuilds()
-                        .useSystemWideDefault(false))
-                .stages(new Stage("Test Stage")
+        return plan.stages(new Stage("Test Stage")
                         .jobs(new Job("Run Unit Tests",
                                 new BambooKey("JOB1"))
                                 .artifacts(new Artifact()
@@ -92,7 +79,6 @@ public class PlanControl {
                             .requirements(new Requirement("system.docker.executable"),
                                     new Requirement("DOCKER"),
                                     new Requirement("LINUX"))))
-            .linkedRepositories("Bamboo Spec Test Project");
 
 //                .triggers(new RepositoryPollingTrigger()
 //                        .description("Timed polling"))
@@ -102,10 +88,6 @@ public class PlanControl {
 //                                .whenRemovedFromRepositoryAfterDays(7)
 //                                .whenInactiveInRepositoryAfterDays(30))
 //                        .notificationLikeParentPlan())
-//                .notifications(new Notification()
-//                        .type(new PlanCompletedNotification())
-//                        .recipients(new AnyNotificationRecipient(new AtlassianModule("com.atlassian.bamboo.plugins.bamboo-slack:recipient.slack"))
-//                                .recipientString("https://hooks.slack.com/services/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|#cyborg-dev")));
-
+;
     }
 }
