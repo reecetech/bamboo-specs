@@ -143,6 +143,12 @@ The job may then have a list of artifacts and tasks:
 The marker `%(projectPlanKey)s` will be substituted for the project-plan key
 (eg. `BST-ST`) before submission to Bamboo.
 
+Finally, if the plan has dependent plans they may be specified (as "dependencies"):
+
+    dependencies:
+      requiresPassing: true
+      plans: [USRSRV-UPSDB]
+
 A sample plan:
     
     bambooServer: https://bamboo.reecenet.org/bamboo
@@ -214,4 +220,4 @@ A sample plan:
         requirements: [system.docker.executable, DOCKER, LINUX]
     dependencies:
       requiresPassing: true
-      plans: USRSRV-UPSDB
+      plans: [USRSRV-UPSDB]

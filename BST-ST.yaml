@@ -67,4 +67,4 @@ stages:
       resultFrom: "**/unittest-report/xml/*.xml"
 dependencies:
   requiresPassing: true
-  plans: USRSRV-UPSDB
+  plans: [USRSRV-UPSDB]
