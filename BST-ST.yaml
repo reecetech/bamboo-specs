@@ -21,6 +21,7 @@ stages:
     name: Run Tests
     key: JOB1
     description: Run Python Unit Tests
+    requirements: [system.docker.executable, DOCKER, LINUX]
     artifacts:
     -
       name: unittest
@@ -60,11 +61,10 @@ stages:
         -v ${bamboo.build.working.directory}/unittest-report:/app/unittest-report:rw \\
         -v ${bamboo.build.working.directory}/pacts:/app/pacts:rw \\
         -e PACT_DIR=/app/pacts \\
-        -t bamboo/%(projectPlanKey)s bash -c \"cd /app/ && ./scripts/ci_tests.sh
+        -t bamboo/%(projectPlanKey)s bash -c "cd /app/ && ./scripts/ci_tests.sh"
     -
       type: JUNIT
       resultFrom: "**/unittest-report/xml/*.xml"
-    requirements: [system.docker.executable, DOCKER, LINUX]
 dependencies:
   requiresPassing: true
   plans: USRSRV-UPSDB
