@@ -31,7 +31,7 @@ public class ReeceNotification {
     @Nullable
     Notification forPlan() {
         switch (this.when) {
-            case COMPLETED:
+            case PLAN_COMPLETED:
                 return new Notification()
                         .type(new PlanCompletedNotification())
                         .recipients(new AnyNotificationRecipient(

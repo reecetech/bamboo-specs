@@ -10,6 +10,17 @@ to the user the program will run as. You do this by creating a
 Don't check this into a repository.
 
 
+# Building and Running
+
+Build the code with:
+
+    mvn package
+    
+Run with:
+
+    java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar permissions permissions.yaml
+    java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar plan plan.yaml
+
 # Controlling Permissions
 
 Create a permissions.yaml file:

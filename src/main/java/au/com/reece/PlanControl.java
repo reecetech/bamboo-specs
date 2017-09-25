@@ -28,7 +28,6 @@ import java.io.IOException;
  */
 @BambooSpec
 public class PlanControl {
-
     /**
      * Run main to publish plan on Bamboo
      */
@@ -46,48 +45,5 @@ public class PlanControl {
         BambooServer bambooServer = new BambooServer(yamlPlan.getBambooServer(), adminUser);
 
         bambooServer.publish(yamlPlan.getPlan());
-    }
-
-    Plan createPlan(Plan plan) {
-        return plan.stages(new Stage("Test Stage")
-                        .jobs(new Job("Run Unit Tests",
-                                new BambooKey("JOB1"))
-                                .artifacts(new Artifact()
-                                                .name("PACT contracts")
-                                                .copyPattern("**")
-                                                .location("pacts"),
-                                    new Artifact()
-                                            .name("Coverage Report")
-                                            .copyPattern("**")
-                                            .location("htmlcov"),
-                                    new Artifact()
-                                            .name("unittest")
-                                            .copyPattern("**")
-                                            .location("unittest-report"))
-                            .tasks(new VcsCheckoutTask()
-                                            .description("Checkout Default Repository")
-                                            .checkoutItems(new CheckoutItem().defaultRepository()),
-                                    new ScriptTask()
-                                            .description("Build docker image")
-                                            .inlineBody("set -ex\n\nscripts/test_image.sh bamboo/diary-notes-python-service"),
-                                    new ScriptTask()
-                                            .description("Run unit tests")
-                                            .inlineBody("set -ex\nmkdir -p htmlcov\nchmod 777 htmlcov\nmkdir -p unittest-report\nchmod 777 unittest-report\nmkdir -p pacts\nchmod 777 pacts\ndocker run --rm -u root \\\n-v ${bamboo.build.working.directory}/htmlcov:/app/htmlcov:rw \\\n-v ${bamboo.build.working.directory}/unittest-report:/app/unittest-report:rw \\\n-v ${bamboo.build.working.directory}/pacts:/app/pacts:rw \\\n-e PACT_DIR=/app/pacts \\\n-t bamboo/diary-notes-python-service bash -c \"cd /app/ && ./scripts/ci_tests.sh\""),
-                                    new TestParserTask(TestParserTaskProperties.TestType.JUNIT)
-                                            .description("JUnit parsing")
-                                            .resultDirectories("**/unittest-report/xml/*.xml"))
-                            .requirements(new Requirement("system.docker.executable"),
-                                    new Requirement("DOCKER"),
-                                    new Requirement("LINUX"))))
-
-//                .triggers(new RepositoryPollingTrigger()
-//                        .description("Timed polling"))
-//                .planBranchManagement(new PlanBranchManagement()
-//                        .createForVcsBranch()
-//                        .delete(new BranchCleanup()
-//                                .whenRemovedFromRepositoryAfterDays(7)
-//                                .whenInactiveInRepositoryAfterDays(30))
-//                        .notificationLikeParentPlan())
-;
     }
 }

@@ -12,9 +12,7 @@ public class PlanSpecTest {
     public void checkYourPlanOffline() throws PropertiesValidationException {
         Plan plan = new Plan(new Project().key(new BambooKey("BST")).name("Bamboo Spec Testing"),
                 "Spec Testing", new BambooKey("ST"));
-
-        plan = new PlanControl().createPlan(plan);
-
+        // THIS TEST IS USELESS
         EntityPropertiesBuilders.build(plan);
     }
 }
