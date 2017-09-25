@@ -9,10 +9,12 @@ import com.atlassian.bamboo.specs.builders.task.ScriptTask;
 import com.atlassian.bamboo.specs.builders.task.TestParserTask;
 import com.atlassian.bamboo.specs.builders.task.VcsCheckoutTask;
 import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
+import com.atlassian.bamboo.specs.util.Logger;
 
 import javax.annotation.Nullable;
 
 public class ReeceTask {
+    private static final Logger log = Logger.getLogger(ReeceTask.class);
     private ReeceTaskType type;
     private String description;
     private String body;
@@ -20,6 +22,10 @@ public class ReeceTask {
 
     @Nullable
     public Task asTask(Plan plan) {
+        if (this.type == null) {
+            log.info("Missing 'type' value in yaml task: " + this.description);
+            return null;
+        }
         switch (this.type) {
             case VCS:
                 return new VcsCheckoutTask().description(this.description)
@@ -35,6 +41,7 @@ public class ReeceTask {
                         .resultDirectories(this.resultFrom);
             default:
                 // shouldn't actually be possible, given we load via enum
+                log.info("Unexpected 'type' value from yaml " + this.type);
                 return null;
         }
     }

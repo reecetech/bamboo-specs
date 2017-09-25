@@ -4,17 +4,6 @@
 package au.com.reece;
 
 import com.atlassian.bamboo.specs.api.BambooSpec;
-import com.atlassian.bamboo.specs.api.builders.BambooKey;
-import com.atlassian.bamboo.specs.api.builders.plan.Job;
-import com.atlassian.bamboo.specs.api.builders.plan.Plan;
-import com.atlassian.bamboo.specs.api.builders.plan.Stage;
-import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
-import com.atlassian.bamboo.specs.api.builders.requirement.Requirement;
-import com.atlassian.bamboo.specs.builders.task.CheckoutItem;
-import com.atlassian.bamboo.specs.builders.task.ScriptTask;
-import com.atlassian.bamboo.specs.builders.task.TestParserTask;
-import com.atlassian.bamboo.specs.builders.task.VcsCheckoutTask;
-import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
 import com.atlassian.bamboo.specs.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;

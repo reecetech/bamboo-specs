@@ -11,13 +11,13 @@ public class ReeceDependencies {
     private boolean requiresPassing;
     private ArrayList<String> plans = new ArrayList<>();
 
-    public Plan addToPlan(Plan plan) {
+    public void addToPlan(Plan plan) {
         ArrayList<PlanIdentifier> children = new ArrayList<>();
         for (String idString : this.plans) {
             String[] parts = idString.split("-");
             children.add(new PlanIdentifier(parts[0], parts[1]));
         }
-        return plan.dependencies(new Dependencies()
+        plan.dependencies(new Dependencies()
             .configuration(new DependenciesConfiguration()
                 .requireAllStagesPassing(this.requiresPassing))
             .childPlans(children.toArray(new PlanIdentifier[children.size()])));
