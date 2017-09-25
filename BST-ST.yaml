@@ -8,9 +8,10 @@ repository:
   name: Bamboo Spec Test Project
   projectKey: SAN
   repositorySlug: bamboo-spec-test-project
+repositoryPolling: true
 notifications:
 -
-  when: completed
+  when: PLAN_COMPLETED
   slack: https://hooks.slack.com/services/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|#cyborg-dev
 stages:
 -
@@ -64,3 +65,6 @@ stages:
       type: JUNIT
       resultFrom: "**/unittest-report/xml/*.xml"
     requirements: [system.docker.executable, DOCKER, LINUX]
+dependencies:
+  requiresPassing: true
+  plans: USRSRV-UPSDB

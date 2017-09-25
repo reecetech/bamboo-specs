@@ -3,9 +3,12 @@ package au.com.reece;
 import com.atlassian.bamboo.specs.api.builders.notification.Notification;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
 import com.atlassian.bamboo.specs.api.builders.plan.Stage;
+import com.atlassian.bamboo.specs.api.builders.plan.branches.BranchCleanup;
+import com.atlassian.bamboo.specs.api.builders.plan.branches.PlanBranchManagement;
 import com.atlassian.bamboo.specs.api.builders.plan.configuration.AllOtherPluginsConfiguration;
 import com.atlassian.bamboo.specs.api.builders.plan.configuration.ConcurrentBuilds;
 import com.atlassian.bamboo.specs.api.builders.project.Project;
+import com.atlassian.bamboo.specs.builders.trigger.RepositoryPollingTrigger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,23 +21,30 @@ public class ReecePlan {
     private String planName;
     private String description;
     private ReeceRepository repository;
+    private boolean repositoryPolling;
     private List<ReeceNotification> notifications = new ArrayList<>();
     private List<ReeceStage> stages = new ArrayList<>();
+    private ReeceDependencies dependencies;
 
     public Plan getPlan() {
         Project project = new Project().key(this.getProjectKey());
         Plan plan = new Plan(project, this.getPlanName(), this.getPlanKey());
         plan.description(this.description);
 
-        this.pluginConfiguration(plan);
+        this.addPluginConfiguration(plan);
 
         if (this.repository != null) {
             this.repository.addToPlan(plan);
         }
 
+        if (this.repositoryPolling) {
+            plan.triggers(new RepositoryPollingTrigger().description("Timed polling"));
+        }
+
         ArrayList<Notification> notifications = new ArrayList<>();
         for (ReeceNotification notification: this.notifications) {
-            notifications.add(notification.forPlan());
+            Notification n = notification.forPlan();
+            if (n != null) notifications.add(n);
         }
         plan.notifications(notifications.toArray(new Notification[notifications.size()]));
 
@@ -44,15 +54,45 @@ public class ReecePlan {
         }
         plan.stages(stages.toArray(new Stage[stages.size()]));
 
+        this.addPlanBranchManagement(plan);
+
+        this.dependencies.addToPlan(plan);
+
         return plan;
     }
 
-    private void pluginConfiguration(Plan plan) {
+    private void addPlanBranchManagement(Plan plan) {
+        // plan branch management - cleanup
+        plan.planBranchManagement(new PlanBranchManagement()
+                .createForVcsBranch()
+                .delete(new BranchCleanup()
+                        .whenRemovedFromRepositoryAfterDays(7)
+                        .whenInactiveInRepositoryAfterDays(30))
+                .notificationLikeParentPlan());
+    }
+
+    private void addPluginConfiguration(Plan plan) {
         // this is the basic configuration needed
         plan.pluginConfigurations(
                 new ConcurrentBuilds().useSystemWideDefault(false),
                 new AllOtherPluginsConfiguration()
         );
+    }
+
+    public boolean isRepositoryPolling() {
+        return repositoryPolling;
+    }
+
+    public void setRepositoryPolling(boolean repositoryPolling) {
+        this.repositoryPolling = repositoryPolling;
+    }
+
+    public ReeceDependencies getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(ReeceDependencies dependencies) {
+        this.dependencies = dependencies;
     }
 
     public String getBambooServer() {
