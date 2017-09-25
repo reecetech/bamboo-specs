@@ -19,7 +19,7 @@ Create a permissions.yaml file:
     -
       projects: [BST-ST, SPAM-IT]
       groups: [Cyborg_Team]
-      users: [islaa]
+      users: [islaa, tobind]
       permissions: [VIEW, EDIT, BUILD, CLONE, ADMIN]
     -
       projects: [BST-ST]
@@ -38,8 +38,8 @@ viewing a project's plan, eg:
 
 Each permission will be applied to each group and user in each project for a
 given permissions entry. So for the first group above, the complete set of
-permissions will be granted to the Cyborg_Team group and user islaa in the
-BST-ST and SPAM-IT plans.
+permissions will be granted to the `Cyborg_Team` group and users `islaa`
+and `tobind` in the `BST-ST` and `SPAM-IT` plans.
 
 The admin user used to make the changes (see Credentials and Authentication) is hard-coded
 to be granted Admin user permission regardless of the other settings in
@@ -128,6 +128,9 @@ The job may then have a list of artifacts and tasks:
     -
       type: JUNIT
       resultFrom: "**/unittest-report/xml/*.xml"
+      
+The marker `%(projectPlanKey)s` will be substituted for the project-plan key
+(eg. `BST-ST`) before submission to Bamboo.
 
 A sample plan:
     
