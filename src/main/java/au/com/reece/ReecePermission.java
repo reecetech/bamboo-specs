@@ -12,9 +12,17 @@ public class ReecePermission {
     public List<String> projects = new ArrayList<>();
     public List<String> users = new ArrayList<>();
     public List<String> groups = new ArrayList<>();
-    public List<String> permissions = new ArrayList<>();
+    public List<String> grant = new ArrayList<>();
 
     public boolean addPermissions(HashMap<String, ReecePlanPermissions> rpp) {
+        if (this.projects.size() == 0 || this.grant.size() == 0) {
+            log.info("'projects' and 'grant' are both required");
+            return false;
+        }
+        if (this.users.size() == 0 && this.groups.size() == 0) {
+            log.info("one of 'users' or 'groups' is required");
+            return false;
+        }
         boolean ok = true;
         for (String idString: this.projects) {
             if (!rpp.containsKey(idString)) {
@@ -23,7 +31,7 @@ public class ReecePermission {
             ReecePlanPermissions perms = rpp.get(idString);
 
             List<PermissionType> values = new ArrayList<>();
-            for (String perm : this.permissions) {
+            for (String perm : this.grant) {
                 values.add(PermissionType.valueOf(perm));
             }
             PermissionType[] types = values.toArray(new PermissionType[values.size()]);

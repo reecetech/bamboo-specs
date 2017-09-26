@@ -3,8 +3,8 @@ permissions:
 -
   projects: [BST-ST]
   groups: [Cyborg_Team]
-  permissions: [VIEW, EDIT, BUILD, CLONE, ADMIN]
+  grant: [VIEW, EDIT, BUILD, CLONE, ADMIN]
 -
   projects: [BST-ST]
   users: [dooleyj]
-  permissions: [VIEW]
+  grant: [VIEW]

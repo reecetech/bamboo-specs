@@ -31,14 +31,14 @@ Create a permissions.yaml file:
       projects: [BST-ST, SPAM-IT]
       groups: [Cyborg_Team]
       users: [islaa, tobind]
-      permissions: [VIEW, EDIT, BUILD, CLONE, ADMIN]
+      grant: [VIEW, EDIT, BUILD, CLONE, ADMIN]
     -
       projects: [BST-ST]
       users: [dooleyj]
-      permissions: [VIEW]
+      grant: [VIEW]
 
 There can be many entries in the permissions: list, each of which
-can specify one or more projects, groups, users and permissions to apply.
+can specify one or more projects, groups, users and permissions to grant.
 
 The projects list contains key pairs (project key, plan key) so the
 first list has the ST plan in the BST project, and the IT plan in
@@ -47,14 +47,14 @@ viewing a project's plan, eg:
 
     https://bamboo.reecenet.org/bamboo/browse/DNSS-DNPSM
 
-Each permission will be applied to each group and user in each project for a
+Each permission will be granted to each group and user in each project for a
 given permissions entry. So for the first group above, the complete set of
 permissions will be granted to the `Cyborg_Team` group and users `islaa`
 and `tobind` in the `BST-ST` and `SPAM-IT` plans.
 
-The admin user used to make the changes (see Credentials and Authentication) is hard-coded
-to be granted Admin user permission regardless of the other settings in
-the permissions yaml, to prevent that user from having that permission
+The admin user used to make the changes (see Credentials and Authentication) is
+hard-coded to be granted Admin user permission regardless of the other settings
+in the permissions yaml, to prevent that user from having that permission
 removed (which would break the program).
 
 

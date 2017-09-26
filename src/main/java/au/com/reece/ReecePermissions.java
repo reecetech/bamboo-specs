@@ -5,18 +5,25 @@ import com.atlassian.bamboo.specs.api.builders.permission.Permissions;
 import com.atlassian.bamboo.specs.api.builders.permission.PlanPermissions;
 import com.atlassian.bamboo.specs.api.builders.plan.PlanIdentifier;
 import com.atlassian.bamboo.specs.util.BambooServer;
+import com.atlassian.bamboo.specs.util.Logger;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
 public class ReecePermissions extends CheckRequired {
+    private static final Logger log = Logger.getLogger(ReeceTask.class);
     @Required public String bambooServer;
     public List<ReecePermission> permissions;
     private HashMap<String, ReecePlanPermissions> rpp = new HashMap<>();
 
     boolean gather() {
         if (!this.checkRequired()) return false;
+
+        if (this.permissions.size() == 0) {
+            log.info("top-level grant list is empty");
+            return false;
+        }
 
         boolean ok = true;
         for (ReecePermission p: this.permissions) {
@@ -38,13 +45,13 @@ public class ReecePermissions extends CheckRequired {
 
             ReecePlanPermissions pp = (ReecePlanPermissions)pair.getValue();
 
-            // Set user permissions first
+            // Set user grant first
             for (Map.Entry user_pair: pp.users.entrySet()) {
                 PermissionType[] types = (PermissionType[])user_pair.getValue();
                 permissions.userPermissions((String)user_pair.getKey(), types);
             }
 
-            // Now set group permissions
+            // Now set group grant
             for (Map.Entry group_pair: pp.groups.entrySet()) {
                 PermissionType[] types = (PermissionType[])group_pair.getValue();
                 permissions.groupPermissions((String)group_pair.getKey(), types);
