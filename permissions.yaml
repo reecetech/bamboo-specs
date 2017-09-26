@@ -1,10 +1,8 @@
 bambooServer: https://bamboo.reecenet.org/bamboo
 permissions:
--
-  projects: [BST-ST]
+- projects: [BST-ST]
   groups: [Cyborg_Team]
   grant: [VIEW, EDIT, BUILD, CLONE, ADMIN]
--
-  projects: [BST-ST]
+- projects: [BST-ST]
   users: [dooleyj]
   grant: [VIEW]
