@@ -12,6 +12,7 @@ import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
 import com.atlassian.bamboo.specs.util.Logger;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class ReeceTask extends CheckRequired {
     private static final Logger log = Logger.getLogger(ReeceTask.class);
@@ -19,6 +20,8 @@ public class ReeceTask extends CheckRequired {
     @Required public String description;
     public String body;
     public String resultFrom;
+    public List<ReeceVCS> repositories;
+    public boolean defaultRepository = false;
 
     @Nullable
     public Task asTask(Plan plan) {
@@ -26,8 +29,15 @@ public class ReeceTask extends CheckRequired {
 
         switch (this.type) {
             case VCS:
-                return new VcsCheckoutTask().description(this.description)
-                        .checkoutItems(new CheckoutItem().defaultRepository());
+                VcsCheckoutTask task = new VcsCheckoutTask().description(this.description);
+                if (this.repositories.isEmpty() || this.defaultRepository) {
+                    task.checkoutItems(new CheckoutItem().defaultRepository());
+                } else {
+                    for (ReeceVCS vcs : this.repositories) {
+                        task.checkoutItems(vcs.asCheckoutItem());
+                    }
+                }
+                return task;
             case SCRIPT:
                 if (this.body == null) {
                     log.info("Missing 'body' value from yaml for SCRIPT");

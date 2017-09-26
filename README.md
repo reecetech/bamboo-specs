@@ -134,6 +134,18 @@ The job may then have a list of artifacts and tasks:
 The marker `%(projectPlanKey)s` will be substituted for the project-plan key
 (eg. `BST-ST`) before submission to Bamboo.
 
+The VCS task has a number of options. By default it will check out the default
+repository for the plan. If you wish to check out other repositories you may list
+them (and optionally include the default repository also):
+
+    - type: VCS
+      description: Checkout All Repositories
+      defaultRepository: true
+      repositories:
+      - name: Running Man
+      - name: Running Man Properties
+        path: properties
+
 Finally, if the plan has dependent plans they may be specified (as "dependencies"):
 
     dependencies:

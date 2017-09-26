@@ -31,7 +31,12 @@ stages:
       location: htmlcov
     tasks:
     - type: VCS
-      description: Checkout Default Repository
+      description: Checkout All Repositories
+      defaultRepository: true
+      repositories:
+      - name: Running Man
+      - name: Running Man Properties
+        path: properties
     - type: SCRIPT
       description: Build docker image
       body: |
