@@ -8,8 +8,8 @@ import com.atlassian.bamboo.specs.api.builders.plan.dependencies.DependenciesCon
 import java.util.ArrayList;
 
 public class ReeceDependencies {
-    private boolean requiresPassing;
-    private ArrayList<String> plans = new ArrayList<>();
+    public boolean requiresPassing = true;
+    public ArrayList<String> plans = new ArrayList<>();
 
     public void addToPlan(Plan plan) {
         ArrayList<PlanIdentifier> children = new ArrayList<>();
@@ -21,21 +21,5 @@ public class ReeceDependencies {
             .configuration(new DependenciesConfiguration()
                 .requireAllStagesPassing(this.requiresPassing))
             .childPlans(children.toArray(new PlanIdentifier[children.size()])));
-    }
-
-    public boolean isRequiresPassing() {
-        return requiresPassing;
-    }
-
-    public void setRequiresPassing(boolean requiresPassing) {
-        this.requiresPassing = requiresPassing;
-    }
-
-    public ArrayList<String> getPlans() {
-        return plans;
-    }
-
-    public void setPlans(ArrayList<String> plans) {
-        this.plans = plans;
     }
 }

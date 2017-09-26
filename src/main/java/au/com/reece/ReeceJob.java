@@ -8,15 +8,17 @@ import com.atlassian.bamboo.specs.api.builders.task.Task;
 
 import java.util.ArrayList;
 
-public class ReeceJob {
-    public String name;
-    public String key;
-    public String description;
+public class ReeceJob extends CheckRequired {
+    @Required public String name;
+    @Required public String key;
+    @Required public String description;
     public ArrayList<ReeceArtifact> artifacts = new ArrayList<>();
     public ArrayList<ReeceTask> tasks = new ArrayList<>();
     public ArrayList<String> requirements = new ArrayList<>();
 
     public Job asJob(Plan plan) {
+        if (!this.checkRequired()) return null;
+
         Job job = new Job(this.name, this.key);
         job.description(this.description);
 

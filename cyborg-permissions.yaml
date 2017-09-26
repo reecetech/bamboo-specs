@@ -3,4 +3,9 @@ permissions:
 -
   projects: [BST-ST, PA-PBA, PA-PCA, PA-PRAT, PA-PUA, CTV-CPSC, DNSS-DNPSM, USRSRV-UPSC]
   groups: [Cyborg_Team]
+  users: [islaa]
+  permissions: [VIEW, EDIT, BUILD, CLONE, ADMIN]
+-
+  projects: [BST-ST]
+  users: [spam]
   permissions: [VIEW, EDIT, BUILD, CLONE, ADMIN]

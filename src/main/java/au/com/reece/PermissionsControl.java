@@ -31,49 +31,21 @@ public class PermissionsControl {
     void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        ReecePermissions yamlPlan;
+        ReecePermissions yamlPermissions;
         try {
-            yamlPlan = mapper.readValue(yamlFile, ReecePermissions.class);
+            yamlPermissions = mapper.readValue(yamlFile, ReecePermissions.class);
         } catch (IOException e) {
             System.out.println("Error reading YAML file");
             e.printStackTrace();
             return;
         }
 
-        BambooServer bambooServer = new BambooServer(yamlPlan.getBambooServer(), adminUser);
+        BambooServer bambooServer = new BambooServer(yamlPermissions.bambooServer, adminUser);
 
-        List<ReecePermission> permissionList = yamlPlan.getPermissions();
+        if (!yamlPermissions.gather()) return;
 
-        Permissions permissions = new Permissions();
-        for (ReecePermission p: permissionList) {
-            for (String idString: p.getProjects()) {
-                String[] parts = idString.split("-");
-                PlanIdentifier id = new PlanIdentifier(parts[0], parts[1]);
-
-                // Ensure our admin user always has admin permission
-                permissions.userPermissions(adminUser.getUsername(), PermissionType.ADMIN);
-
-                // Set user permissions first
-                for (String user : p.getUsers()) {
-                    List<PermissionType> values = new ArrayList<>();
-                    for (String perm : p.getPermissions()) {
-                        values.add(PermissionType.valueOf(perm));
-                    }
-                    permissions.userPermissions(user, values.toArray(new PermissionType[values.size()]));
-                }
-
-                // Now set group permissions
-                for (String group : p.getGroups()) {
-                    List<PermissionType> values = new ArrayList<>();
-                    for (String perm : p.getPermissions()) {
-                        values.add(PermissionType.valueOf(perm));
-                    }
-                    permissions.groupPermissions(group, values.toArray(new PermissionType[values.size()]));
-                }
-                // Everyone gets view access
-                permissions.loggedInUserPermissions(PermissionType.VIEW).anonymousUserPermissionView();
-                if (publish) bambooServer.publish(new PlanPermissions(id).permissions(permissions));
-            }
+        if (publish) {
+            yamlPermissions.publish(bambooServer, adminUser);
         }
     }
 }
