@@ -1,8 +1,8 @@
 bambooServer: https://bamboo.reecenet.org/bamboo
 projectKey: BST
 projectName: Bamboo Spec Testing
-planKey: ST3
-planName: Spec Testing 3
+planKey: ST
+planName: Spec Testing
 description: This is a test plan for bamboo specs
 repository:
   name: Bamboo Spec Test Project

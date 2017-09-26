@@ -58,7 +58,7 @@ the permissions yaml, to prevent that user from having that permission
 removed (which would break the program).
 
 
-# Configuring Plans
+# Creating and Configuring Plans
 
 Plans have a lot more options. The required minumum is:
 
@@ -68,6 +68,9 @@ Plans have a lot more options. The required minumum is:
     planKey: ST
     planName: Spec Testing
     description: This is a test plan for bamboo specs
+    
+If the Plan or Project do not exist in Bamboo they will be created, so please
+double-check that the `projectKey` and `planKey` are correct.
 
 The rest of the configuration is all optional chunks, though some will depend
 on others (VCS tasks would require a repository, for example).
