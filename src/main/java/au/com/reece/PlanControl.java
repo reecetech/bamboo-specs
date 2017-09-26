@@ -4,6 +4,7 @@
 package au.com.reece;
 
 import com.atlassian.bamboo.specs.api.BambooSpec;
+import com.atlassian.bamboo.specs.api.builders.plan.Plan;
 import com.atlassian.bamboo.specs.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -20,7 +21,7 @@ public class PlanControl {
     /**
      * Run main to publish plan on Bamboo
      */
-    void run(UserPasswordCredentials adminUser, File yamlFile) {
+    void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         ReecePlan yamlPlan;
         try {
@@ -33,6 +34,17 @@ public class PlanControl {
 
         BambooServer bambooServer = new BambooServer(yamlPlan.getBambooServer(), adminUser);
 
-        bambooServer.publish(yamlPlan.getPlan());
+        if (!publish) {
+            yamlPlan.getPlan(true);
+            return;
+        }
+
+        Plan plan = yamlPlan.getPlan(false);
+        if (plan == null) return;
+        bambooServer.publish(plan);
+
+        plan = yamlPlan.getPlan(true);
+        if (plan == null) return;
+        bambooServer.publish(plan);
     }
 }

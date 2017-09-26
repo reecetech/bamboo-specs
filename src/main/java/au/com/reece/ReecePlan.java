@@ -10,26 +10,33 @@ import com.atlassian.bamboo.specs.api.builders.plan.configuration.ConcurrentBuil
 import com.atlassian.bamboo.specs.api.builders.project.Project;
 import com.atlassian.bamboo.specs.builders.trigger.RepositoryPollingTrigger;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReecePlan {
-    private String bambooServer;
-    private String projectKey;
-    private String projectName;
-    private String planKey;
-    private String planName;
-    private String description;
-    private ReeceRepository repository;
-    private boolean repositoryPolling;
-    private List<ReeceNotification> notifications = new ArrayList<>();
-    private List<ReeceStage> stages = new ArrayList<>();
-    private ReeceDependencies dependencies;
+public class ReecePlan extends CheckRequired {
+    @Required public String bambooServer;
+    @Required public String projectKey;
+    @Required public String projectName;
+    @Required public String planKey;
+    @Required public String planName;
+    @Required public String description;
+    public ReeceRepository repository;
+    public boolean repositoryPolling;
+    public List<ReeceNotification> notifications = new ArrayList<>();
+    public List<ReeceStage> stages = new ArrayList<>();
+    public ReeceDependencies dependencies;
 
-    public Plan getPlan() {
+    @Nullable
+    public Plan getPlan(boolean complete) {
+        if (!this.checkRequired()) return null;
         Project project = new Project().key(this.getProjectKey());
         Plan plan = new Plan(project, this.getPlanName(), this.getPlanKey());
         plan.description(this.description);
+
+        if (!complete) {
+            return plan;
+        }
 
         this.addPluginConfiguration(plan);
 

@@ -9,12 +9,12 @@ import com.atlassian.bamboo.specs.api.builders.task.Task;
 import java.util.ArrayList;
 
 public class ReeceJob {
-    private String name;
-    private String key;
-    private String description;
-    private ArrayList<ReeceArtifact> artifacts = new ArrayList<>();
-    private ArrayList<ReeceTask> tasks = new ArrayList<>();
-    private ArrayList<String> requirements = new ArrayList<>();
+    public String name;
+    public String key;
+    public String description;
+    public ArrayList<ReeceArtifact> artifacts = new ArrayList<>();
+    public ArrayList<ReeceTask> tasks = new ArrayList<>();
+    public ArrayList<String> requirements = new ArrayList<>();
 
     public Job asJob(Plan plan) {
         Job job = new Job(this.name, this.key);
@@ -22,7 +22,8 @@ public class ReeceJob {
 
         ArrayList<Artifact> artifacts = new ArrayList<>();
         for (ReeceArtifact artifact : this.artifacts) {
-            artifacts.add(artifact.asArtifact());
+            Artifact a = artifact.asArtifact();
+            if (a != null) artifacts.add(a);
         }
         job.artifacts(artifacts.toArray(new Artifact[artifacts.size()]));
 
@@ -41,53 +42,4 @@ public class ReeceJob {
 
         return job;
     }
-
-    public ArrayList<String> getRequirements() {
-        return requirements;
-    }
-
-    public void setRequirements(ArrayList<String> requirements) {
-        this.requirements = requirements;
-    }
-
-    public ArrayList<ReeceTask> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(ArrayList<ReeceTask> tasks) {
-        this.tasks = tasks;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public ArrayList<ReeceArtifact> getArtifacts() {
-        return artifacts;
-    }
-
-    public void setArtifacts(ArrayList<ReeceArtifact> artifacts) {
-        this.artifacts = artifacts;
-    }
-
 }

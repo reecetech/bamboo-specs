@@ -28,7 +28,7 @@ public class PermissionsControl {
     /**
      * Run main to publish plan on Bamboo
      */
-    void run(UserPasswordCredentials adminUser, File yamlFile) {
+    void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         ReecePermissions yamlPlan;
@@ -72,7 +72,7 @@ public class PermissionsControl {
                 }
                 // Everyone gets view access
                 permissions.loggedInUserPermissions(PermissionType.VIEW).anonymousUserPermissionView();
-                bambooServer.publish(new PlanPermissions(id).permissions(permissions));
+                if (publish) bambooServer.publish(new PlanPermissions(id).permissions(permissions));
             }
         }
     }

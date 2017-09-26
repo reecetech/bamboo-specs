@@ -8,33 +8,14 @@ import com.atlassian.bamboo.specs.util.Logger;
 
 import javax.annotation.Nullable;
 
-public class ReeceNotification {
+public class ReeceNotification extends CheckRequired {
     private static final Logger log = Logger.getLogger(ReeceNotification.class);
-    private NotificationTrigger when;
-    private String slack;
-
-    public NotificationTrigger getWhen() {
-        return when;
-    }
-
-    public void setWhen(NotificationTrigger when) {
-        this.when = when;
-    }
-
-    public String getSlack() {
-        return slack;
-    }
-
-    public void setSlack(String slack) {
-        this.slack = slack;
-    }
+    @Required public NotificationTrigger when;
+    @Required public String slack;
 
     @Nullable
     Notification forPlan() {
-        if (this.when == null) {
-            log.info("Missing 'when' value in yaml task: " + this.slack);
-            return null;
-        }
+        if (!this.checkRequired()) return null;
         switch (this.when) {
             case PLAN_COMPLETED:
                 return new Notification()

@@ -13,29 +13,35 @@ import com.atlassian.bamboo.specs.util.Logger;
 
 import javax.annotation.Nullable;
 
-public class ReeceTask {
+public class ReeceTask extends CheckRequired {
     private static final Logger log = Logger.getLogger(ReeceTask.class);
-    private ReeceTaskType type;
-    private String description;
-    private String body;
-    private String resultFrom;
+    @Required public ReeceTaskType type;
+    @Required public String description;
+    public String body;
+    public String resultFrom;
 
     @Nullable
     public Task asTask(Plan plan) {
-        if (this.type == null) {
-            log.info("Missing 'type' value in yaml task: " + this.description);
-            return null;
-        }
+        if (!this.checkRequired()) return null;
+
         switch (this.type) {
             case VCS:
                 return new VcsCheckoutTask().description(this.description)
                         .checkoutItems(new CheckoutItem().defaultRepository());
             case SCRIPT:
+                if (this.body == null) {
+                    log.info("Missing 'body' value from yaml for SCRIPT");
+                    return null;
+                }
                 PlanIdentifier id = plan.getIdentifier();
                 String projectPlanKey = id.getProjectKey() + "-" + id.getPlanKey();
                 String body = this.body.replace("%(projectPlanKey)s", projectPlanKey);
                 return new ScriptTask().description(this.description).inlineBody(body);
             case JUNIT:
+                if (this.resultFrom == null) {
+                    log.info("Missing 'resultFrom' value from yaml for JUNIT");
+                    return null;
+                }
                 return new TestParserTask(TestParserTaskProperties.TestType.JUNIT)
                         .description(this.description)
                         .resultDirectories(this.resultFrom);
@@ -44,37 +50,5 @@ public class ReeceTask {
                 log.info("Unexpected 'type' value from yaml " + this.type);
                 return null;
         }
-    }
-
-    public ReeceTaskType getType() {
-        return type;
-    }
-
-    public void setType(ReeceTaskType type) {
-        this.type = type;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public String getResultFrom() {
-        return resultFrom;
-    }
-
-    public void setResultFrom(String resultFrom) {
-        this.resultFrom = resultFrom;
     }
 }

@@ -1,8 +1,8 @@
 bambooServer: https://bamboo.reecenet.org/bamboo
 projectKey: BST
 projectName: Bamboo Spec Testing
-planKey: ST
-planName: Spec Testing
+planKey: ST3
+planName: Spec Testing 3
 description: This is a test plan for bamboo specs
 repository:
   name: Bamboo Spec Test Project
@@ -64,6 +64,7 @@ stages:
         -t bamboo/%(projectPlanKey)s bash -c "cd /app/ && ./scripts/ci_tests.sh"
     -
       type: JUNIT
+      description: Include XML test results
       resultFrom: "**/unittest-report/xml/*.xml"
 dependencies:
   requiresPassing: true

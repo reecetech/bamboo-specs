@@ -2,36 +2,16 @@ package au.com.reece;
 
 import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
 
-public class ReeceArtifact {
-    private String name;
-    private String pattern;
-    private String location;
+import javax.annotation.Nullable;
 
+public class ReeceArtifact extends CheckRequired {
+    @Required  public String name;
+    @Required  public String pattern;
+    @Required  public String location;
+
+    @Nullable
     public Artifact asArtifact() {
+        if (!this.checkRequired()) return null;
         return new Artifact(this.name).copyPattern(this.pattern).location(this.location);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPattern() {
-        return pattern;
-    }
-
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 }
