@@ -1,4 +1,4 @@
-package au.com.reece;
+package au.com.reece.deliveryengineering.bamboospecs;
 
 import com.atlassian.bamboo.specs.api.builders.BambooKey;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;

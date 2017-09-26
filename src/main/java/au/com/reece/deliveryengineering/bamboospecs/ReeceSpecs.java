@@ -1,4 +1,4 @@
-package au.com.reece;
+package au.com.reece.deliveryengineering.bamboospecs;
 
 import com.atlassian.bamboo.specs.util.FileUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
@@ -7,11 +7,13 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.List;
 
 public class ReeceSpecs {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReeceSpecs.class);
 
     public static void main(final String[] args) throws Exception {
         UserPasswordCredentials adminUser = new FileUserPasswordCredentials("./.credentials");
@@ -33,20 +35,20 @@ public class ReeceSpecs {
         // do we publish?
         if (cmd.hasOption("t")) {
             publish = false;
-            System.out.println("Parsing yaml only, not publishing");
+            LOGGER.info("Parsing yaml only, not publishing");
         }
 
         String[] remains = cmd.getArgs();
 
         if (remains.length < 2) {
-            System.out.println("Error: missing required <command> and <yaml file> arguments");
+            LOGGER.error("Error: missing required <command> and <yaml file> arguments");
             printHelp(options);
         } else if (remains[0].equals("permissions")) {
             new PermissionsControl().run(adminUser, new File(remains[1]), publish);
         } else if (remains[0].equals("plan")) {
             new PlanControl().run(adminUser, new File(remains[1]), publish);
         } else {
-            System.out.println("Error: unrecognised <command> " + remains[0]);
+            LOGGER.error("Error: unrecognised <command> " + remains[0]);
             printHelp(options);
         }
     }
