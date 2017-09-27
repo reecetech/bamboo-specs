@@ -7,6 +7,7 @@ import com.atlassian.bamboo.specs.api.builders.plan.PlanIdentifier;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
@@ -17,7 +18,8 @@ public class PermissionFileModel extends DomainModel {
     public String bambooServer;
 
     @NotNull
-    public Set<PermissionModel> permissions;
+    @NotEmpty
+    public Set<@Valid PermissionModel> permissions;
 
     public void publish(BambooServer bambooServer, UserPasswordCredentials adminUser) {
         // Iterate over each project configured

@@ -10,10 +10,12 @@ import com.atlassian.bamboo.specs.api.builders.plan.configuration.ConcurrentBuil
 import com.atlassian.bamboo.specs.api.builders.project.Project;
 import com.atlassian.bamboo.specs.builders.trigger.RepositoryPollingTrigger;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProjectModel extends DomainModel {
     @NotNull
@@ -47,10 +49,10 @@ public class ProjectModel extends DomainModel {
     public Boolean repositoryPolling;
 
     @NotNull
-    public List<NotificationModel> notifications;
+    public List<@Valid NotificationModel> notifications;
 
     @NotNull
-    public List<StageModel> stages;
+    public List<@Valid StageModel> stages;
 
     public DependencyModel dependencies;
 
@@ -58,9 +60,10 @@ public class ProjectModel extends DomainModel {
         Project project = new Project().key(this.projectKey);
         Plan plan = new Plan(project, this.planName, this.planKey);
         plan.description(this.description);
+        plan.notifications(this.notifications.stream().map(NotificationModel::forPlan).collect(Collectors.toList()).toArray(new Notification[]{}));
 
         if (!complete) {
-            return plan;
+            //return plan;
         }
 
         this.addPluginConfiguration(plan);
@@ -73,12 +76,6 @@ public class ProjectModel extends DomainModel {
             plan.triggers(new RepositoryPollingTrigger().description("Timed polling"));
         }
 
-        ArrayList<Notification> notifications = new ArrayList<>();
-        for (NotificationModel notification: this.notifications) {
-            notifications.add(notification.forPlan());
-        }
-
-        plan.notifications(notifications.toArray(new Notification[notifications.size()]));
 
         ArrayList<Stage> stages = new ArrayList<>();
         for (StageModel stage: this.stages) {

@@ -3,7 +3,6 @@
 
 package au.com.reece.deliveryengineering.bamboospecs;
 
-import au.com.reece.deliveryengineering.bamboospecs.models.PermissionModel;
 import au.com.reece.deliveryengineering.bamboospecs.models.ProjectModel;
 import com.atlassian.bamboo.specs.api.BambooSpec;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
@@ -39,7 +38,7 @@ public class PlanControl {
             yamlPlan = mapper.readValue(yamlFile, ProjectModel.class);
             Set<ConstraintViolation<ProjectModel>> violations = validator.validate(yamlPlan);
             if (!violations.isEmpty()) {
-                violations.forEach(x -> LOGGER.error(x.getMessage()));
+                violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
                 throw new RuntimeException("Invalid YAML file");
             }
 

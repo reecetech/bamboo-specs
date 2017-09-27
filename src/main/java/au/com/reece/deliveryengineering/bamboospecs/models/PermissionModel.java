@@ -24,5 +24,6 @@ public class PermissionModel extends DomainModel {
     }
 
     @NotNull
+    @NotEmpty
     public Set<PermissionType> grant;
 }

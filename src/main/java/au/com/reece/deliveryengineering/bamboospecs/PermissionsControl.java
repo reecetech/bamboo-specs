@@ -40,7 +40,7 @@ public class PermissionsControl {
             yamlPermissions = mapper.readValue(yamlFile, PermissionFileModel.class);
             Set<ConstraintViolation<PermissionFileModel>> violations = validator.validate(yamlPermissions);
             if (!violations.isEmpty()) {
-                violations.forEach(x -> LOGGER.error(x.getMessage()));
+                violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
                 throw new RuntimeException("Invalid YAML file");
             }
         } catch (IOException e) {

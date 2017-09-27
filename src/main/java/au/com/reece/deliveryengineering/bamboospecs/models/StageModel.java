@@ -4,6 +4,7 @@ import com.atlassian.bamboo.specs.api.builders.plan.Job;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
 import com.atlassian.bamboo.specs.api.builders.plan.Stage;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class StageModel extends DomainModel {
     public String name;
 
     @NotNull
-    public List<StageJobModel> jobs;
+    public List<@Valid StageJobModel> jobs;
 
     public Stage asStage(Plan plan) {
         Stage stage = new Stage(this.name);
