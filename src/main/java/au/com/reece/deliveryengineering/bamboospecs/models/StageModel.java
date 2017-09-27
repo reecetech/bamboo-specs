@@ -15,7 +15,6 @@ public class StageModel extends DomainModel {
     public String name;
 
     @NotNull
-    @NotEmpty
     public List<StageJobModel> jobs;
 
     public Stage asStage(Plan plan) {

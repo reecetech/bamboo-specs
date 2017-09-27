@@ -12,11 +12,25 @@ import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public class TaskModel extends DomainModel {
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskModel.class);
+
+    @NotNull
     public TaskType type;
+
+    @NotNull
+    @NotEmpty
     public String description;
+
+    @NotNull
+    @NotEmpty
     public String body;
+
+    @NotNull
+    @NotEmpty
     public String resultFrom;
 
     public Task asTask(Plan plan) {

@@ -11,7 +11,6 @@ import javax.validation.constraints.NotNull;
 
 public class NotificationModel extends DomainModel {
     @NotNull
-    @NotEmpty
     public NotificationTrigger when;
 
     @NotNull
@@ -25,7 +24,7 @@ public class NotificationModel extends DomainModel {
                         .type(new PlanCompletedNotification())
                         .recipients(new AnyNotificationRecipient(
                                 new AtlassianModule("com.atlassian.bamboo.plugins.bamboo-slack:recipient.slack"))
-                                .recipientString("https://hooks.slack.com/services/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|#cyborg-dev"));
+                                .recipientString(slack));
             default:
                 // shouldn't actually be possible, given we load via enum
                 throw new RuntimeException("Unexpected 'when' value from yaml " + this.when);

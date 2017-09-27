@@ -12,7 +12,6 @@ import java.util.Set;
 
 public class DependencyModel extends DomainModel {
     @NotNull
-    @NotEmpty
     public Boolean requiresPassing;
 
     @NotNull

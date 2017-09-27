@@ -6,15 +6,32 @@ import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
 import com.atlassian.bamboo.specs.api.builders.requirement.Requirement;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Set;
 
 public class StageJobModel extends DomainModel {
+    @NotNull
+    @NotEmpty
     public String name;
+
+    @NotNull
+    @NotEmpty
     public String key;
+
+    @NotNull
+    @NotEmpty
     public String description;
+
+    @NotNull
+    @NotEmpty
     public Set<String> requirements;
+
+    @NotNull
     public Set<ArtifactModel> artifacts;
+
+    @NotNull
     public Set<TaskModel> tasks;
 
     public Job asJob(Plan plan) {

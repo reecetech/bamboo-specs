@@ -3,16 +3,23 @@
 
 package au.com.reece.deliveryengineering.bamboospecs;
 
+import au.com.reece.deliveryengineering.bamboospecs.models.PermissionFileModel;
 import au.com.reece.deliveryengineering.bamboospecs.models.PermissionModel;
 import com.atlassian.bamboo.specs.api.BambooSpec;
 
-import com.atlassian.bamboo.specs.util.*;
+import com.atlassian.bamboo.specs.util.BambooServer;
+import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * Plan configuration for Bamboo.
@@ -20,15 +27,22 @@ import java.io.IOException;
  */
 @BambooSpec
 public class PermissionsControl {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PermissionsControl.class);
     /**
      * Run main to publish plan on Bamboo
      */
     void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
-
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        PermissionModel yamlPermissions;
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        PermissionFileModel yamlPermissions;
         try {
-            yamlPermissions = mapper.readValue(yamlFile, PermissionModel.class);
+            yamlPermissions = mapper.readValue(yamlFile, PermissionFileModel.class);
+            Set<ConstraintViolation<PermissionFileModel>> violations = validator.validate(yamlPermissions);
+            if (!violations.isEmpty()) {
+                violations.forEach(x -> LOGGER.error(x.getMessage()));
+                throw new RuntimeException("Invalid YAML file");
+            }
         } catch (IOException e) {
             throw new RuntimeException("Error reading YAML file", e);
         }

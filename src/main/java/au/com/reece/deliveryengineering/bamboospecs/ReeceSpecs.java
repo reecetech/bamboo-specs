@@ -10,6 +10,9 @@ import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.io.File;
 
 public class ReeceSpecs {
@@ -58,5 +61,4 @@ public class ReeceSpecs {
         formatter.printHelp("reece-specs [options] <command> <yaml file>",
                 "options:", options, "");
     }
-
 }

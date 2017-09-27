@@ -41,22 +41,18 @@ public class ProjectModel extends DomainModel {
     public String description;
 
     @NotNull
-    @NotEmpty
     public RepositoryModel repository;
 
     @NotNull
-    @NotEmpty
     public Boolean repositoryPolling;
 
     @NotNull
-    @NotEmpty
     public List<NotificationModel> notifications;
 
     @NotNull
-    @NotEmpty
     public List<StageModel> stages;
 
-    public List<DependencyModel> dependencies;
+    public DependencyModel dependencies;
 
     public Plan getPlan(boolean complete) {
         Project project = new Project().key(this.projectKey);
@@ -92,7 +88,7 @@ public class ProjectModel extends DomainModel {
 
         this.addPlanBranchManagement(plan);
 
-        this.dependencies.forEach(x -> x.addToPlan(plan));
+        this.dependencies.addToPlan(plan);
 
         return plan;
     }

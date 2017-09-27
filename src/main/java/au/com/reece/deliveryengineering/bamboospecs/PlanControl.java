@@ -3,15 +3,22 @@
 
 package au.com.reece.deliveryengineering.bamboospecs;
 
+import au.com.reece.deliveryengineering.bamboospecs.models.PermissionModel;
 import au.com.reece.deliveryengineering.bamboospecs.models.ProjectModel;
 import com.atlassian.bamboo.specs.api.BambooSpec;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
 import com.atlassian.bamboo.specs.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * Plan configuration for Bamboo.
@@ -19,14 +26,23 @@ import java.io.IOException;
  */
 @BambooSpec
 public class PlanControl {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlanControl.class);
     /**
      * Run main to publish plan on Bamboo
      */
     void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
         ProjectModel yamlPlan;
         try {
             yamlPlan = mapper.readValue(yamlFile, ProjectModel.class);
+            Set<ConstraintViolation<ProjectModel>> violations = validator.validate(yamlPlan);
+            if (!violations.isEmpty()) {
+                violations.forEach(x -> LOGGER.error(x.getMessage()));
+                throw new RuntimeException("Invalid YAML file");
+            }
+
         } catch (IOException e) {
             throw new RuntimeException("Error reading YAML file", e);
         }
