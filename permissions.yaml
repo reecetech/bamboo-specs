@@ -6,3 +6,7 @@ permissions:
 - projects: [BST-ST]
   users: [dooleyj]
   grant: [VIEW]
+-
+  projects: [BST-ST]
+  users: [patersoa]
+  grant: [VIEW, EDIT, BUILD, CLONE, ADMIN]
