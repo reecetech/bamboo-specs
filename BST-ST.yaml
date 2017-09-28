@@ -10,43 +10,39 @@ repository:
   repositorySlug: bamboo-spec-test-project
 repositoryPolling: true
 notifications:
--
-  when: PLAN_COMPLETED
+- when: PLAN_COMPLETED
   slack: https://hooks.slack.com/services/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|#cyborg-dev
 stages:
--
-  name: Default Stage
+- name: Default Stage
   jobs:
-  -
-    name: Run Tests
+  - name: Run Tests
     key: JOB1
     description: Run Python Unit Tests
     requirements: [system.docker.executable, DOCKER, LINUX]
     artifacts:
-    -
-      name: unittest
+    - name: unittest
       pattern: "**"
       location: unittest-report
-    -
-      name: PACT Contracts
+    - name: PACT Contracts
       pattern: "**"
       location: pacts
-    -
-      name: Coverage Report
+    - name: Coverage Report
       pattern: "**"
       location: htmlcov
     tasks:
-    -
-      type: VCS
-      description: Checkout Default Repository
-    -
-      type: SCRIPT
+    - type: VCS
+      description: Checkout All Repositories
+      defaultRepository: true
+      repositories:
+      - name: Running Man
+      - name: Running Man Properties
+        path: properties
+    - type: SCRIPT
       description: Build docker image
       body: |
         set -ex
         scripts/test_image.sh bamboo/%(projectPlanKey)s
-    -
-      type: SCRIPT
+    - type: SCRIPT
       description: Run tests
       body: |
         set -ex
@@ -62,8 +58,7 @@ stages:
         -v ${bamboo.build.working.directory}/pacts:/app/pacts:rw \\
         -e PACT_DIR=/app/pacts \\
         -t bamboo/%(projectPlanKey)s bash -c "cd /app/ && ./scripts/ci_tests.sh"
-    -
-      type: JUNIT
+    - type: JUNIT
       description: Include XML test results
       resultFrom: "**/unittest-report/xml/*.xml"
 dependencies:

@@ -12,6 +12,7 @@ import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class TaskModel extends DomainModel {
     @NotNull
@@ -25,11 +26,22 @@ public class TaskModel extends DomainModel {
 
     public String resultFrom;
 
+    public List<RepositoryModel> repositories;
+
+    public boolean defaultRepository = false;
+
     public Task asTask(Plan plan) {
         switch (this.type) {
             case VCS:
-                return new VcsCheckoutTask().description(this.description)
-                        .checkoutItems(new CheckoutItem().defaultRepository());
+                VcsCheckoutTask task = new VcsCheckoutTask().description(this.description);
+                if (this.repositories.isEmpty() || this.defaultRepository) {
+                    task.checkoutItems(new CheckoutItem().defaultRepository());
+                } else {
+                    for (RepositoryModel vcs : this.repositories) {
+                        task.checkoutItems(vcs.asCheckoutItem());
+                    }
+                }
+                return task;
             case SCRIPT:
                 if (this.body == null) {
                     throw new RuntimeException("Missing 'body' value from yaml for SCRIPT");

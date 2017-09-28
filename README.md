@@ -27,13 +27,11 @@ Create a permissions.yaml file:
 
     bambooServer: https://bamboo.reecenet.org/bamboo
     permissions:
-    -
-      projects: [BST-ST, SPAM-IT]
+    - projects: [BST-ST, SPAM-IT]
       groups: [Cyborg_Team]
       users: [islaa, tobind]
       grant: [VIEW, EDIT, BUILD, CLONE, ADMIN]
-    -
-      projects: [BST-ST]
+    - projects: [BST-ST]
       users: [dooleyj]
       grant: [VIEW]
 
@@ -91,18 +89,15 @@ components above come from the repository URL like so:
 Slack notifications on plan completion are supported (others can be added):
 
     notifications:
-    -
-      when: PLAN_COMPLETED
+    - when: PLAN_COMPLETED
       slack: https://hooks.slack.com/services/...the rest of the URL...|#cyborg-dev
 
 Then stages and jobs may be defined:
 
     stages:
-    -
-      name: Default Stage
+    - name: Default Stage
       jobs:
-      -
-        name: Run Tests
+      - name: Run Tests
         key: JOB1
         description: Run Python Unit Tests
         requirements: [system.docker.executable, DOCKER, LINUX]
@@ -111,40 +106,45 @@ Requirements is optional. The job key is arbitrary and unique inside a plan.
 The job may then have a list of artifacts and tasks:
 
     artifacts:
-    -
-      name: unittest
+    - name: unittest
       pattern: "**"
       location: unittest-report
-    -
-      name: PACT Contracts
+    - name: PACT Contracts
       pattern: "**"
       location: pacts
-    -
-      name: Coverage Report
+    - name: Coverage Report
       pattern: "**"
       location: htmlcov
     tasks:
-    -
-      type: VCS
+    - type: VCS
       description: Checkout Default Repository
-    -
-      type: SCRIPT
+    - type: SCRIPT
       description: Build docker image
       body: |
         set -ex
         scripts/test_image.sh bamboo/%(projectPlanKey)s
-    -
-      type: SCRIPT
+    - type: SCRIPT
       description: Run tests
       body: |
         set -ex
         scripts/run_tests.sh
-    -
-      type: JUNIT
+    - type: JUNIT
       resultFrom: "**/unittest-report/xml/*.xml"
       
 The marker `%(projectPlanKey)s` will be substituted for the project-plan key
 (eg. `BST-ST`) before submission to Bamboo.
+
+The VCS task has a number of options. By default it will check out the default
+repository for the plan. If you wish to check out other repositories you may list
+them (and optionally include the default repository also):
+
+    - type: VCS
+      description: Checkout All Repositories
+      defaultRepository: true
+      repositories:
+      - name: Running Man
+      - name: Running Man Properties
+        path: properties
 
 Finally, if the plan has dependent plans they may be specified (as "dependencies"):
 
@@ -166,42 +166,33 @@ A sample plan:
       repositorySlug: bamboo-spec-test-project
     repositoryPolling: true
     notifications:
-    -
-      when: PLAN_COMPLETED
+    - when: PLAN_COMPLETED
       slack: https://hooks.slack.com/...the rest of the URL|#cyborg-dev
     stages:
-    -
-      name: Default Stage
+    - name: Default Stage
       jobs:
-      -
-        name: Run Tests
+      - name: Run Tests
         key: JOB1
         description: Run Python Unit Tests
         artifacts:
-        -
-          name: unittest
+        - name: unittest
           pattern: "**"
           location: unittest-report
-        -
-          name: PACT Contracts
+        - name: PACT Contracts
           pattern: "**"
           location: pacts
-        -
-          name: Coverage Report
+        - name: Coverage Report
           pattern: "**"
           location: htmlcov
         tasks:
-        -
-          type: VCS
+        - type: VCS
           description: Checkout Default Repository
-        -
-          type: SCRIPT
+        - type: SCRIPT
           description: Build docker image
           body: |
             set -ex
             scripts/test_image.sh bamboo/%(projectPlanKey)s
-        -
-          type: SCRIPT
+        - type: SCRIPT
           description: Run tests
           body: |
             set -ex
@@ -217,8 +208,7 @@ A sample plan:
             -v ${bamboo.build.working.directory}/pacts:/app/pacts:rw \\
             -e PACT_DIR=/app/pacts \\
             -t bamboo/%(projectPlanKey)s bash -c "cd /app/ && ./scripts/ci_tests.sh"
-        -
-          type: JUNIT
+        - type: JUNIT
           resultFrom: "**/unittest-report/xml/*.xml"
         requirements: [system.docker.executable, DOCKER, LINUX]
     dependencies:

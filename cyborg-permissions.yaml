@@ -1,6 +1,5 @@
 bambooServer: https://bamboo.reecenet.org/bamboo
 permissions:
--
-  projects: [BST-ST, PA-PBA, PA-PCA, PA-PRAT, PA-PUA, CTV-CPSC, DNSS-DNPSM, USRSRV-UPSC]
+- projects: [BST-ST, PA-PBA, PA-PCA, PA-PRAT, PA-PUA, CTV-CPSC, DNSS-DNPSM, USRSRV-UPSC]
   groups: [Cyborg_Team]
   grant: [VIEW, EDIT, BUILD, CLONE, ADMIN]
