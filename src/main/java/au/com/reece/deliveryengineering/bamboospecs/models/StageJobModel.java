@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class StageJobModel extends DomainModel {
@@ -27,13 +28,13 @@ public class StageJobModel extends DomainModel {
 
     @NotNull
     @NotEmpty
-    public ArrayList<String> requirements;
+    public List<String> requirements;
 
     @NotNull
-    public ArrayList<@Valid ArtifactModel> artifacts;
+    public List<@Valid ArtifactModel> artifacts;
 
     @NotNull
-    public ArrayList<@Valid TaskModel> tasks;
+    public List<@Valid TaskModel> tasks;
 
     public Job asJob(Plan plan) {
         Job job = new Job(this.name, this.key);
