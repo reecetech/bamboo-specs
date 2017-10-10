@@ -73,7 +73,13 @@ double-check that the `projectKey` and `planKey` are correct.
 The rest of the configuration is all optional chunks, though some will depend
 on others (VCS tasks would require a repository, for example).
 
-If there is a repository linked then include it as:
+If there are repositories used then include as either linked repositories
+(shared between plans):
+
+    linkedRepositories: [Bamboo Spec Test Project, Other Repository]
+
+The linked repository is typically added when a plan is created. Alternatively
+you can use a locally (to this plan) defined repository:
 
     repository:
       name: Bamboo Spec Test Project
@@ -81,7 +87,7 @@ If there is a repository linked then include it as:
       repositorySlug: bamboo-spec-test-project
     repositoryPolling: true
 
-The repository must be in the Reece Stash instance and the configuration
+The repository above must be in the Reece Stash instance and the configuration
 components above come from the repository URL like so:
 
     https://stash.reecenet.org/projects/<projectKey>/repos/<repositorySlug>/browse

@@ -27,13 +27,13 @@ public class StageJobModel extends DomainModel {
 
     @NotNull
     @NotEmpty
-    public Set<String> requirements;
+    public ArrayList<String> requirements;
 
     @NotNull
-    public Set<@Valid ArtifactModel> artifacts;
+    public ArrayList<@Valid ArtifactModel> artifacts;
 
     @NotNull
-    public Set<@Valid TaskModel> tasks;
+    public ArrayList<@Valid TaskModel> tasks;
 
     public Job asJob(Plan plan) {
         Job job = new Job(this.name, this.key);

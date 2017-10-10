@@ -1,0 +1,61 @@
+bambooServer: https://bamboo.reecenet.org/bamboo
+projectKey: CPS
+projectName: Customer Prices Service
+planKey: UT
+planName: Unit Tests
+description: Unit tests for the Customer Prices Service
+linkedRepositories: [Customer Prices Service (master)]
+repositoryPolling: true
+notifications:
+- when: PLAN_COMPLETED
+  slack: https://hooks.slack.com/services/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|#cyborg-dev
+stages:
+- name: Default Stage
+  jobs:
+  - name: Run Tests
+    key: JOB1
+    description: Run Python Unit Tests
+    requirements: [system.docker.executable, DOCKER, LINUX]
+    artifacts:
+    - name: unittest
+      pattern: "**"
+      location: unittest-report
+    - name: PACT Contracts
+      pattern: "**"
+      location: pacts
+    - name: Coverage Report
+      pattern: "**"
+      location: htmlcov
+    tasks:
+    - type: VCS
+      description: Checkout All Repositories
+      defaultRepository: true
+      repositories:
+      - name: Running Man
+      - name: Running Man Properties
+        path: properties
+    - type: SCRIPT
+      description: Build docker image
+      body: |
+        set -ex
+        scripts/test_image.sh bamboo/%(projectPlanKey)s
+    - type: SCRIPT
+      description: Run tests
+      body: |
+        set -ex
+        mkdir -p htmlcov
+        chmod 777 htmlcov
+        mkdir -p unittest-report
+        chmod 777 unittest-report
+        mkdir -p pacts
+        chmod 777 pacts
+        docker run --rm -u root \\
+        -v ${bamboo.build.working.directory}/htmlcov:/app/htmlcov:rw \\
+        -v ${bamboo.build.working.directory}/unittest-report:/app/unittest-report:rw \\
+        -v ${bamboo.build.working.directory}/pacts:/app/pacts:rw \\
+        -e PACT_DIR=/app/pacts \\
+        -t bamboo/%(projectPlanKey)s bash -c "cd /app/ && ./scripts/ci_tests.sh"
+    - type: JUNIT
+      description: Include XML test results
+      resultFrom: "**/unittest-report/xml/*.xml"
+

@@ -42,8 +42,8 @@ public class ProjectModel extends DomainModel {
     @NotEmpty
     public String description;
 
-    @NotNull
     public RepositoryModel repository;
+    public String[] linkedRepositories;
 
     @NotNull
     public Boolean repositoryPolling;
@@ -71,11 +71,13 @@ public class ProjectModel extends DomainModel {
         if (this.repository != null) {
             this.repository.addToPlan(plan);
         }
+        if (this.linkedRepositories.length > 0) {
+            plan.linkedRepositories(this.linkedRepositories);
+        }
 
         if (this.repositoryPolling) {
             plan.triggers(new RepositoryPollingTrigger().description("Timed polling"));
         }
-
 
         ArrayList<Stage> stages = new ArrayList<>();
         for (StageModel stage: this.stages) {
@@ -85,7 +87,7 @@ public class ProjectModel extends DomainModel {
 
         this.addPlanBranchManagement(plan);
 
-        this.dependencies.addToPlan(plan);
+        if (this.dependencies != null) this.dependencies.addToPlan(plan);
 
         return plan;
     }
