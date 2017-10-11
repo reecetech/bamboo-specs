@@ -1,3 +1,9 @@
+# Sample configuration files
+
+See the bamboo-configs repository for sample files:
+
+    https://stash.reecenet.org/projects/DE/repos/bamboo-configs
+
 # Credentials and Authentication
 
 Before running this program you need to configure an admin user
