@@ -38,7 +38,7 @@ stages:
       description: Build docker image
       body: |
         set -ex
-        scripts/test_image.sh bamboo/%(projectPlanKey)s
+        scripts/test_image.sh bamboo/customer-prices-service
     - type: SCRIPT
       description: Run tests
       body: |
@@ -49,12 +49,12 @@ stages:
         chmod 777 unittest-report
         mkdir -p pacts
         chmod 777 pacts
-        docker run --rm -u root \\
-        -v ${bamboo.build.working.directory}/htmlcov:/app/htmlcov:rw \\
-        -v ${bamboo.build.working.directory}/unittest-report:/app/unittest-report:rw \\
-        -v ${bamboo.build.working.directory}/pacts:/app/pacts:rw \\
-        -e PACT_DIR=/app/pacts \\
-        -t bamboo/%(projectPlanKey)s bash -c "cd /app/ && ./scripts/ci_tests.sh"
+        docker run --rm -u root \CPS-UT.yaml
+        -v ${bamboo.build.working.directory}/htmlcov:/app/htmlcov:rw \
+        -v ${bamboo.build.working.directory}/unittest-report:/app/unittest-report:rw \
+        -v ${bamboo.build.working.directory}/pacts:/app/pacts:rw \
+        -e PACT_DIR=/app/pacts \
+        -t bamboo/customer-prices-service bash -c "cd /app/ && ./scripts/ci_tests.sh"
     - type: JUNIT
       description: Include XML test results
       resultFrom: "**/unittest-report/xml/*.xml"

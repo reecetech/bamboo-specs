@@ -30,7 +30,6 @@ public class StageJobModel extends DomainModel {
     @NotEmpty
     public List<String> requirements;
 
-    @NotNull
     public List<@Valid ArtifactModel> artifacts;
 
     @NotNull
@@ -40,12 +39,14 @@ public class StageJobModel extends DomainModel {
         Job job = new Job(this.name, this.key);
         job.description(this.description);
 
-        ArrayList<Artifact> artifacts = new ArrayList<>();
-        for (ArtifactModel artifact : this.artifacts) {
-            Artifact a = artifact.asArtifact();
-            if (a != null) artifacts.add(a);
+        if (this.artifacts != null) {
+            ArrayList<Artifact> artifacts = new ArrayList<>();
+            for (ArtifactModel artifact : this.artifacts) {
+                Artifact a = artifact.asArtifact();
+                if (a != null) artifacts.add(a);
+            }
+            job.artifacts(artifacts.toArray(new Artifact[artifacts.size()]));
         }
-        job.artifacts(artifacts.toArray(new Artifact[artifacts.size()]));
 
         ArrayList<Task> tasks = new ArrayList<>();
         for (TaskModel task : this.tasks) {

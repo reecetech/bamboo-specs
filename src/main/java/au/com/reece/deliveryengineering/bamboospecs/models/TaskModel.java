@@ -28,18 +28,23 @@ public class TaskModel extends DomainModel {
 
     public List<RepositoryModel> repositories;
 
+    public boolean cleanCheckout = false;
+
     public boolean defaultRepository = false;
 
     public Task asTask(Plan plan) {
         switch (this.type) {
             case VCS:
                 VcsCheckoutTask task = new VcsCheckoutTask().description(this.description);
-                if (this.repositories.isEmpty() || this.defaultRepository) {
+                if (this.repositories == null || this.defaultRepository) {
                     task.checkoutItems(new CheckoutItem().defaultRepository());
                 } else {
                     for (RepositoryModel vcs : this.repositories) {
                         task.checkoutItems(vcs.asCheckoutItem());
                     }
+                }
+                if (this.cleanCheckout) {
+                    task.cleanCheckout(true);
                 }
                 return task;
             case SCRIPT:

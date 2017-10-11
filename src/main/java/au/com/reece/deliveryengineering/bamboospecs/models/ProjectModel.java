@@ -1,5 +1,6 @@
 package au.com.reece.deliveryengineering.bamboospecs.models;
 
+import com.atlassian.bamboo.specs.api.builders.Variable;
 import com.atlassian.bamboo.specs.api.builders.notification.Notification;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
 import com.atlassian.bamboo.specs.api.builders.plan.Stage;
@@ -15,6 +16,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class ProjectModel extends DomainModel {
@@ -44,6 +47,8 @@ public class ProjectModel extends DomainModel {
 
     public RepositoryModel repository;
     public String[] linkedRepositories;
+
+    public Map<String, String> variables;
 
     @NotNull
     public Boolean repositoryPolling;
@@ -76,7 +81,17 @@ public class ProjectModel extends DomainModel {
         }
 
         if (this.repositoryPolling) {
-            plan.triggers(new RepositoryPollingTrigger().description("Timed polling"));
+            plan.triggers(new RepositoryPollingTrigger()
+                    .description("Timed polling")
+                    .pollEvery(3, TimeUnit.MINUTES));
+        }
+
+        ArrayList<Variable> variables = new ArrayList<>();
+        if (this.variables != null) {
+            for (String key : this.variables.keySet()) {
+                variables.add(new Variable(key, this.variables.get(key)));
+            }
+            plan.variables(variables.toArray(new Variable[variables.size()]));
         }
 
         ArrayList<Stage> stages = new ArrayList<>();
@@ -96,6 +111,8 @@ public class ProjectModel extends DomainModel {
         // plan branch management - cleanup
         plan.planBranchManagement(new PlanBranchManagement()
                 .createForVcsBranch()
+                .triggerBuildsLikeParentPlan()
+                .issueLinkingEnabled(true)
                 .delete(new BranchCleanup()
                         .whenRemovedFromRepositoryAfterDays(7)
                         .whenInactiveInRepositoryAfterDays(30))

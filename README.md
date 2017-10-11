@@ -70,6 +70,12 @@ Plans have a lot more options. The required minumum is:
 If the Plan or Project do not exist in Bamboo they will be created, so please
 double-check that the `projectKey` and `planKey` are correct.
 
+If you have arbitrary variables stored on a plan you may set them as key-value
+pairs like so:
+
+    variables:
+      major_version_number: 1
+
 The rest of the configuration is all optional chunks, though some will depend
 on others (VCS tasks would require a repository, for example).
 
@@ -108,8 +114,8 @@ Then stages and jobs may be defined:
         description: Run Python Unit Tests
         requirements: [system.docker.executable, DOCKER, LINUX]
         
-Requirements is optional. The job key is arbitrary and unique inside a plan.
-The job may then have a list of artifacts and tasks:
+Requirements and artifacts are optional. The job key is arbitrary and unique
+inside a plan. The job may then have a list of tasks:
 
     artifacts:
     - name: unittest
@@ -124,6 +130,7 @@ The job may then have a list of artifacts and tasks:
     tasks:
     - type: VCS
       description: Checkout Default Repository
+      cleanCheckout: true
     - type: SCRIPT
       description: Build docker image
       body: |
@@ -151,6 +158,9 @@ them (and optionally include the default repository also):
       - name: Running Man
       - name: Running Man Properties
         path: properties
+      cleanCheckout: true
+      
+If you wish to force a clean checkout of the repositories on or off use `cleanCheckout`.
 
 Finally, if the plan has dependent plans they may be specified (as "dependencies"):
 

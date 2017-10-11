@@ -1,0 +1,108 @@
+bambooServer: https://bamboo.reecenet.org/bamboo
+projectKey: CPS
+projectName: Customer Prices Service
+planKey: DB
+planName: Docker Build
+description: Build and deploy the docker images for Customer Prices Service
+linkedRepositories: [Customer Prices Service (master), Running Man, Running Man Properties]
+repositoryPolling: true
+variables:
+  version_major_number: 1
+notifications:
+- when: PLAN_COMPLETED
+  slack: https://hooks.slack.com/services/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|#cyborg-dev
+stages:
+- name: Build Image
+  jobs:
+  - name: Build and Push Image to Nexus
+    key: BPIN
+    description: Build and Push Image to Nexus
+    requirements: [system.docker.executable, DOCKER]
+    tasks:
+    - type: VCS
+      description: Checkout Default Repositories
+      defaultRepository: true
+    - type: SCRIPT
+      description: Create Version file
+      body: |
+        set -ex
+        VERSION=${bamboo.version_major_number}'.'${bamboo.buildNumber}
+        if [[ $VERSION == *"SNAPSHOT"* ]]; then
+          VERSION="latest"
+          fi
+        echo $VERSION
+        ./scripts/inject_ci_build_properties.sh $VERSION ${bamboo.buildNumber} ${bamboo.buildTimeStamp} ${bamboo.buildResultsUrl} ${bamboo.repository.revision.number}
+        echo "DONE"
+    - type: SCRIPT
+      description: Build docker image
+      body: |
+        set -ex
+        ./scripts/build_image.sh service/customer-prices-service ${bamboo.version_major_number}'.'${bamboo.buildNumber}
+    - type: SCRIPT
+      description: Push image
+      body: |
+        set -ex
+        ./scripts/publish.sh service/customer-prices-service ${bamboo.version_major_number}'.'${bamboo.buildNumber}
+- name: Deploy Image
+  jobs:
+  - name: Deploy to Test Environments
+    description: Deploy to Test Environments
+    key: DTT
+    requirements: [LINUX]
+    tasks:
+    - type: VCS
+      description: Running Man
+      repositories:
+      - name: Running Man
+      - name: Running Man Properties
+        path: properties
+    - type: SCRIPT
+      description: Deploy to Test
+      body: |
+        set -ex
+        if [ "${bamboo.version_major_number}" != "SNAPSHOT" ]; then
+          python ./live_deploy.py customer-prices-service cyborgs_uat_au ${bamboo.version_major_number}.${bamboo.buildNumber}
+        else
+          python ./live_deploy.py customer-prices-service omega_test_au latest
+        fi
+- name: Deploy to Offline
+  jobs:
+  - name: Deploy to Offline Environments
+    key: DTOE
+    description: Deploy to Offline Environments (Production + Training)
+    requirements: [LINUX]
+    tasks:
+    - type: VCS
+      description: Running Man
+      repositories:
+      - name: Running Man
+      - name: Running Man Properties
+        path: properties
+    - type: SCRIPT
+      description: Deploy To Offline Training (NZ)
+      body: |
+        set -e
+        if [ "${bamboo.version_major_number}" != "SNAPSHOT" ]; then
+            python ./standby_deploy.py customer-prices-service training_nz ${bamboo.version_major_number}.${bamboo.buildNumber}
+        fi
+    - type: SCRIPT
+      description: Deploy to Offline Training (AU)
+      body: |
+        set -e
+        if [ "${bamboo.version_major_number}" != "SNAPSHOT" ]; then
+            python ./standby_deploy.py customer-prices-service training_au ${bamboo.version_major_number}.${bamboo.buildNumber}
+        fi
+    - type: SCRIPT
+      description: Deploy to Offline Production (NZ)
+      body: |
+        set -e
+        if [ "${bamboo.version_major_number}" != "SNAPSHOT" ]; then
+            python ./standby_deploy.py customer-prices-service prod_nz ${bamboo.version_major_number}.${bamboo.buildNumber}
+        fi
+    - type: SCRIPT
+      description: Deploy to Offline Production (AU)
+      body: |
+        set -e
+        if [ "${bamboo.version_major_number}" != "SNAPSHOT" ]; then
+            python ./standby_deploy.py customer-prices-service prod_au ${bamboo.version_major_number}.${bamboo.buildNumber}
+        fi
