@@ -49,14 +49,14 @@ public class PlanControl {
         BambooServer bambooServer = new BambooServer(yamlPlan.bambooServer, adminUser);
 
         if (!publish) {
-            yamlPlan.getPlan(true);
+            yamlPlan.getPlan();
             return;
         }
 
-        Plan plan = yamlPlan.getPlan(false);
+        Plan plan = yamlPlan.getPlan();
         bambooServer.publish(plan);
 
-        plan = yamlPlan.getPlan(true);
+        plan = yamlPlan.getPlan();
         bambooServer.publish(plan);
     }
 }

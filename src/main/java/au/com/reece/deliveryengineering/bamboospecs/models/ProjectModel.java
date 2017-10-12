@@ -61,15 +61,11 @@ public class ProjectModel extends DomainModel {
 
     public DependencyModel dependencies;
 
-    public Plan getPlan(boolean complete) {
+    public Plan getPlan() {
         Project project = new Project().key(this.projectKey);
         Plan plan = new Plan(project, this.planName, this.planKey);
         plan.description(this.description);
         plan.notifications(this.notifications.stream().map(NotificationModel::forPlan).collect(Collectors.toList()).toArray(new Notification[]{}));
-
-        if (!complete) {
-            //return plan;
-        }
 
         this.addPluginConfiguration(plan);
 
