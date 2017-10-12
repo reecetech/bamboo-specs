@@ -50,8 +50,7 @@ public class ProjectModel extends DomainModel {
 
     public Map<String, String> variables;
 
-    @NotNull
-    public Boolean repositoryPolling;
+    public boolean repositoryPolling=false;
 
     @NotNull
     public List<@Valid NotificationModel> notifications;
@@ -65,7 +64,9 @@ public class ProjectModel extends DomainModel {
         Project project = new Project().key(this.projectKey);
         Plan plan = new Plan(project, this.planName, this.planKey);
         plan.description(this.description);
-        plan.notifications(this.notifications.stream().map(NotificationModel::forPlan).collect(Collectors.toList()).toArray(new Notification[]{}));
+
+        plan.notifications(this.notifications.stream().map(NotificationModel::asNotification)
+                .collect(Collectors.toList()).toArray(new Notification[]{}));
 
         this.addPluginConfiguration(plan);
 
@@ -90,11 +91,7 @@ public class ProjectModel extends DomainModel {
             plan.variables(variables.toArray(new Variable[variables.size()]));
         }
 
-        ArrayList<Stage> stages = new ArrayList<>();
-        for (StageModel stage: this.stages) {
-            stages.add(stage.asStage(plan));
-        }
-        plan.stages(stages.toArray(new Stage[stages.size()]));
+        plan.stages(this.stages.stream().map(StageModel::asStage).collect(Collectors.toList()).toArray(new Stage[]{}));
 
         this.addPlanBranchManagement(plan);
 

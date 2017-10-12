@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class StageJobModel extends DomainModel {
     @NotNull
@@ -28,38 +29,30 @@ public class StageJobModel extends DomainModel {
 
     @NotNull
     @NotEmpty
-    public List<String> requirements;
+    public List<@Valid RequirementModel> requirements;
 
     public List<@Valid ArtifactModel> artifacts;
 
     @NotNull
     public List<@Valid TaskModel> tasks;
 
-    public Job asJob(Plan plan) {
+    public Job asJob() {
         Job job = new Job(this.name, this.key);
         job.description(this.description);
 
         if (this.artifacts != null) {
-            ArrayList<Artifact> artifacts = new ArrayList<>();
-            for (ArtifactModel artifact : this.artifacts) {
-                Artifact a = artifact.asArtifact();
-                if (a != null) artifacts.add(a);
-            }
-            job.artifacts(artifacts.toArray(new Artifact[artifacts.size()]));
+            Artifact[] artifacts = this.artifacts.stream().map(ArtifactModel::asArtifact)
+                    .collect(Collectors.toList()).toArray(new Artifact[]{});
+            job.artifacts(artifacts);
         }
 
-        ArrayList<Task> tasks = new ArrayList<>();
-        for (TaskModel task : this.tasks) {
-            Task t = task.asTask(plan);
-            if (t != null) tasks.add(t);
-        }
-        job.tasks(tasks.toArray(new Task[tasks.size()]));
+        Task[] tasks = this.tasks.stream().map(TaskModel::asTask)
+                .collect(Collectors.toList()).toArray(new Task[]{});
+        job.tasks(tasks);
 
-        ArrayList<Requirement> requirements = new ArrayList<>();
-        for (String requirement : this.requirements) {
-            requirements.add(new Requirement(requirement));
-        }
-        job.requirements(requirements.toArray(new Requirement[requirements.size()]));
+        Requirement[] requirements = this.requirements.stream().map(RequirementModel::asRequirement)
+                .collect(Collectors.toList()).toArray(new Requirement[]{});
+        job.requirements(requirements);
 
         return job;
     }

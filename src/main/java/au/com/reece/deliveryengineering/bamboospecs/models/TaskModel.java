@@ -32,7 +32,7 @@ public class TaskModel extends DomainModel {
 
     public boolean defaultRepository = false;
 
-    public Task asTask(Plan plan) {
+    public Task asTask() {
         switch (this.type) {
             case VCS:
                 VcsCheckoutTask task = new VcsCheckoutTask().description(this.description);
@@ -51,10 +51,7 @@ public class TaskModel extends DomainModel {
                 if (this.body == null) {
                     throw new RuntimeException("Missing 'body' value from yaml for SCRIPT");
                 }
-                PlanIdentifier id = plan.getIdentifier();
-                String projectPlanKey = id.getProjectKey() + "-" + id.getPlanKey();
-                String body = this.body.replace("%(projectPlanKey)s", projectPlanKey);
-                return new ScriptTask().description(this.description).inlineBody(body);
+                return new ScriptTask().description(this.description).inlineBody(this.body);
             case JUNIT:
                 if (this.resultFrom == null) {
                     throw new RuntimeException("Missing 'resultFrom' value from yaml for JUNIT");

@@ -7,6 +7,7 @@ import com.atlassian.bamboo.specs.api.builders.plan.PlanIdentifier;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 
 // TODO document me
@@ -42,7 +43,9 @@ public class DeploymentModel {
             .releaseNaming(this.releaseNaming.asReleaseNaming());
 
         if (this.environments != null) {
-            deployment.environments(this.environments.toArray(new Environment[this.environments.size()]));
+            Environment environments[] = this.environments.stream().map(EnvironmentModel::asEnvironment)
+                    .collect(Collectors.toList()).toArray(new Environment[]{});
+            deployment.environments(environments);
         }
         return deployment;
     }
