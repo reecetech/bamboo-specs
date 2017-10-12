@@ -52,7 +52,8 @@ public class ProjectModel extends DomainModel {
 
     public boolean repositoryPolling=false;
 
-    public PlanBranchManagementModel branchManagement;
+    // branch management has sensible defaults
+    public PlanBranchManagementModel branchManagement = new PlanBranchManagementModel();
 
     @NotNull
     public List<@Valid NotificationModel> notifications;
