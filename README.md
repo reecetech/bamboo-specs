@@ -139,12 +139,41 @@ you can use a locally (to this plan) defined repository:
       name: Bamboo Spec Test Project
       projectKey: SAN
       repositorySlug: bamboo-spec-test-project
-    repositoryPolling: true
 
 The repository above must be in the Reece Stash instance and the configuration
 components above come from the repository URL like so:
 
     https://stash.reecenet.org/projects/<projectKey>/repos/<repositorySlug>/browse
+
+Polling for changes in the repository may be enabled (currently defaulting to
+every 3 minutes):
+
+    repositoryPolling: true
+    
+Plan branches are local configurations based on branches in the repository and
+the strategy for synchronising the two are controlled with:
+
+    branchManagement:
+      createStrategy: MANUALLY
+
+The creation strategy is one of: `MANUALLY`, `ON_PULL_REQUEST`, `ON_NEW_BRANCH`
+or `ON_BRANCH_PATTERN`. The last will create on new branches matching a name
+pattern regular expression:
+
+    branchManagement:
+      createStrategy: ON_BRANCH_PATTERN
+      branchPattern: feature/.*
+
+The `issueLinkingEnabled` option enables automatic linking of the plan branch
+to the Jira issue related to the repository branch, which is enabled by default.
+Cleaning up plan branches is defaulted to 7 days after the repository branch is
+deleted, or after 30 days of inactivity in the repository branch. These options
+may be modified in the `branchManagement` section:
+
+    branchManagement:
+      issueLinkingEnabled: false
+      delayCleanAfterDelete: 2
+      delayCleanAfterInactivity: 60
 
 Notifications on plan completion are supported:
 
