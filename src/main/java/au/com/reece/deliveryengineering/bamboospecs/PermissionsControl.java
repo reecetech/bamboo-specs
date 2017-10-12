@@ -9,6 +9,7 @@ import com.atlassian.bamboo.specs.api.BambooSpec;
 
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
@@ -41,8 +42,11 @@ public class PermissionsControl {
             Set<ConstraintViolation<PermissionFileModel>> violations = validator.validate(yamlPermissions);
             if (!violations.isEmpty()) {
                 violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
-                throw new RuntimeException("Invalid YAML file");
+                return;
             }
+        } catch (JsonProcessingException e) {
+            LOGGER.error(e.getMessage());
+            return;
         } catch (IOException e) {
             throw new RuntimeException("Error reading YAML file", e);
         }

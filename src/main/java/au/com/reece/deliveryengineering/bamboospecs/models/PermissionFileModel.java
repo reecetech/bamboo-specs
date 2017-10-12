@@ -19,37 +19,14 @@ public class PermissionFileModel extends DomainModel {
 
     @NotNull
     @NotEmpty
-    public Set<@Valid PermissionModel> permissions;
+    public Set<@Valid ProjectPermissionModel> projects;
+
+    @NotNull
+    @NotEmpty
+    public Set<@Valid DeploymentPermissionModel> deployments;
 
     public void publish(BambooServer bambooServer, UserPasswordCredentials adminUser) {
-        // Iterate over each project configured
-
-        for (PermissionModel permission : permissions) {
-            for (String projectKey : permission.projects) {
-                String[] parts = projectKey.split("-");
-                PlanIdentifier id = new PlanIdentifier(parts[0], parts[1]);
-
-                Permissions permissions = new Permissions();
-
-                // Ensure our admin user always has admin permission
-                permissions.userPermissions(adminUser.getUsername(), PermissionType.ADMIN);
-
-                PermissionType[] permissionArray = permission.grant.toArray(new PermissionType[permission.grant.size()]);
-
-                // Set user grant first
-                for (String user : permission.getUsers()) {
-                    permissions.userPermissions(user, permissionArray);
-                }
-
-                for (String group : permission.getGroups()) {
-                    permissions.groupPermissions(group, permissionArray);
-                }
-
-                permissions.loggedInUserPermissions(PermissionType.VIEW).anonymousUserPermissionView();
-
-                bambooServer.publish(new PlanPermissions(id).permissions(permissions));
-            }
-
-        }
+        this.projects.forEach(x -> x.publishPermissions(bambooServer, adminUser));
+        this.deployments.forEach(x -> x.publishPermissions(bambooServer, adminUser));
     }
 }

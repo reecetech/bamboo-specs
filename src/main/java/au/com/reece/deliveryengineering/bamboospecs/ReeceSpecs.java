@@ -50,6 +50,8 @@ public class ReeceSpecs {
             new PermissionsControl().run(adminUser, new File(remains[1]), publish);
         } else if (remains[0].equals("plan")) {
             new PlanControl().run(adminUser, new File(remains[1]), publish);
+        } else if (remains[0].equals("deployment")) {
+            new DeploymentControl().run(adminUser, new File(remains[1]), publish);
         } else {
             LOGGER.error("Error: unrecognised <command> " + remains[0]);
             printHelp(options);
@@ -58,7 +60,7 @@ public class ReeceSpecs {
 
     private static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("reece-specs [options] <command> <yaml file>",
+        formatter.printHelp("reece-specs [options] <permissions|plan|deployment> <yaml file>",
                 "options:", options, "");
     }
 }
