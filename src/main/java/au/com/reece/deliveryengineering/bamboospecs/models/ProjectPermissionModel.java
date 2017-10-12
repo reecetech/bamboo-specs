@@ -26,10 +26,7 @@ public class ProjectPermissionModel {
             PlanIdentifier id = new PlanIdentifier(parts[0], parts[1]);
 
             Permissions permissions = new Permissions();
-
-            for (PermissionModel perm: this.permissions) {
-                perm.addToPermissions(permissions);
-            }
+            this.permissions.forEach(x -> x.addToPermissions(permissions));
 
             // Ensure our admin user always has admin permission
             permissions.userPermissions(adminUser.getUsername(), PermissionType.ADMIN);
