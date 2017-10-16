@@ -52,6 +52,9 @@ public class ProjectModel extends DomainModel {
 
     public boolean repositoryPolling=false;
 
+    // branch management has sensible defaults
+    public PlanBranchManagementModel branchManagement = new PlanBranchManagementModel();
+
     @NotNull
     public List<@Valid NotificationModel> notifications;
 
@@ -93,30 +96,18 @@ public class ProjectModel extends DomainModel {
 
         plan.stages(this.stages.stream().map(StageModel::asStage).collect(Collectors.toList()).toArray(new Stage[]{}));
 
-        this.addPlanBranchManagement(plan);
+        plan.planBranchManagement(this.branchManagement.asPlanBranchManagement());
 
         if (this.dependencies != null) this.dependencies.addToPlan(plan);
 
         return plan;
     }
 
-    private void addPlanBranchManagement(Plan plan) {
-        // plan branch management - cleanup
-        plan.planBranchManagement(new PlanBranchManagement()
-                .createForVcsBranch()
-                .triggerBuildsLikeParentPlan()
-                .issueLinkingEnabled(true)
-                .delete(new BranchCleanup()
-                        .whenRemovedFromRepositoryAfterDays(7)
-                        .whenInactiveInRepositoryAfterDays(30))
-                .notificationLikeParentPlan());
-    }
-
     private void addPluginConfiguration(Plan plan) {
         // this is the basic configuration needed
         plan.pluginConfigurations(
-                new ConcurrentBuilds().useSystemWideDefault(false),
-                new AllOtherPluginsConfiguration()
+            new ConcurrentBuilds().useSystemWideDefault(false),
+            new AllOtherPluginsConfiguration()
         );
     }
 }
