@@ -20,7 +20,6 @@ to the user the program will run as. You do this by creating a
 
 Don't check this into a repository.
 
-
 ## Building and Running
 
 Build the code with:
@@ -31,6 +30,7 @@ Run with:
 
     java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar permissions permissions.yaml
     java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar plan plan.yaml
+    java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar deployment deployment-project.yaml
 
 ## Controlling Permissions
 
@@ -99,7 +99,7 @@ in the permissions yaml, to prevent that user from having that permission
 removed (which would break the program).
 
 
-## Creating and Configuring Plans
+## Build and Test Plans
 
 Plans have a lot more options. The required minumum is:
 
@@ -127,6 +127,8 @@ Variables defined here (and others defined by Bamboo for you) may be reference
 in SCRIPT task body texts using `${bamboo.major_version_number}` or
 `${bamboo.target_name}` using the above example settings.
 
+### Source Repositories
+
 If there are repositories used then include as either linked repositories
 (shared between plans):
 
@@ -145,11 +147,6 @@ components above come from the repository URL like so:
 
     https://stash.reecenet.org/projects/<projectKey>/repos/<repositorySlug>/browse
 
-Polling for changes in the repository may be enabled (currently defaulting to
-every 3 minutes):
-
-    repositoryPolling: true
-    
 Plan branches are local configurations based on branches in the repository and
 the strategy for synchronising the two are controlled with:
 
@@ -175,6 +172,31 @@ may be modified in the `branchManagement` section:
       delayCleanAfterDelete: 2
       delayCleanAfterInactivity: 60
 
+### Triggers
+
+Plans may also have a `triggers` section to indicate the specific circumstances
+in which they are to be triggered (that is, their tasks should be executed),
+say running unit tests after commits to the stash repository:
+
+    triggers:
+    - type: AFTER_STASH_COMMIT
+      description: Trigger from stash changes
+
+Or perhaps trigger a deploy from a successful build:
+
+    triggers:
+    - type: AFTER_SUCCESSFUL_BUILD_PLAN
+      description: Deploy main plan branch (master)
+
+If the plan has dependent plans which are to be triggered when
+this plan completes they may be specified (as "dependencies"):
+
+    dependencies:
+      requiresPassing: true
+      plans: [USRSRV-UPSDB]
+
+### Notifications
+
 Notifications on plan completion are supported:
 
     notifications:
@@ -188,7 +210,12 @@ At least one of the notification targets is required: `slack`,
 `DEPLOYMENT_FAILED` and `DEPLOYMENT_FINISHED` which mirror the options of the
 same name in the Bamboo UI.
 
-Then stages and jobs may be defined:
+### Stages, Jobs and Tasks
+
+Your plan may have multiple stages, which each have jobs, and each job may have
+tasks and *final* tasks (tasks to run even if the other tasks fail).
+
+Stages and jobs may be defined:
 
     stages:
     - name: Default Stage
@@ -200,14 +227,11 @@ Then stages and jobs may be defined:
         - name: system.docker.executable
         - name: DOCKER
         - name: LINUX
-        
+
 Requirements and artifacts are optional. The job key is arbitrary and unique
 inside a plan. The job may then have a list of tasks:
 
     artifacts:
-    - name: unittest
-      pattern: "**"
-      location: unittest-report
     - name: PACT Contracts
       pattern: "**"
       location: pacts
@@ -222,17 +246,15 @@ inside a plan. The job may then have a list of tasks:
       description: Build docker image
       body: |
         set -ex
-        scripts/test_image.sh bamboo/%(projectPlanKey)s
+        scripts/test_image.sh bamboo/${bamboo.target_name}
     - type: SCRIPT
       description: Run tests
       body: |
         set -ex
         scripts/run_tests.sh
-    - type: JUNIT
-      resultFrom: "**/unittest-report/xml/*.xml"
       
-The marker `%(projectPlanKey)s` will be substituted for the project-plan key
-(eg. `BST-ST`) before submission to Bamboo.
+Here you can see we refer to the bamboo variable we defined way up above so that
+the script body may be the same across multiple projects.
 
 The VCS task has a number of options. By default it will check out the default
 repository for the plan. If you wish to check out other repositories you may list
@@ -249,86 +271,15 @@ them (and optionally include the default repository also):
       
 If you wish to force a clean checkout of the repositories on or off use `cleanCheckout`.
 
-Finally, if the plan has dependent plans (which are to be triggered when
-this plan completes) they may be specified (as "dependencies"):
+Final tasks are tasks that are always run after the other tasks, regardless of whether
+they were successful. These could be cleanup tasks, or more commonly including a
+JUnit parser to parse the results of the tests which may have failed:
 
-    dependencies:
-      requiresPassing: true
-      plans: [USRSRV-UPSDB]
-      
-The dependent plan may also have a `triggers` section to indicate the specific
-circumstances in which they are to be triggered:
+    finalTasks:
+    - type: JUNIT
+      description: Include XML test results
+      resultFrom: "**/unittest-report/xml/*.xml"
 
-    triggers:
-    - type: AFTER_SUCCESSFUL_BUILD_PLAN
-      description: Deploy main plan branch (master)
-      
-The above is currently the only option for the type value.
+## Deployment Projects
 
-## Sample Plan
-
-A sample plan:
-    
-    bambooServer: https://bamboo.reecenet.org/bamboo
-    projectKey: BST
-    projectName: Bamboo Spec Testing
-    planKey: ST
-    planName: Spec Testing
-    description: This is a test plan for bamboo specs
-    repository:
-      name: Bamboo Spec Test Project
-      projectKey: SAN
-      repositorySlug: bamboo-spec-test-project
-    repositoryPolling: true
-    notifications:
-    - when: PLAN_COMPLETED
-      slack: https://hooks.slack.com/...the rest of the URL|#cyborg-dev
-    stages:
-    - name: Default Stage
-      jobs:
-      - name: Run Tests
-        key: JOB1
-        description: Run Python Unit Tests
-        artifacts:
-        - name: unittest
-          pattern: "**"
-          location: unittest-report
-        - name: PACT Contracts
-          pattern: "**"
-          location: pacts
-        - name: Coverage Report
-          pattern: "**"
-          location: htmlcov
-        tasks:
-        - type: VCS
-          description: Checkout Default Repository
-        - type: SCRIPT
-          description: Build docker image
-          body: |
-            set -ex
-            scripts/test_image.sh bamboo/%(projectPlanKey)s
-        - type: SCRIPT
-          description: Run tests
-          body: |
-            set -ex
-            mkdir -p htmlcov
-            chmod 777 htmlcov
-            mkdir -p unittest-report
-            chmod 777 unittest-report
-            mkdir -p pacts
-            chmod 777 pacts
-            docker run --rm -u root \\
-            -v ${bamboo.build.working.directory}/htmlcov:/app/htmlcov:rw \\
-            -v ${bamboo.build.working.directory}/unittest-report:/app/unittest-report:rw \\
-            -v ${bamboo.build.working.directory}/pacts:/app/pacts:rw \\
-            -e PACT_DIR=/app/pacts \\
-            -t bamboo/%(projectPlanKey)s bash -c "cd /app/ && ./scripts/ci_tests.sh"
-        - type: JUNIT
-          resultFrom: "**/unittest-report/xml/*.xml"
-        requirements:
-        - name: system.docker.executable
-        - name: DOCKER
-        - name: LINUX
-    dependencies:
-      requiresPassing: true
-      plans: [BST-DB]
+TODO document me
