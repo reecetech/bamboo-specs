@@ -30,6 +30,9 @@ public class NotificationModel extends DomainModel {
             case PLAN_COMPLETED:
                 type = new PlanCompletedNotification();
                 break;
+            case PLAN_FAILED:
+                type = new PlanFailedNotification();
+                break;
             case DEPLOYMENT_FAILED:
                 type = new DeploymentFailedNotification();
                 break;
