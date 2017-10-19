@@ -12,8 +12,9 @@ See the bamboo-configs repository for sample files:
 ## Credentials and Authentication
 
 Before running this program you need to configure an admin user
-to the user the program will run as. You do this by creating a
-`.credentials` file with the following contents:
+to the user the program will run as (ie. your Bamboo credentials)
+You do this by creating a `.credentials` file with the following
+contents:
 
     username=<admin user username>
     password=<admin user password>
@@ -31,6 +32,22 @@ Run with:
     java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar permissions permissions.yaml
     java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar plan plan.yaml
     java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar deployment deployment-project.yaml
+
+Troubleshooting:                                                         
+If you get this error when running the jar files,
+you need to add Reece's CA cert to your java keystore:
+
+    Caused by: javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPath
+
+    On Ubuntu:
+    ----------
+    Visit https://bamboo.reecenet.org in Chrome
+    Use developer tools - Security - View Certificate - details tab - export
+    This will save a copy of the public certificate to a file
+    (vicpjdt01.reecenet.org in the example below)
+    Import that file using:
+    keytool -import -alias vicpjdt01.reecenet.org -keystore cacerts \
+    -trustcacerts -file ~dev/vicpjdt01.reecenet.org
 
 ## Controlling Permissions
 
