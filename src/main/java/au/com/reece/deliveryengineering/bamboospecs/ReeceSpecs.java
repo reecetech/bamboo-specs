@@ -1,6 +1,7 @@
 package au.com.reece.deliveryengineering.bamboospecs;
 
 import com.atlassian.bamboo.specs.util.FileUserPasswordCredentials;
+import com.atlassian.bamboo.specs.util.SimpleUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -13,18 +14,21 @@ import org.slf4j.LoggerFactory;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.io.Console;
 import java.io.File;
 
 public class ReeceSpecs {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReeceSpecs.class);
 
     public static void main(final String[] args) throws Exception {
-        UserPasswordCredentials adminUser = new FileUserPasswordCredentials("./.credentials");
         boolean publish = true;
 
         Options options = new Options();
 
         options.addOption("t", false, "parse yaml only, do not publish");
+        options.addOption("u", true, "Bamboo user to publish as");
+        options.addOption("p", true, "Bamboo user's password");
+        options.addOption("c", true, "credentials file with Bamboo user login");
         options.addOption("h", false, "display this help");
 
         CommandLineParser parser = new DefaultParser();
@@ -33,6 +37,22 @@ public class ReeceSpecs {
         if (cmd.hasOption("h")) {
             printHelp(options);
             return;
+        }
+
+        UserPasswordCredentials adminUser;
+        if (cmd.hasOption("u")) {
+            String username = cmd.getOptionValue("u");
+            String password;
+            if (cmd.hasOption("p")) {
+                password = cmd.getOptionValue("c");
+            } else {
+                Console console = System.console();
+                char passwordArray[] = console.readPassword("Enter password for '%s': ", username);
+                password = new String(passwordArray);
+            }
+            adminUser = new SimpleUserPasswordCredentials(username, password);
+        } else {
+            adminUser = new FileUserPasswordCredentials(cmd.getOptionValue("c", "./.credentials"));
         }
 
         // do we publish?

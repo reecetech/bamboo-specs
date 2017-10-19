@@ -29,9 +29,15 @@ Build the code with:
     
 Run with:
 
-    java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar permissions permissions.yaml
-    java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar plan plan.yaml
-    java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar deployment deployment-project.yaml
+    java -jar target/bamboo-specs-reece-1.0.0.jar permissions permissions.yaml
+    java -jar target/bamboo-specs-reece-1.0.0.jar plan plan.yaml
+    java -jar target/bamboo-specs-reece-1.0.0.jar deployment deployment-project.yaml
+    
+You can test your YAML using the -t switch passed to any of those commands, for example:
+
+    java -jar target/bamboo-specs-reece-1.0.0.jar plan -t plan.yaml
+
+This will just parse the YAML and not deploy it to Bamboo.
 
 ## Java SSL keystore fix
 
