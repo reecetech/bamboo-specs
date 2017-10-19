@@ -33,8 +33,9 @@ Run with:
     java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar plan plan.yaml
     java -jar target/bamboo-specs-reece-1.0.0-SNAPSHOT.jar deployment deployment-project.yaml
 
-Troubleshooting:                                                         
-    If you get this error when running the jar files, you need to add Reece's CA cert to your java keystore:
+## Java SSL keystore fix
+
+If you get this error when running the jar files, you need to add Reece's CA cert to your java keystore:
 
     Caused by: javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPath
 
