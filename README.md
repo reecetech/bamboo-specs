@@ -47,6 +47,7 @@ Troubleshooting:
     Import that file using:
     keytool -import -alias vicpjdt01.reecenet.org -keystore cacerts \
     -trustcacerts -file ~dev/vicpjdt01.reecenet.org
+    This will prompt for a password; the default is "changeit"
 
 ## Controlling Permissions
 
