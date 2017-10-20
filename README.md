@@ -245,17 +245,27 @@ Stages and jobs may be defined:
         - name: system.docker.executable
         - name: DOCKER
         - name: LINUX
+        artifacts:
+        - name: PACT Contracts
+          pattern: "**"
+          location: pacts
+        - name: Coverage Report
+          pattern: "**"
+          location: htmlcov
 
-Requirements and artifacts are optional. The job key is arbitrary and unique
-inside a plan. The job may then have a list of tasks:
+The job key is arbitrary and unique inside a plan. Requirements and artifacts are optional.
 
-    artifacts:
-    - name: PACT Contracts
-      pattern: "**"
-      location: pacts
-    - name: Coverage Report
-      pattern: "**"
-      location: htmlcov
+The requirements are restrictions on which Bamboo agents may be used to run the plan's jobs.
+The actual list of requirements possible is available in the Bamboo UI, though the precise
+key to be used in the list above is unclear for the requirements build into Bamboo. For
+example, in the Bamboo UI you may select the built-in "Docker" requirement, which in the
+list above is "system.docker.executable". The UI also lists "DOCKER" which is represented
+in the list above with the same name. I recommend adding the requirement through the UI
+and using the "View plan as Bamboo Specs" option under Plan Configuration Actions menu to
+determine the actual string to use in the requirements list in YAML.
+
+The job may then have a list of tasks:
+
     tasks:
     - type: VCS
       description: Checkout Default Repository
@@ -300,4 +310,56 @@ JUnit parser to parse the results of the tests which may have failed:
 
 ## Deployment Projects
 
-TODO document me
+Deployment projects look a lot like build and test plans, and even share some of the
+same sections, but do have a different preamble and structure.
+
+### Preamble
+
+At the top of the file you need to identify the deployment by *name*, and then the
+build plan that it belongs to:
+
+    bambooServer: https://bamboo.reecenet.org/bamboo
+    name: Diary Notes Python Shared Service
+    buildProject: DNSS
+    buildPlan: DNPSDB
+    description: This is a deployment plan for the Diary Notes Python Shared Service
+
+You should also define the release naming scheme:
+
+    releaseNaming:
+      pattern: ${bamboo.version_major_number}.${bamboo.buildNumber}
+
+### Environments Structure
+
+This is a list of environments that you will deploy to. Each
+environment will have a name and description followed by requirements, notifications
+and tasks that are constructed exactly the same as in build plans. So for example:
+    
+    environments:
+    - environment: Production (AU + NZ)
+      description: Deployment plan for the Diary Notes Python Shared Service to production
+      requirements:
+      - name: system.docker.executable
+      notifications:
+      - when: DEPLOYMENT_FINISHED
+        slack: https://hooks.slack.com/services/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|#cyborg-dev
+      tasks:
+      - type: VCS
+        description: Running Man
+        repositories:
+        - name: Running Man
+        - name: Running Man Properties
+          path: properties
+      - type: SCRIPT
+        description: Cutover Blue to Green - Training
+        body: |
+          python ./cutover.py  ${bamboo.target_name} training_nz ${bamboo.version_major_number}.${bamboo.buildNumber}
+          python ./cutover.py  ${bamboo.target_name} training_au ${bamboo.version_major_number}.${bamboo.buildNumber}
+      - type: SCRIPT
+        description: Cutover Blue to Green - Production
+        body: |
+          python ./cutover.py  ${bamboo.target_name} prod_au ${bamboo.version_major_number}.${bamboo.buildNumber}
+          python ./cutover.py  ${bamboo.target_name} prod_nz ${bamboo.version_major_number}.${bamboo.buildNumber}
+      triggers:
+      - type: AFTER_SUCCESSFUL_BUILD_PLAN
+        description: Deploy main plan branch (master)
