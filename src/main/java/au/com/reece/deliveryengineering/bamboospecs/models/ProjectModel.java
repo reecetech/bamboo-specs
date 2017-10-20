@@ -75,7 +75,8 @@ public class ProjectModel extends DomainModel {
         if (this.repository != null) {
             this.repository.addToPlan(plan);
         }
-        if (this.linkedRepositories.length > 0) {
+
+        if (this.linkedRepositories != null) {
             plan.linkedRepositories(this.linkedRepositories);
         }
 
