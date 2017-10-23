@@ -300,6 +300,8 @@ The job may then have a list of tasks:
 Here you can see we refer to the bamboo variable we defined way up above so that
 the script body may be the same across multiple projects.
 
+#### VCS Task
+
 The VCS task has a number of options. By default it will check out the default
 repository for the plan. If you wish to check out other repositories you may list
 them (and optionally include the default repository also):
@@ -314,6 +316,40 @@ them (and optionally include the default repository also):
       cleanCheckout: true
       
 If you wish to force a clean checkout of the repositories on or off use `cleanCheckout`.
+
+#### SCRIPT Tasks
+
+These are pretty simple, just bash scripts that contain a body to run.
+
+#### DOCKER Tasks
+
+Currently only the *run* docker task is supported. It requires the *image* property
+to be specified, but also allows all the other options:
+
+    - type: DOCKER
+      description: Run unit tests
+      image: dockerrepo.reecenet.org:4433/cyborg/tox-tests
+      workingDirectory: /app
+      environmentVariables: PACT_DIR=/app/pacts
+      volumeMappings:
+      - local: ${bamboo.working.directory}
+        container: /app
+      command: tox
+
+Also supported is running docker containers in the background with port mappings:
+
+    - type: DOCKER
+      description: Run unit tests
+      image: dockerrepo.reecenet.org:4433/cyborg/some-server
+      workingDirectory: /app
+      portMappings:
+      - local: 8080
+        container: 8001
+      detach: true
+      waitToStart: true
+
+
+### Final Tasks
 
 Final tasks are tasks that are always run after the other tasks, regardless of whether
 they were successful. These could be cleanup tasks, or more commonly including a
