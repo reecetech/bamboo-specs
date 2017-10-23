@@ -1,8 +1,8 @@
 package au.com.reece.deliveryengineering.bamboospecs.models;
 
+import au.com.reece.deliveryengineering.bamboospecs.models.docker.PortMapping;
+import au.com.reece.deliveryengineering.bamboospecs.models.docker.VolumeMapping;
 import au.com.reece.deliveryengineering.bamboospecs.models.enums.TaskType;
-import com.atlassian.bamboo.specs.api.builders.plan.Plan;
-import com.atlassian.bamboo.specs.api.builders.plan.PlanIdentifier;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
@@ -48,68 +48,84 @@ public class TaskModel extends DomainModel {
     public Task asTask() {
         switch (this.type) {
             case VCS:
-                VcsCheckoutTask task = new VcsCheckoutTask().description(this.description);
-                if (this.repositories == null || this.defaultRepository) {
-                    task.checkoutItems(new CheckoutItem().defaultRepository());
-                } else {
-                    for (RepositoryModel vcs : this.repositories) {
-                        task.checkoutItems(vcs.asCheckoutItem());
-                    }
-                }
-                if (this.cleanCheckout) {
-                    task.cleanCheckout(true);
-                }
-                return task;
+                return getVersionControlTask();
             case SCRIPT:
-                if (this.body == null) {
-                    throw new RuntimeException("Missing 'body' value from yaml for SCRIPT");
-                }
-                return new ScriptTask().description(this.description).inlineBody(this.body);
+                return getScriptTask();
             case JUNIT:
-                if (this.resultFrom == null) {
-                    throw new RuntimeException("Missing 'resultFrom' value from yaml for JUNIT");
-                }
-                return new TestParserTask(TestParserTaskProperties.TestType.JUNIT)
-                        .description(this.description)
-                        .resultDirectories(this.resultFrom);
+                return getJunitTask();
             case DOCKER:
-                if (this.image == null) {
-                    throw new RuntimeException("DOCKER tasks require 'image' to be set");
-                }
-
-                // note the serviceURLPattern comes from the Bamboo docs and spec dump and doesn't
-                // appear to be sensible to override.
-                DockerRunContainerTask docker = new DockerRunContainerTask().imageName(this.image)
-                        .description(this.description)
-                        .serviceURLPattern("http://localhost:${docker.port}");
-
-                if (this.command != null) docker.containerCommand(this.command);
-
-                if (this.workingDirectory != null) docker.containerWorkingDirectory(this.workingDirectory);
-
-                if (this.detach) {
-                    docker.detachContainer(this.detach).waitToStart(this.waitToStart);
-                }
-
-                if (this.environmentVariables != null) docker.environmentVariables(this.environmentVariables);
-
-                if (this.portMappings != null) {
-                    docker.clearPortMappings();
-                    for (PortMapping port : this.portMappings) {
-                        docker.appendPortMapping(port.local, port.container);
-                    }
-                }
-
-                if (this.volumeMappings != null) {
-                    docker.clearVolumeMappings();
-                    for (VolumeMapping volume : this.volumeMappings) {
-                        docker.appendVolumeMapping(volume.local, volume.container);
-                    }
-                }
-                return docker;
+                return getDockerTask();
             default:
                 // shouldn't actually be possible, given we load via enum
                 throw new RuntimeException("Unexpected 'type' value from yaml " + this.type);
         }
+    }
+
+    private Task getVersionControlTask() {
+        VcsCheckoutTask task = new VcsCheckoutTask().description(this.description);
+        if (this.repositories == null || this.defaultRepository) {
+            task.checkoutItems(new CheckoutItem().defaultRepository());
+        } else {
+            for (RepositoryModel vcs : this.repositories) {
+                task.checkoutItems(vcs.asCheckoutItem());
+            }
+        }
+        if (this.cleanCheckout) {
+            task.cleanCheckout(true);
+        }
+        return task;
+    }
+
+    private Task getScriptTask() {
+        if (this.body == null) {
+            throw new RuntimeException("Missing 'body' value from yaml for SCRIPT");
+        }
+        return new ScriptTask().description(this.description).inlineBody(this.body);
+    }
+
+    private Task getJunitTask() {
+        if (this.resultFrom == null) {
+            throw new RuntimeException("Missing 'resultFrom' value from yaml for JUNIT");
+        }
+        return new TestParserTask(TestParserTaskProperties.TestType.JUNIT)
+                .description(this.description)
+                .resultDirectories(this.resultFrom);
+    }
+
+    private Task getDockerTask() {
+        if (this.image == null) {
+            throw new RuntimeException("DOCKER tasks require 'image' to be set");
+        }
+
+        // note the serviceURLPattern comes from the Bamboo docs and spec dump and doesn't
+        // appear to be sensible to override.
+        DockerRunContainerTask docker = new DockerRunContainerTask().imageName(this.image)
+                .description(this.description)
+                .serviceURLPattern("http://localhost:${docker.port}");
+
+        if (this.command != null) docker.containerCommand(this.command);
+
+        if (this.workingDirectory != null) docker.containerWorkingDirectory(this.workingDirectory);
+
+        if (this.detach) {
+            docker.detachContainer(this.detach).waitToStart(this.waitToStart);
+        }
+
+        if (this.environmentVariables != null) docker.environmentVariables(this.environmentVariables);
+
+        if (this.portMappings != null) {
+            docker.clearPortMappings();
+            for (PortMapping port : this.portMappings) {
+                docker.appendPortMapping(port.local, port.container);
+            }
+        }
+
+        if (this.volumeMappings != null) {
+            docker.clearVolumeMappings();
+            for (VolumeMapping volume : this.volumeMappings) {
+                docker.appendVolumeMapping(volume.local, volume.container);
+            }
+        }
+        return docker;
     }
 }

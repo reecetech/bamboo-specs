@@ -1,4 +1,4 @@
-package au.com.reece.deliveryengineering.bamboospecs.models;
+package au.com.reece.deliveryengineering.bamboospecs.models.docker;
 
 import javax.validation.constraints.NotNull;
 
