@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class DependencyModel extends DomainModel {
-    public boolean requiresPassing=true;
+    public boolean requiresPassing = true;
 
     public Set<String> plans;
 
-    public boolean none=false;
+    public boolean none = false;
 
     public void addToPlan(Plan plan) {
         ArrayList<PlanIdentifier> children = new ArrayList<>();
