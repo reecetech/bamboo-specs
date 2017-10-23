@@ -218,6 +218,16 @@ this plan completes they may be specified (as "dependencies"):
     dependencies:
       requiresPassing: true
       plans: [USRSRV-UPSDB]
+      
+If there are no dependencies you may leave this section out, though if
+the plan *previously had dependencies* you will need to explicitly clear
+them with:
+
+    dependencies:
+      none: true
+
+If you don't then you'll get an error "Plan import is blocked to prevent
+deleting your plan dependencies silently."
 
 ### Notifications
 
