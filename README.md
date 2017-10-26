@@ -380,12 +380,21 @@ You should also define the release naming scheme:
 
     releaseNaming:
       pattern: ${bamboo.version_major_number}.${bamboo.buildNumber}
+      
+If you would like to set variables across all environments you can set variables in
+the preamble:
+
+    variables:
+      target_name: diary-notes-service
+
+This will have the effect of setting the variable in each of the environments (Bamboo
+does not offer variables at this level).
 
 ### Environments Structure
 
 This is a list of environments that you will deploy to. Each
-environment will have a name and description followed by requirements, notifications
-and tasks that are constructed exactly the same as in build plans. So for example:
+environment will have a name and description followed by requirements, notifications,
+variables and tasks that are constructed exactly the same as in build plans. So for example:
     
     environments:
     - environment: Production (AU + NZ)
@@ -395,6 +404,8 @@ and tasks that are constructed exactly the same as in build plans. So for exampl
       notifications:
       - when: DEPLOYMENT_FINISHED
         slack: https://hooks.slack.com/services/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|#cyborg-dev
+      variables:
+        deployment_script: cutover.py
       tasks:
       - type: VCS
         description: Running Man
@@ -405,13 +416,13 @@ and tasks that are constructed exactly the same as in build plans. So for exampl
       - type: SCRIPT
         description: Cutover Blue to Green - Training
         body: |
-          python ./cutover.py  ${bamboo.target_name} training_nz ${bamboo.version_major_number}.${bamboo.buildNumber}
-          python ./cutover.py  ${bamboo.target_name} training_au ${bamboo.version_major_number}.${bamboo.buildNumber}
+          ${deployment_script} ${bamboo.target_name} training_nz ${bamboo.version_major_number}.${bamboo.buildNumber}
+          ${deployment_script} ${bamboo.target_name} training_au ${bamboo.version_major_number}.${bamboo.buildNumber}
       - type: SCRIPT
         description: Cutover Blue to Green - Production
         body: |
-          python ./cutover.py  ${bamboo.target_name} prod_au ${bamboo.version_major_number}.${bamboo.buildNumber}
-          python ./cutover.py  ${bamboo.target_name} prod_nz ${bamboo.version_major_number}.${bamboo.buildNumber}
+          ${deployment_script} ${bamboo.target_name} prod_au ${bamboo.version_major_number}.${bamboo.buildNumber}
+          ${deployment_script} ${bamboo.target_name} prod_nz ${bamboo.version_major_number}.${bamboo.buildNumber}
       triggers:
       - type: AFTER_SUCCESSFUL_BUILD_PLAN
         description: Deploy main plan branch (master)

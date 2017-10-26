@@ -1,5 +1,6 @@
 package au.com.reece.deliveryengineering.bamboospecs.models;
 
+import com.atlassian.bamboo.specs.api.builders.Variable;
 import com.atlassian.bamboo.specs.api.builders.deployment.Environment;
 import com.atlassian.bamboo.specs.api.builders.notification.Notification;
 import com.atlassian.bamboo.specs.api.builders.requirement.Requirement;
@@ -9,7 +10,9 @@ import com.atlassian.bamboo.specs.api.builders.trigger.Trigger;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 // TODO document me
@@ -31,6 +34,8 @@ public class EnvironmentModel {
     public List<@Valid NotificationModel> notifications;
 
     public List<@Valid RequirementModel> requirements;
+
+    public Map<String, String> variables;
 
     public Environment asEnvironment() {
         Task[] tasks = this.tasks.stream().map(TaskModel::asTask)
@@ -56,6 +61,13 @@ public class EnvironmentModel {
             environment.requirements(requirements);
         }
 
+        if (this.variables != null) {
+            ArrayList<Variable> variables = new ArrayList<>();
+            for (String key : this.variables.keySet()) {
+                variables.add(new Variable(key, this.variables.get(key)));
+            }
+            environment.variables(variables.toArray(new Variable[variables.size()]));
+        }
         return environment;
     }
 }
