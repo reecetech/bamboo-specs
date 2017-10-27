@@ -53,7 +53,6 @@ public class StageJobModel extends DomainModel {
         if (this.include != null) {
             Path includedYaml = Paths.get(this.yamlPath, this.include);
             StageJobModel included = StageJobModel.fromYAML(includedYaml.toString());
-            if (included == null) throw new RuntimeException("Error parsing included job from " + this.include);
             return included.asJob();
         }
 
@@ -108,13 +107,12 @@ public class StageJobModel extends DomainModel {
             Set<ConstraintViolation<StageJobModel>> violations = validator.validate(included);
             if (!violations.isEmpty()) {
                 violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
-                return null;
+                throw new RuntimeException("Error parsing included job from " + filename);
             }
         } catch (JsonProcessingException e) {
-            LOGGER.error(e.getMessage());
-            return null;
+            throw new RuntimeException("Error parsing included job from " + filename, e);
         } catch (IOException e) {
-            throw new RuntimeException("Error reading YAML file", e);
+            throw new RuntimeException("Error parsing included job from " + filename, e);
         }
 
         return included;
