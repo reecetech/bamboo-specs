@@ -1,45 +1,68 @@
 package au.com.reece.deliveryengineering.bamboospecs.models;
 
+import au.com.reece.deliveryengineering.bamboospecs.PlanControl;
 import com.atlassian.bamboo.specs.api.builders.plan.Job;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
 import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
 import com.atlassian.bamboo.specs.api.builders.plan.configuration.AllOtherPluginsConfiguration;
 import com.atlassian.bamboo.specs.api.builders.requirement.Requirement;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class StageJobModel extends DomainModel {
-    @NotNull
-    @NotEmpty
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlanControl.class);
+
+    public String yamlPath;
+
+    public String include;
+
     public String name;
 
-    @NotNull
-    @NotEmpty
     public String key;
 
-    @NotNull
-    @NotEmpty
     public String description;
 
-    @NotNull
-    @NotEmpty
     public List<@Valid RequirementModel> requirements;
 
     public List<@Valid ArtifactModel> artifacts;
 
-    @NotNull
     public List<@Valid TaskModel> tasks;
 
     public List<@Valid TaskModel> finalTasks;
 
     public Job asJob() {
+        if (this.include != null) {
+            Path includedYaml = Paths.get(this.yamlPath, this.include);
+            StageJobModel included = StageJobModel.fromYAML(includedYaml.toString());
+            if (included == null) throw new RuntimeException("Error parsing included job from " + this.include);
+            return included.asJob();
+        }
+
+        if (this.name == null) throw new RuntimeException("Stage jobs require a 'name'");
+        if (this.key == null) throw new RuntimeException("Stage jobs require a 'key'");
+        if (this.description == null) throw new RuntimeException("Stage jobs require a 'description'");
+        if (this.requirements == null) throw new RuntimeException("Stage jobs require 'requirements'");
+        if (this.tasks == null) throw new RuntimeException("Stage jobs require 'tasks'");
+
         Job job = new Job(this.name, this.key);
         job.description(this.description);
 
@@ -69,5 +92,31 @@ public class StageJobModel extends DomainModel {
         job.requirements(requirements);
 
         return job;
+    }
+
+    public static StageJobModel fromYAML(String filename) {
+        LOGGER.info("Parsing YAML {}", filename);
+
+        File yaml = new File(filename);
+
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        StageJobModel included;
+        try {
+            included = mapper.readValue(yaml, StageJobModel.class);
+            Set<ConstraintViolation<StageJobModel>> violations = validator.validate(included);
+            if (!violations.isEmpty()) {
+                violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
+                return null;
+            }
+        } catch (JsonProcessingException e) {
+            LOGGER.error(e.getMessage());
+            return null;
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading YAML file", e);
+        }
+
+        return included;
     }
 }

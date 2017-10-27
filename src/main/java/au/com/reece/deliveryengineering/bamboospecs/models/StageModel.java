@@ -9,8 +9,11 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StageModel extends DomainModel {
+    public String yamlPath;
+
     @NotNull
     @NotEmpty
     public String name;
@@ -18,12 +21,11 @@ public class StageModel extends DomainModel {
     @NotNull
     public List<@Valid StageJobModel> jobs;
 
+    public String include;
+
     public Stage asStage() {
         Stage stage = new Stage(this.name);
-        ArrayList<Job> l = new ArrayList<>();
-        for (StageJobModel job : this.jobs) {
-            l.add(job.asJob());
-        }
-        return stage.jobs(l.toArray(new Job[l.size()]));
+        this.jobs.forEach(x -> x.yamlPath = this.yamlPath);
+        return stage.jobs(jobs.stream().map(StageJobModel::asJob).collect(Collectors.toList()).toArray(new Job[]{}));
     }
 }
