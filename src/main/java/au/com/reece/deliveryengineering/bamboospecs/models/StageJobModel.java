@@ -109,8 +109,6 @@ public class StageJobModel extends DomainModel {
                 violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
                 throw new RuntimeException("Error parsing included job from " + filename);
             }
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error parsing included job from " + filename, e);
         } catch (IOException e) {
             throw new RuntimeException("Error parsing included job from " + filename, e);
         }
