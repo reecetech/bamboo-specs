@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ProjectModel extends DomainModel {
+    public String yamlPath;
+
     @NotNull
     @NotEmpty
     public String bambooServer;
@@ -88,6 +90,8 @@ public class ProjectModel extends DomainModel {
             plan.variables(variables.toArray(new Variable[variables.size()]));
         }
 
+        this.stages.forEach(x -> x.yamlPath = this.yamlPath);
+
         plan.stages(this.stages.stream().map(StageModel::asStage)
                 .collect(Collectors.toList()).toArray(new Stage[]{}));
 
@@ -110,4 +114,5 @@ public class ProjectModel extends DomainModel {
             new AllOtherPluginsConfiguration()
         );
     }
+
 }

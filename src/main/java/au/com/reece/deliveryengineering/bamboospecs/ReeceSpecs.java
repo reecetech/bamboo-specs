@@ -16,6 +16,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.io.Console;
 import java.io.File;
+import java.nio.file.*;
 
 public class ReeceSpecs {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReeceSpecs.class);
@@ -66,21 +67,33 @@ public class ReeceSpecs {
         if (remains.length < 2) {
             LOGGER.error("Error: missing required <command> and <yaml file> arguments");
             printHelp(options);
-        } else if (remains[0].equals("permissions")) {
-            new PermissionsControl().run(adminUser, new File(remains[1]), publish);
-        } else if (remains[0].equals("plan")) {
-            new PlanControl().run(adminUser, new File(remains[1]), publish);
-        } else if (remains[0].equals("deployment")) {
-            new DeploymentControl().run(adminUser, new File(remains[1]), publish);
-        } else {
-            LOGGER.error("Error: unrecognised <command> " + remains[0]);
-            printHelp(options);
+            return;
+        }
+
+        // operate on all files
+        for (int i=1; i < remains.length; i++) {
+            String filePath = remains[i];
+            switch (remains[0]) {
+                case "permissions":
+                    new PermissionsControl().run(adminUser, new File(filePath), publish);
+                    break;
+                case "plan":
+                    new PlanControl().run(adminUser, filePath, publish);
+                    break;
+                case "deployment":
+                    new DeploymentControl().run(adminUser, new File(filePath), publish);
+                    break;
+                default:
+                    LOGGER.error("Error: unrecognised <command> " + remains[0]);
+                    printHelp(options);
+                    return;
+            }
         }
     }
 
     private static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("reece-specs [options] <permissions|plan|deployment> <yaml file>",
+        formatter.printHelp("reece-specs [options] <permissions|plan|deployment> <yaml file> ...",
                 "options:", options, "");
     }
 }

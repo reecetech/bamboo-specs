@@ -55,6 +55,8 @@ public class TaskModel extends DomainModel {
                 return getJunitTask();
             case DOCKER:
                 return getDockerTask();
+            case CLEAN:
+                return new CleanWorkingDirectoryTask();
             default:
                 // shouldn't actually be possible, given we load via enum
                 throw new RuntimeException("Unexpected 'type' value from yaml " + this.type);

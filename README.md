@@ -32,12 +32,16 @@ Run with:
     java -jar target/bamboo-specs-reece-1.0.0.jar permissions permissions.yaml
     java -jar target/bamboo-specs-reece-1.0.0.jar plan plan.yaml
     java -jar target/bamboo-specs-reece-1.0.0.jar deployment deployment-project.yaml
-    
+
 You can test your YAML using the -t switch passed to any of those commands, for example:
 
     java -jar target/bamboo-specs-reece-1.0.0.jar plan -t plan.yaml
 
 This will just parse the YAML and not deploy it to Bamboo.
+
+The commands all accept multiple yaml files to process:
+
+    java -jar target/bamboo-specs-reece-1.0.0.jar plan configs/plan-*.yaml
 
 ## Java SSL keystore fix
 
@@ -359,6 +363,39 @@ JUnit parser to parse the results of the tests which may have failed:
     - type: JUNIT
       description: Include XML test results
       resultFrom: "**/unittest-report/xml/*.xml"
+      
+## Reusable Jobs
+
+If you have the same Job run across many different plans you can craft a YAML file that
+contains *just* the Job specification, for example "include/library-unit-tests.yaml":
+
+    name: Run Library Unit Tests
+    key: UT
+    description: Run tox unit tests and check setup.py version against existing git tags
+    requirements:
+    - name: system.docker.executable
+    tasks:
+    - type: VCS
+    ...
+
+And then in your plan YAML file you may include that (noting that you may also declare
+other plan-specific jobs):
+
+    stages:
+    - name: Default Stage
+      jobs:
+      - include: include/library-unit-tests.yaml
+      - name: Build package
+        key: BUILD
+        description: Build Python package
+        requirements:
+        ...
+
+In this example the include file is in a separate subdirectory - this makes it easier
+to use globbing to process multiple files in a single directory, like:
+
+  java -jar target/bamboo-specs-reece-1.0.5.jar plan bamboo-configs/Cyborg/unit-tests/*.yaml
+
 
 ## Deployment Projects
 

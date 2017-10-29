@@ -18,6 +18,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Set;
 
 /**
@@ -30,10 +31,13 @@ public class PlanControl {
     /**
      * Run main to publish plan on Bamboo
      */
-    void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
+    void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
+        LOGGER.info("Parsing YAML {}", filePath);
+
+        File yamlFile = new File(filePath);
         ProjectModel yamlPlan;
         try {
             yamlPlan = mapper.readValue(yamlFile, ProjectModel.class);
@@ -49,6 +53,9 @@ public class PlanControl {
             throw new RuntimeException("Error reading YAML file", e);
         }
 
+        // set the file path to the yaml file for includes
+        yamlPlan.yamlPath = yamlFile.getParentFile().getAbsolutePath();
+
         BambooServer bambooServer = new BambooServer(yamlPlan.bambooServer, adminUser);
 
         if (!publish) {
@@ -56,10 +63,9 @@ public class PlanControl {
             return;
         }
 
+        // publish twice in case we're creating a new plan which requires it to be done twice :/
         Plan plan = yamlPlan.getPlan();
         bambooServer.publish(plan);
-
-        plan = yamlPlan.getPlan();
         bambooServer.publish(plan);
     }
 }
