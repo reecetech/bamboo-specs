@@ -402,7 +402,7 @@ to use globbing to process multiple files in a single directory, like:
 Deployment projects look a lot like build and test plans, and even share some of the
 same sections, but do have a different preamble and structure.
 
-### Preamble
+### Top Level Settings
 
 At the top of the file you need to identify the deployment by *name*, and then the
 build plan that it belongs to:
@@ -426,6 +426,28 @@ the preamble:
 
 This will have the effect of setting the variable in each of the environments (Bamboo
 does not offer variables at this level).
+
+
+### Permissions
+
+Deployment project permissions may be set in this file with a section at the top
+level which has the same basic structure as the previous permissions settings (users,
+groups, grants), just that it has two sections:
+
+    permissions:
+      project:
+        users: [dooleyj, poultonj]
+        groups: [Cyborg_Team]
+        grant: [VIEW, EDIT]
+      environment:
+        users: [dooleyj, poultonj]
+        groups: [Cyborg_Team]
+        grant: [VIEW, EDIT, BUILD]
+
+The first section applies to the the project itself, and the second applies to **all**
+environments in the project. There is currently no support for per-environment
+permissions in this file.
+
 
 ### Environments Structure
 
@@ -463,3 +485,19 @@ variables and tasks that are constructed exactly the same as in build plans. So 
       triggers:
       - type: AFTER_SUCCESSFUL_BUILD_PLAN
         description: Deploy main plan branch (master)
+
+
+### Using Included Environments
+
+If you have the same environments appearing in mutiple deployments you may save them off in a
+separate YAML file (say, `environments.yaml`) which has the exact structure of the above 
+environments structure sample (ie. `environments:` at the top level) and then each
+of the named environments may be included in your deployment project yaml like so:
+
+    includeEnvironments:
+      from: environments.yaml
+      environments: [
+        Production (AU + NZ),
+        POS1 TEST AU, POS1 TEST NZ, POS2 TEST AU, POS2 TEST NZ,
+        POS2 UAT AU, POS2 UAT NZ
+      ]

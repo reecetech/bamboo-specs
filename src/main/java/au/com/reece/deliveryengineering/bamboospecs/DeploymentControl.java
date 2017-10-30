@@ -2,6 +2,7 @@ package au.com.reece.deliveryengineering.bamboospecs;
 
 import au.com.reece.deliveryengineering.bamboospecs.models.DeploymentModel;
 import com.atlassian.bamboo.specs.api.builders.deployment.Deployment;
+import com.atlassian.bamboo.specs.api.builders.permission.EnvironmentPermissions;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,17 +19,20 @@ import java.io.IOException;
 import java.util.Set;
 
 public class DeploymentControl {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlanControl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeploymentControl.class);
     /**
      * Run main to publish deployment on Bamboo
      */
-    void run(UserPasswordCredentials adminUser, File yamlDeploymentFile, boolean publish) {
+    void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
+        LOGGER.info("Parsing YAML {}", filePath);
+
+        File yamlFile = new File(filePath);
         DeploymentModel yamlDeployment;
         try {
-            yamlDeployment = mapper.readValue(yamlDeploymentFile, DeploymentModel.class);
+            yamlDeployment = mapper.readValue(yamlFile, DeploymentModel.class);
             Set<ConstraintViolation<DeploymentModel>> violations = validator.validate(yamlDeployment);
             if (!violations.isEmpty()) {
                 violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
@@ -41,16 +45,15 @@ public class DeploymentControl {
             throw new RuntimeException("Error reading YAML file", e);
         }
 
-        BambooServer bambooServer = new BambooServer(yamlDeployment.bambooServer, adminUser);
+        // set the file path to the yaml file for includes
+        yamlDeployment.yamlPath = yamlFile.getParentFile().getAbsolutePath();
 
-        if (!publish) {
-            yamlDeployment.getDeployment();
-            return;
+        if (publish) {
+            BambooServer bambooServer = new BambooServer(yamlDeployment.bambooServer, adminUser);
+            yamlDeployment.publish(bambooServer, adminUser);
+        } else {
+            yamlDeployment.asDeployment();
+            LOGGER.info("YAML parsed OK");
         }
-
-        Deployment deployment = yamlDeployment.getDeployment();
-        bambooServer.publish(deployment);
-
-        deployment = yamlDeployment.getDeployment();
-        bambooServer.publish(deployment);
-    }}
+    }
+}

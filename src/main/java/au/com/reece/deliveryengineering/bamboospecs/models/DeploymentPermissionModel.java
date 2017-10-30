@@ -42,5 +42,4 @@ public class DeploymentPermissionModel {
         // now publish all the environment permissions
         this.environments.forEach(x -> x.publishPermissions(bambooServer, adminUser, this.name));
     }
-
 }

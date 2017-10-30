@@ -4,7 +4,6 @@
 package au.com.reece.deliveryengineering.bamboospecs;
 
 import au.com.reece.deliveryengineering.bamboospecs.models.PermissionFileModel;
-import au.com.reece.deliveryengineering.bamboospecs.models.PermissionModel;
 import com.atlassian.bamboo.specs.api.BambooSpec;
 
 import com.atlassian.bamboo.specs.util.BambooServer;
@@ -55,6 +54,8 @@ public class PermissionsControl {
 
         if (publish) {
             yamlPermissions.publish(bambooServer, adminUser);
+        } else {
+            LOGGER.info("YAML parsed OK");
         }
     }
 }
