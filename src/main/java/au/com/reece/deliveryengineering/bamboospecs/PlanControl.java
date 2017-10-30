@@ -18,7 +18,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Set;
 
 /**
@@ -58,14 +57,11 @@ public class PlanControl {
 
         BambooServer bambooServer = new BambooServer(yamlPlan.bambooServer, adminUser);
 
-        if (!publish) {
-            yamlPlan.getPlan();
-            return;
-        }
-
-        // publish twice in case we're creating a new plan which requires it to be done twice :/
         Plan plan = yamlPlan.getPlan();
-        bambooServer.publish(plan);
-        bambooServer.publish(plan);
+        if (publish) {
+            bambooServer.publish(plan);
+        } else {
+            LOGGER.info("YAML parsed OK");
+        }
     }
 }

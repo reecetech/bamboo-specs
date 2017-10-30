@@ -1,13 +1,10 @@
 package au.com.reece.deliveryengineering.bamboospecs.models;
 
-import au.com.reece.deliveryengineering.bamboospecs.PlanControl;
 import com.atlassian.bamboo.specs.api.builders.plan.Job;
-import com.atlassian.bamboo.specs.api.builders.plan.Plan;
 import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
 import com.atlassian.bamboo.specs.api.builders.plan.configuration.AllOtherPluginsConfiguration;
 import com.atlassian.bamboo.specs.api.builders.requirement.Requirement;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
@@ -17,19 +14,16 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class StageJobModel extends DomainModel {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlanControl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StageJobModel.class);
 
     public String yamlPath;
 
@@ -94,7 +88,7 @@ public class StageJobModel extends DomainModel {
     }
 
     public static StageJobModel fromYAML(String filename) {
-        LOGGER.info("Parsing YAML {}", filename);
+        LOGGER.info("Parsing job YAML {}", filename);
 
         File yaml = new File(filename);
 

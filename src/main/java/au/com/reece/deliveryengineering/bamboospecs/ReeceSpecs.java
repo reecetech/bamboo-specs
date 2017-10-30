@@ -11,12 +11,8 @@ import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.io.Console;
 import java.io.File;
-import java.nio.file.*;
 
 public class ReeceSpecs {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReeceSpecs.class);
@@ -81,7 +77,7 @@ public class ReeceSpecs {
                     new PlanControl().run(adminUser, filePath, publish);
                     break;
                 case "deployment":
-                    new DeploymentControl().run(adminUser, new File(filePath), publish);
+                    new DeploymentControl().run(adminUser, filePath, publish);
                     break;
                 default:
                     LOGGER.error("Error: unrecognised <command> " + remains[0]);

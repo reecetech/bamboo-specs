@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-// TODO document me
 public class EnvironmentModel {
     @NotNull
     @NotEmpty
