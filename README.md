@@ -105,7 +105,7 @@ viewing a project's plan, eg:
 
     https://bamboo.reecenet.org/bamboo/browse/DNSS-DNPSM
 
-The deployments list contains deployments and environments identified by
+The optional deployments list contains deployments and environments identified by
 their label in the Bamboo interface. Note that permissions granted to a
 deployment are only for administrating the deployment project settings in
 Bamboo and do *not* affect the access controls for each of the environments.
