@@ -21,12 +21,12 @@ public class PermissionFileModel extends DomainModel {
     @NotEmpty
     public Set<@Valid ProjectPermissionModel> projects;
 
-    @NotNull
-    @NotEmpty
     public Set<@Valid DeploymentPermissionModel> deployments;
 
     public void publish(BambooServer bambooServer, UserPasswordCredentials adminUser) {
         this.projects.forEach(x -> x.publishPermissions(bambooServer, adminUser));
-        this.deployments.forEach(x -> x.publishPermissions(bambooServer, adminUser));
+        if (this.deployments != null) {
+            this.deployments.forEach(x -> x.publishPermissions(bambooServer, adminUser));
+        }
     }
 }
