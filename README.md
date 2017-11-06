@@ -335,10 +335,13 @@ to be specified, but also allows all the other options:
       image: dockerrepo.reecenet.org:4433/cyborg/tox-tests
       workingDirectory: /app
       environmentVariables: PACT_DIR=/app/pacts
+      cmdLineArguments: -u 1000
       volumeMappings:
       - local: ${bamboo.working.directory}
         container: /app
       command: tox
+
+The `cmdLineAguments` are additional arguments for the "docker run" command.
 
 Also supported is running docker containers in the background with port mappings:
 
