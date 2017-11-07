@@ -45,6 +45,8 @@ public class TaskModel extends DomainModel {
 
     public PortMapping[] portMappings;
 
+    public String cmdLineArguments;
+
     public Task asTask() {
         switch (this.type) {
             case VCS:
@@ -110,10 +112,12 @@ public class TaskModel extends DomainModel {
         if (this.workingDirectory != null) docker.containerWorkingDirectory(this.workingDirectory);
 
         if (this.detach) {
-            docker.detachContainer(this.detach).waitToStart(this.waitToStart);
+            docker.detachContainer(true).waitToStart(this.waitToStart);
         }
 
         if (this.environmentVariables != null) docker.environmentVariables(this.environmentVariables);
+
+        if (this.cmdLineArguments != null) docker.additionalArguments(this.cmdLineArguments);
 
         if (this.portMappings != null) {
             docker.clearPortMappings();
