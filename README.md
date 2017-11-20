@@ -60,6 +60,12 @@ If you get this error when running the jar files, you need to add Reece's CA cer
     -trustcacerts -file ~dev/vicpjdt01.reecenet.org
     This will prompt for a password; the default is "changeit"
 
+    On Windows:
+    -----------
+    keytool -importcert -alias vicpjdt01.reecenet.org \
+    -file vicpjdt01.reecenet.org.cer -keystore "C:\Program Files (x86)\Java\jre1.8.0_131\lib\security\cacerts"
+
+
 ## Controlling Permissions
 
 Create a permissions.yaml file:
