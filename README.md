@@ -64,6 +64,15 @@ If you get this error when running the jar files, you need to add Reece's CA cer
     -----------
     keytool -importcert -alias vicpjdt01.reecenet.org \
     -file vicpjdt01.reecenet.org.cer -keystore "C:\Program Files (x86)\Java\jre1.8.0_131\lib\security\cacerts"
+    
+    On Mac OS X:
+    -------
+    Find the Java home:
+    $ /usr/libexec/java_home
+    Then import the cert:
+    $ cd /Library/Java/JavaVirtualMachines/jdk-9.jdk/Contents/Home/lib/security
+    $ sudo cp cacerts cacerts.orig
+    $ sudo keytool -importcert -file your_cert_file_here -keystore cacerts -alias vicpjdt01.reecenet.org
 
 
 ## Controlling Permissions
