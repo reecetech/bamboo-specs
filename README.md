@@ -348,27 +348,39 @@ to be specified, but also allows all the other options:
     - type: DOCKER
       description: Run unit tests
       image: dockerrepo.reecenet.org:4433/cyborg/tox-tests
-      workingDirectory: /app
-      environmentVariables: PACT_DIR=/app/pacts
+      environmentVariables: JAVA_OPTS="-Xmx256m -Xms128m"
       cmdLineArguments: -u 1000
+      container:
+        workingDirectory: /app
+        environmentVariables: PACT_DIR=/app/pacts
+        command: tox
       volumeMappings:
       - local: ${bamboo.working.directory}
         container: /app
-      command: tox
 
-The `cmdLineAguments` are additional arguments for the "docker run" command.
+The `cmdLineAguments` are additional arguments for the "docker run" command. Note the
+distinction between environment variables set *outside* the docker container and
+those set *inside* the container.
 
 Also supported is running docker containers in the background with port mappings:
 
     - type: DOCKER
       description: Run unit tests
       image: dockerrepo.reecenet.org:4433/cyborg/some-server
-      workingDirectory: /app
+      detach: true
+      container:
+        name: detached-server
+        workingDirectory: /app
       portMappings:
       - local: 8080
         container: 8001
-      detach: true
-      waitToStart: true
+      serviceStartCheck:
+        url: http://localhost:${docker.port}
+        timeout: 120
+
+Note that the container -> name property is required for detached containers. The
+docker.port variable will provide the first exposed port for creating the service
+check URL.
 
 
 ### Final Tasks
@@ -519,3 +531,12 @@ of the named environments may be included in your deployment project yaml like s
         POS1 TEST AU, POS1 TEST NZ, POS2 TEST AU, POS2 TEST NZ,
         POS2 UAT AU, POS2 UAT NZ
       ]
+
+
+## Version History
+
+1.1.0
+
+    Clarified docker container configuration by splitting various aspects into sub-groups in the
+    YAML, allowing clear distinction between the two environmentVariables settings. Also, clean up
+    the config around detached containers.
