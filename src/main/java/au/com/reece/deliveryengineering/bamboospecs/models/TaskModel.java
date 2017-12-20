@@ -1,5 +1,7 @@
 package au.com.reece.deliveryengineering.bamboospecs.models;
 
+import au.com.reece.deliveryengineering.bamboospecs.models.docker.DockerContainer;
+import au.com.reece.deliveryengineering.bamboospecs.models.docker.DockerStartCheck;
 import au.com.reece.deliveryengineering.bamboospecs.models.docker.PortMapping;
 import au.com.reece.deliveryengineering.bamboospecs.models.docker.VolumeMapping;
 import au.com.reece.deliveryengineering.bamboospecs.models.enums.TaskType;
@@ -31,15 +33,19 @@ public class TaskModel extends DomainModel {
 
     public String image;
 
-    public String command;
-
     public boolean detach = false;
 
-    public boolean waitToStart = true;
+    public DockerStartCheck serviceStartCheck;
 
     public String environmentVariables;
 
+    // legacy attributes
+    public String command;
+
     public String workingDirectory;
+    // end legacy
+
+    public DockerContainer container;
 
     public VolumeMapping[] volumeMappings;
 
@@ -107,12 +113,23 @@ public class TaskModel extends DomainModel {
                 .description(this.description)
                 .serviceURLPattern("http://localhost:${docker.port}");
 
+        // legacy options
         if (this.command != null) docker.containerCommand(this.command);
-
         if (this.workingDirectory != null) docker.containerWorkingDirectory(this.workingDirectory);
+        // end legacy
+
+        if (this.container != null) {
+            this.container.applyConfig(docker);
+        }
 
         if (this.detach) {
-            docker.detachContainer(true).waitToStart(this.waitToStart);
+            if (this.container == null || this.container.name == null) {
+                throw new RuntimeException("DOCKER detached tasks require 'container' -> 'name' to be set");
+            }
+            docker.detachContainer(true);
+            if (this.serviceStartCheck != null) {
+                this.serviceStartCheck.applyConfig(docker);
+            }
         }
 
         if (this.environmentVariables != null) docker.environmentVariables(this.environmentVariables);
