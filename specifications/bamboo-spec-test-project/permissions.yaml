@@ -1,0 +1,17 @@
+bambooServer: https://bamboo.reecenet.org/bamboo
+projects:
+- plans: [SPAM-IT]
+  permissions:
+  - groups: [Cyborg_Team]
+    users: [islaa, tobind]
+    grant: [VIEW, EDIT, BUILD, CLONE, ADMIN]
+deployments:
+- name: Bamboo Spec Testing
+  permissions:
+  - users: [dooleyj, poultonj]
+    grant: [VIEW, EDIT]
+  environments:
+  - names: [Production (AU + NZ), TEST AU, TEST NZ]
+    permissions:
+    - groups: [Cyborg_Team]
+      grant: [VIEW, EDIT, BUILD]
