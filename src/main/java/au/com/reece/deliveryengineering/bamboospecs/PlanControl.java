@@ -4,9 +4,9 @@
 package au.com.reece.deliveryengineering.bamboospecs;
 
 import au.com.reece.deliveryengineering.bamboospecs.models.ProjectModel;
-import com.atlassian.bamboo.specs.api.BambooSpec;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
-import com.atlassian.bamboo.specs.util.*;
+import com.atlassian.bamboo.specs.util.BambooServer;
+import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -20,23 +20,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-/**
- * Plan configuration for Bamboo.
- * Learn more on: <a href="https://confluence.atlassian.com/display/BAMBOO/Bamboo+Specs">https://confluence.atlassian.com/display/BAMBOO/Bamboo+Specs</a>
- */
-@BambooSpec
 public class PlanControl {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlanControl.class);
-    /**
-     * Run main to publish plan on Bamboo
-     */
-    void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {
+
+    static void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-        LOGGER.info("Parsing YAML {}", filePath);
+        LOGGER.info("Parsing YAML {}", yamlFile.toPath());
 
-        File yamlFile = new File(filePath);
         ProjectModel yamlPlan;
         try {
             yamlPlan = mapper.readValue(yamlFile, ProjectModel.class);
@@ -63,5 +55,9 @@ public class PlanControl {
         } else {
             LOGGER.info("YAML parsed OK");
         }
+    }
+
+    static void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {
+        run(adminUser, new File(filePath), publish);
     }
 }

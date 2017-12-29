@@ -4,8 +4,6 @@
 package au.com.reece.deliveryengineering.bamboospecs;
 
 import au.com.reece.deliveryengineering.bamboospecs.models.PermissionFileModel;
-import com.atlassian.bamboo.specs.api.BambooSpec;
-
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,17 +19,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-/**
- * Plan configuration for Bamboo.
- * Learn more on: <a href="https://confluence.atlassian.com/display/BAMBOO/Bamboo+Specs">https://confluence.atlassian.com/display/BAMBOO/Bamboo+Specs</a>
- */
-@BambooSpec
 public class PermissionsControl {
     private static final Logger LOGGER = LoggerFactory.getLogger(PermissionsControl.class);
-    /**
-     * Run main to publish plan on Bamboo
-     */
-    void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
+
+    static void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {
+        run(adminUser, new File(filePath), publish);
+    }
+
+    static void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
