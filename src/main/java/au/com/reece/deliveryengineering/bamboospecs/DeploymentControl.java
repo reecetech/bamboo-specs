@@ -1,6 +1,8 @@
 package au.com.reece.deliveryengineering.bamboospecs;
 
 import au.com.reece.deliveryengineering.bamboospecs.models.DeploymentModel;
+import com.atlassian.bamboo.specs.api.builders.deployment.Deployment;
+import com.atlassian.bamboo.specs.api.builders.permission.EnvironmentPermissions;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,15 +20,16 @@ import java.util.Set;
 
 public class DeploymentControl {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeploymentControl.class);
-
-    static void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {
-        run(adminUser, new File(filePath), publish);
-    }
-
-    static void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
+    /**
+     * Run main to publish deployment on Bamboo
+     */
+    void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
+        LOGGER.info("Parsing YAML {}", filePath);
+
+        File yamlFile = new File(filePath);
         DeploymentModel yamlDeployment;
         try {
             yamlDeployment = mapper.readValue(yamlFile, DeploymentModel.class);

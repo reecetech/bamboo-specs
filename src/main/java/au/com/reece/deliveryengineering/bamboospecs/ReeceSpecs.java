@@ -3,11 +3,16 @@ package au.com.reece.deliveryengineering.bamboospecs;
 import com.atlassian.bamboo.specs.util.FileUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.SimpleUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Console;
+import java.io.File;
 
 public class ReeceSpecs {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReeceSpecs.class);
@@ -66,13 +71,13 @@ public class ReeceSpecs {
             String filePath = remains[i];
             switch (remains[0]) {
                 case "permissions":
-                    PermissionsControl.run(adminUser, filePath, publish);
+                    new PermissionsControl().run(adminUser, new File(filePath), publish);
                     break;
                 case "plan":
-                    PlanControl.run(adminUser, filePath, publish);
+                    new PlanControl().run(adminUser, filePath, publish);
                     break;
                 case "deployment":
-                    DeploymentControl.run(adminUser, filePath, publish);
+                    new DeploymentControl().run(adminUser, filePath, publish);
                     break;
                 default:
                     LOGGER.error("Error: unrecognised <command> " + remains[0]);
