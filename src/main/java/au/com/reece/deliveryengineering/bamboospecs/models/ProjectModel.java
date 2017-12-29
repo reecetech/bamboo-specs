@@ -49,8 +49,6 @@ public class ProjectModel extends DomainModel {
 
     public Map<String, String> variables;
 
-    public boolean repositoryPolling=false;
-
     // branch management has sensible defaults
     public PlanBranchManagementModel branchManagement = new PlanBranchManagementModel();
 
@@ -66,6 +64,7 @@ public class ProjectModel extends DomainModel {
 
     public Plan getPlan() {
         Project project = new Project().key(this.projectKey);
+        project.name(projectName);
         Plan plan = new Plan(project, this.planName, this.planKey);
         plan.description(this.description);
 

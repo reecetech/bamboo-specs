@@ -1,0 +1,49 @@
+bambooServer: https://bamboo.reecenet.org/bamboo
+projectKey: BST
+projectName: Bamboo Spec Testing
+planKey: ST
+planName: Spec Testing
+description: This is a test plan for bamboo specs
+linkedRepositories: [Bamboo Spec Test Project]
+notifications:
+- when: PLAN_COMPLETED
+  recipientUsers: [patersoa]
+branchManagement:
+  createStrategy: ON_NEW_BRANCH
+  issueLinkingEnabled: false
+  delayCleanAfterDelete: 2
+  delayCleanAfterInactivity: 60
+triggers:
+- type: AFTER_STASH_COMMIT
+  description: Trigger from stash changes
+stages:
+- name: Default Stage
+  jobs:
+  - name: Run Tests
+    key: JOB1
+    description: Run Python Unit Tests
+    requirements:
+    - name: system.docker.executable
+    - name: DOCKER
+    - name: LINUX
+    artifacts:
+    - name: PACT Contracts
+      pattern: "**"
+      location: pacts
+    - name: Coverage Report
+      pattern: "**"
+      location: htmlcov
+    tasks:
+    - type: VCS
+      description: Checkout Default Repository
+      cleanCheckout: true
+    - type: SCRIPT
+      description: Build docker image
+      body: |
+        set -ex
+        scripts/test_image.sh bamboo/${bamboo.target_name}
+    - type: SCRIPT
+      description: Run tests
+      body: |
+        set -ex
+        scripts/run_tests.sh

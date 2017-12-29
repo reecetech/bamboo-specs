@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 @BambooSpec
@@ -31,13 +34,27 @@ public class AutoDeploy {
         if (Objects.requireNonNull(directory.listFiles()).length < 1) {
             LOGGER.warn("There were no yaml files found to process in directory {}", directory.toPath());
         } else {
-            for (File file : Objects.requireNonNull(directory.listFiles())) {
-                processSpecificationFile(file);
-            }
+            List<File> files = Arrays.asList(Objects.requireNonNull(directory.listFiles()));
+            files.stream().sorted(Comparator.comparing(AutoDeploy::getFileCode)).forEach(AutoDeploy::processSpecificationFile);
+        }
+    }
+
+    private static Integer getFileCode(File file) {
+        FileType type = FileType.getFromFile(file);
+        switch (type) {
+            case PLAN:
+                return 1;
+            case DEPLOYMENT:
+                return 2;
+            case PERMISSIONS:
+                return 3;
+            default:
+                return 4;
         }
     }
 
     private static void processSpecificationFile(File file) {
+        LOGGER.info("Processing file {}", file.toPath());
         FileType type = FileType.getFromFile(file);
         switch (type) {
             case PLAN:

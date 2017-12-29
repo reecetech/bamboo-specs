@@ -1,0 +1,36 @@
+bambooServer: https://bamboo.reecenet.org/bamboo
+name: Bamboo Specs Testing
+buildProject: BST
+buildPlan: ST
+description: Testing the Specs!
+releaseNaming:
+  pattern: ${bamboo.version_major_number}.${bamboo.buildNumber}
+environments:
+- environment: Production (AU + NZ)
+  description: Deployment plan for the Diary Notes Python Shared Service to production
+  requirements:
+  - name: system.docker.executable
+  variables:
+    deployment_script: cutover.py
+  tasks:
+  - type: VCS
+    description: Running Man
+    repositories:
+    - name: Running Man
+    - name: Running Man Properties
+      path: properties
+  - type: SCRIPT
+    description: Cutover Blue to Green - Training
+    body: |
+      exit 1;
+      ${deployment_script} ${bamboo.target_name} training_nz ${bamboo.version_major_number}.${bamboo.buildNumber}
+      ${deployment_script} ${bamboo.target_name} training_au ${bamboo.version_major_number}.${bamboo.buildNumber}
+  - type: SCRIPT
+    description: Cutover Blue to Green - Production
+    body: |
+      exit 1;
+      ${deployment_script} ${bamboo.target_name} prod_au ${bamboo.version_major_number}.${bamboo.buildNumber}
+      ${deployment_script} ${bamboo.target_name} prod_nz ${bamboo.version_major_number}.${bamboo.buildNumber}
+  triggers:
+  - type: AFTER_SUCCESSFUL_BUILD_PLAN
+    description: Deploy main plan branch (master)
