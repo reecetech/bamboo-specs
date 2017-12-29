@@ -540,3 +540,7 @@ of the named environments may be included in your deployment project yaml like s
     Clarified docker container configuration by splitting various aspects into sub-groups in the
     YAML, allowing clear distinction between the two environmentVariables settings. Also, clean up
     the config around detached containers.
+
+2.0.0
+
+    Added support for automatic parsing of plans added to the repository
