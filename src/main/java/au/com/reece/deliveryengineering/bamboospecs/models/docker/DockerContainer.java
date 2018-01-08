@@ -16,7 +16,11 @@ public class DockerContainer {
 
         if (this.command != null) docker.containerCommand(this.command);
 
-        if (this.workingDirectory != null) docker.containerWorkingDirectory(this.workingDirectory);
+        if (this.workingDirectory != null) {
+            docker.containerWorkingDirectory(this.workingDirectory);
+        } else {
+            docker.containerWorkingDirectory("");
+        }
 
         if (this.environmentVariables != null) docker.containerEnvironmentVariables(this.environmentVariables);
     }
