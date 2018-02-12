@@ -178,17 +178,26 @@ If there are repositories used then include as either linked repositories
     linkedRepositories: [Bamboo Spec Test Project, Other Repository]
 
 The linked repository is typically added when a plan is created. Alternatively
-you can use a locally (to this plan) defined repository:
+you can use a locally (to this plan) defined repositories:
 
-    repository:
-      name: Bamboo Spec Test Project
+    repositories:
+    - name: Bamboo Spec Test Project
       projectKey: SAN
       repositorySlug: bamboo-spec-test-project
+    - name: PACT Specification
+      gitURL: https://github.com/pact-foundation/pact-specification.git
+      branch: version-1.1
+      path: pact-spec-version-1.1
 
-The repository above must be in the Reece Stash instance and the configuration
-components above come from the repository URL like so:
+So the two types of repositories currently supported are:
+
+1. A repository in the Reece Stash instance. It's identified by the `projectKey`
+   and `repositorySlug` from the repository URL like so:
 
     https://stash.reecenet.org/projects/<projectKey>/repos/<repositorySlug>/browse
+
+2. An arbitrary git repository identified by `gitURL`. It must specify a `path`
+   that the repository will be cloned to, and optionally a `branch`.
 
 Plan branches are local configurations based on branches in the repository and
 the strategy for synchronising the two are controlled with:
@@ -333,7 +342,10 @@ them (and optionally include the default repository also):
       - name: Running Man Properties
         path: properties
       cleanCheckout: true
-      
+
+The default repository will always be checked out first (if used), and then the other
+repositories in the order specified.
+
 If you wish to force a clean checkout of the repositories on or off use `cleanCheckout`.
 
 #### SCRIPT Tasks
@@ -534,6 +546,10 @@ of the named environments may be included in your deployment project yaml like s
 
 
 ## Version History
+
+1.1.4
+
+    Added support for arbitrary git repositories in test plans.
 
 1.1.0
 

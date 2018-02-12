@@ -44,7 +44,9 @@ public class ProjectModel extends DomainModel {
     @NotEmpty
     public String description;
 
+    // TODO deprecate repository
     public RepositoryModel repository;
+    public List<@Valid RepositoryModel> repositories;
     public String[] linkedRepositories;
 
     public Map<String, String> variables;
@@ -80,6 +82,12 @@ public class ProjectModel extends DomainModel {
 
         if (this.linkedRepositories != null) {
             plan.linkedRepositories(this.linkedRepositories);
+        }
+
+        if (this.repositories != null) {
+            for (RepositoryModel repos : this.repositories) {
+                repos.addToPlan(plan);
+            }
         }
 
         ArrayList<Variable> variables = new ArrayList<>();
