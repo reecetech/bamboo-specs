@@ -65,8 +65,6 @@ public class TaskModel extends DomainModel {
                 return getDockerTask();
             case CLEAN:
                 return new CleanWorkingDirectoryTask();
-            case ARTEFACT:
-                return getArtefactDownloadTask();
             default:
                 // shouldn't actually be possible, given we load via enum
                 throw new RuntimeException("Unexpected 'type' value from yaml " + this.type);
@@ -103,10 +101,6 @@ public class TaskModel extends DomainModel {
         return new TestParserTask(TestParserTaskProperties.TestType.JUNIT)
                 .description(this.description)
                 .resultDirectories(this.resultFrom);
-    }
-
-    private Task getArtefactDownloadTask() {
-        return new ArtifactDownloaderTask().artifacts(new DownloadItem().allArtifacts(true));
     }
 
     private Task getDockerTask() {
