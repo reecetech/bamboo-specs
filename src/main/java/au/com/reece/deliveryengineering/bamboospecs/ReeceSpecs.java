@@ -41,7 +41,7 @@ public class ReeceSpecs {
             String username = cmd.getOptionValue("u");
             String password;
             if (cmd.hasOption("p")) {
-                password = cmd.getOptionValue("c");
+                password = cmd.getOptionValue("p");
             } else {
                 Console console = System.console();
                 char passwordArray[] = console.readPassword("Enter password for '%s': ", username);
