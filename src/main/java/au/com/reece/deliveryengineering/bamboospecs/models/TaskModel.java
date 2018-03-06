@@ -73,9 +73,10 @@ public class TaskModel extends DomainModel {
 
     private Task getVersionControlTask() {
         VcsCheckoutTask task = new VcsCheckoutTask().description(this.description);
-        if (this.repositories == null || this.defaultRepository) {
+        if (this.defaultRepository) {
             task.checkoutItems(new CheckoutItem().defaultRepository());
-        } else {
+        }
+        if (this.repositories != null) {
             for (RepositoryModel vcs : this.repositories) {
                 task.checkoutItems(vcs.asCheckoutItem());
             }
@@ -136,15 +137,15 @@ public class TaskModel extends DomainModel {
 
         if (this.cmdLineArguments != null) docker.additionalArguments(this.cmdLineArguments);
 
+        docker.clearPortMappings();
         if (this.portMappings != null) {
-            docker.clearPortMappings();
             for (PortMapping port : this.portMappings) {
                 docker.appendPortMapping(port.local, port.container);
             }
         }
 
+        docker.clearVolumeMappings();
         if (this.volumeMappings != null) {
-            docker.clearVolumeMappings();
             for (VolumeMapping volume : this.volumeMappings) {
                 docker.appendVolumeMapping(volume.local, volume.container);
             }
