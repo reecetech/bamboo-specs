@@ -1,5 +1,6 @@
 package au.com.reece.de.bamboospecs.models;
 
+import au.com.reece.de.bamboospecs.models.deployment.DeploymentPermissionModel;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 

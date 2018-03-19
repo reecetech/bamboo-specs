@@ -4,7 +4,6 @@ import com.atlassian.bamboo.specs.api.builders.plan.Plan;
 import com.atlassian.bamboo.specs.api.builders.plan.PlanIdentifier;
 import com.atlassian.bamboo.specs.api.builders.plan.dependencies.Dependencies;
 import com.atlassian.bamboo.specs.api.builders.plan.dependencies.DependenciesConfiguration;
-import com.atlassian.bamboo.specs.api.builders.plan.dependencies.EmptyDependenciesList;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -19,7 +18,7 @@ public class DependencyModel extends DomainModel {
     public void addToPlan(Plan plan) {
         ArrayList<PlanIdentifier> children = new ArrayList<>();
         if (this.none) {
-            plan.dependencies(new EmptyDependenciesList());
+            plan.dependencies(new Dependencies());
             return;
         }
 

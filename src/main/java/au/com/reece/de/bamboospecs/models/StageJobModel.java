@@ -50,11 +50,11 @@ public class StageJobModel extends DomainModel {
             return included.asJob();
         }
 
-        if (this.name == null) throw new RuntimeException("Stage jobs require a 'name'");
-        if (this.key == null) throw new RuntimeException("Stage jobs require a 'key'");
-        if (this.description == null) throw new RuntimeException("Stage jobs require a 'description'");
-        if (this.requirements == null) throw new RuntimeException("Stage jobs require 'requirements'");
-        if (this.tasks == null) throw new RuntimeException("Stage jobs require 'tasks'");
+        if (this.name == null) throw new IllegalArgumentException("Stage jobs require a 'name'");
+        if (this.key == null) throw new IllegalArgumentException("Stage jobs require a 'key'");
+        if (this.description == null) throw new IllegalArgumentException("Stage jobs require a 'description'");
+        if (this.requirements == null) throw new IllegalArgumentException("Stage jobs require 'requirements'");
+        if (this.tasks == null) throw new IllegalArgumentException("Stage jobs require 'tasks'");
 
         Job job = new Job(this.name, this.key);
         job.description(this.description);

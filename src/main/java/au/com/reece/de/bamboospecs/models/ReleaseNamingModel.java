@@ -18,9 +18,8 @@ public class ReleaseNamingModel {
 
     public ReleaseNaming asReleaseNaming() {
         ReleaseNaming releaseNaming = new ReleaseNaming(this.pattern);
-        if (this.autoIncrement) {
-            releaseNaming = releaseNaming.autoIncrement(this.autoIncrement);
-        }
+        releaseNaming = releaseNaming.autoIncrement(this.autoIncrement);
+
         if (this.autoIncrementVariables != null) {
             releaseNaming = releaseNaming.variablesToAutoIncrement(this.autoIncrementVariables);
         }

@@ -1,5 +1,9 @@
-package au.com.reece.de.bamboospecs.models;
+package au.com.reece.de.bamboospecs.models.deployment.environment;
 
+import au.com.reece.de.bamboospecs.models.NotificationModel;
+import au.com.reece.de.bamboospecs.models.RequirementModel;
+import au.com.reece.de.bamboospecs.models.TaskModel;
+import au.com.reece.de.bamboospecs.models.TriggerModel;
 import com.atlassian.bamboo.specs.api.builders.Variable;
 import com.atlassian.bamboo.specs.api.builders.deployment.Environment;
 import com.atlassian.bamboo.specs.api.builders.notification.Notification;

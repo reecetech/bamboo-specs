@@ -1,6 +1,6 @@
 package au.com.reece.de.bamboospecs;
 
-import au.com.reece.de.bamboospecs.models.DeploymentModel;
+import au.com.reece.de.bamboospecs.models.deployment.DeploymentModel;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 import com.fasterxml.jackson.core.JsonProcessingException;

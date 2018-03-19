@@ -1,5 +1,8 @@
 package au.com.reece.de.bamboospecs.models;
 
+import au.com.reece.de.bamboospecs.models.deployment.environment.EnvironmentModel;
+import au.com.reece.de.bamboospecs.models.deployment.environment.EnvironmentsModel;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.nio.file.Path;

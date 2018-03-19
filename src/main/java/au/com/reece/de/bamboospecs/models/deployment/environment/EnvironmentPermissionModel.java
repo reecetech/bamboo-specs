@@ -1,5 +1,6 @@
-package au.com.reece.de.bamboospecs.models;
+package au.com.reece.de.bamboospecs.models.deployment.environment;
 
+import au.com.reece.de.bamboospecs.models.PermissionModel;
 import com.atlassian.bamboo.specs.api.builders.permission.EnvironmentPermissions;
 import com.atlassian.bamboo.specs.api.builders.permission.PermissionType;
 import com.atlassian.bamboo.specs.api.builders.permission.Permissions;

@@ -1,5 +1,8 @@
-package au.com.reece.de.bamboospecs.models;
+package au.com.reece.de.bamboospecs.models.deployment;
 
+import au.com.reece.de.bamboospecs.models.deployment.environment.EnvironmentModel;
+import au.com.reece.de.bamboospecs.models.IncludeEnvironmentsModel;
+import au.com.reece.de.bamboospecs.models.ReleaseNamingModel;
 import com.atlassian.bamboo.specs.api.builders.Variable;
 import com.atlassian.bamboo.specs.api.builders.deployment.Deployment;
 import com.atlassian.bamboo.specs.api.builders.deployment.Environment;
@@ -14,6 +17,7 @@ import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -46,7 +50,7 @@ public class DeploymentModel {
 
     public Map<String, String> variables;
 
-    public ArrayList<EnvironmentModel> environments;
+    public List<EnvironmentModel> environments;
 
     public IncludeEnvironmentsModel includeEnvironments;
 

@@ -1,4 +1,4 @@
-package au.com.reece.de.bamboospecs.models;
+package au.com.reece.de.bamboospecs.models.deployment.environment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;

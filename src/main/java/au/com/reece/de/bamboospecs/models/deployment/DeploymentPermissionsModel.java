@@ -1,4 +1,6 @@
-package au.com.reece.de.bamboospecs.models;
+package au.com.reece.de.bamboospecs.models.deployment;
+
+import au.com.reece.de.bamboospecs.models.PermissionModel;
 
 import javax.validation.constraints.NotNull;
 
