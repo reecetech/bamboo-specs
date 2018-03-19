@@ -9,7 +9,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>au.com.reece.deliveryengineering</groupId>
+    <groupId>au.com.reece.de</groupId>
     <artifactId>bamboo-specs-reece</artifactId>
     <version>2.0.0</version>
     <packaging>jar</packaging>
@@ -125,7 +125,7 @@
                             <transformers>
                                 <!-- add Main-Class to manifest file -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>au.com.reece.deliveryengineering.bamboospecs.ReeceSpecs</mainClass>
+                                    <mainClass>au.com.reece.de.bamboospecs.ReeceSpecs</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
