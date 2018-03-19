@@ -20,6 +20,19 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>reecetech Artifactory-snapshots</name>
+            <url>https://artifactory.reecenet.org:443/artifactory/libs-snapshot</url>
+        </snapshotRepository>
+        <repository>
+            <id>central</id>
+            <name>reecetech Artifactory-releases</name>
+            <url>https://artifactory.reecenet.org:443/artifactory/libs-release</url>
+        </repository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>com.atlassian.bamboo</groupId>
