@@ -29,19 +29,17 @@ Build the code with:
     
 Run with:
 
-    java -jar target/bamboo-specs-reece-1.0.0.jar permissions permissions.yaml
-    java -jar target/bamboo-specs-reece-1.0.0.jar plan plan.yaml
-    java -jar target/bamboo-specs-reece-1.0.0.jar deployment deployment-project.yaml
+    java -jar target/bamboo-specs-reece-2.0.0.jar permissions.yaml plan.yaml deployment-project.yaml
 
 You can test your YAML using the -t switch passed to any of those commands, for example:
 
-    java -jar target/bamboo-specs-reece-1.0.0.jar plan -t plan.yaml
+    java -jar target/bamboo-specs-reece-2.0.0.jar -t plan.yaml
 
 This will just parse the YAML and not deploy it to Bamboo.
 
 The commands all accept multiple yaml files to process:
 
-    java -jar target/bamboo-specs-reece-1.0.0.jar plan configs/plan-*.yaml
+    java -jar target/bamboo-specs-reece-2.0.0.jar configs/plan-*.yaml
 
 ## Java SSL keystore fix
 
@@ -65,7 +63,7 @@ If you get this error when running the jar files, you need to add Reece's CA cer
     keytool -importcert -alias vicpjdt01.reecenet.org \
     -file vicpjdt01.reecenet.org.cer -keystore "C:\Program Files (x86)\Java\jre1.8.0_131\lib\security\cacerts"
     
-    On Mac OS X:
+    On macOS:
     ------------
     Find the Java home:
     $ /usr/libexec/java_home
@@ -79,6 +77,7 @@ If you get this error when running the jar files, you need to add Reece's CA cer
 
 Create a permissions.yaml file:
 
+    type: permissions
     bambooServer: https://bamboo.reecenet.org/bamboo
     projects:
     - plans: [BST-ST, SPAM-IT]
@@ -146,6 +145,7 @@ removed (which would break the program).
 
 Plans have a lot more options. The required minumum is:
 
+    type: build
     bambooServer: https://bamboo.reecenet.org/bamboo
     projectKey: BST
     projectName: Bamboo Spec Testing
@@ -455,6 +455,7 @@ same sections, but do have a different preamble and structure.
 At the top of the file you need to identify the deployment by *name*, and then the
 build plan that it belongs to:
 
+    type: deployment
     bambooServer: https://bamboo.reecenet.org/bamboo
     name: Diary Notes Python Shared Service
     buildProject: DNSS
@@ -537,7 +538,7 @@ variables and tasks that are constructed exactly the same as in build plans. So 
 
 ### Using Included Environments
 
-If you have the same environments appearing in mutiple deployments you may save them off in a
+If you have the same environments appearing in multiple deployments you may save them off in a
 separate YAML file (say, `environments.yaml`) which has the exact structure of the above 
 environments structure sample (ie. `environments:` at the top level) and then each
 of the named environments may be included in your deployment project yaml like so:
@@ -553,6 +554,10 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
+2.0.0
+
+    Added support for automatic parsing of plans added to the repository
+
 1.1.4
 
     Added support for arbitrary git repositories in test plans.
@@ -563,6 +568,3 @@ of the named environments may be included in your deployment project yaml like s
     YAML, allowing clear distinction between the two environmentVariables settings. Also, clean up
     the config around detached containers.
 
-2.0.0
-
-    Added support for automatic parsing of plans added to the repository

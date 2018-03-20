@@ -1,13 +1,22 @@
 package au.com.reece.de.bamboospecs;
 
+import au.com.reece.de.bamboospecs.models.BambooYamlFileModel;
+import au.com.reece.de.bamboospecs.models.exception.InvalidSyntaxException;
 import com.atlassian.bamboo.specs.util.FileUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.SimpleUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Console;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import java.io.IOException;
+import java.util.Set;
 
 public class ReeceSpecs {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReeceSpecs.class);
@@ -17,11 +26,11 @@ public class ReeceSpecs {
 
         Options options = new Options();
 
-        options.addOption("t", false, "parse yaml only, do not publish");
+        options.addOption("t", false, "Parse yaml only, do not publish");
         options.addOption("u", true, "Bamboo user to publish as");
         options.addOption("p", true, "Bamboo user's password");
-        options.addOption("c", true, "credentials file with Bamboo user login");
-        options.addOption("h", false, "display this help");
+        options.addOption("c", true, "Credentials file with Bamboo user login");
+        options.addOption("h", false, "Display this help");
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse( options, args);
@@ -38,9 +47,7 @@ public class ReeceSpecs {
             if (cmd.hasOption("p")) {
                 password = cmd.getOptionValue("p");
             } else {
-                Console console = System.console();
-                char passwordArray[] = console.readPassword("Enter password for '%s': ", username);
-                password = new String(passwordArray);
+                password = new String(System.console().readPassword("Enter password for '%s': ", username));
             }
             adminUser = new SimpleUserPasswordCredentials(username, password);
         } else {
@@ -53,38 +60,54 @@ public class ReeceSpecs {
             LOGGER.info("Parsing yaml only, not publishing");
         }
 
-        String[] remains = cmd.getArgs();
-
-        if (remains.length < 2) {
-            LOGGER.error("Error: missing required <command> and <yaml file> arguments");
+        if (cmd.getArgList().isEmpty()) {
+            LOGGER.error("Error: missing required <yaml file(s)>");
             printHelp(options);
             return;
         }
 
-        // operate on all files
-        for (int i=1; i < remains.length; i++) {
-            String filePath = remains[i];
-            switch (remains[0]) {
-                case "permissions":
-                    PermissionsControl.run(adminUser, filePath, publish);
+        for (String path : cmd.getArgList()) {
+            BambooYamlFileModel bambooFile = readAndValidateYamlFile(path);
+            switch (bambooFile.getFileType()) {
+                case BUILD:
+                    PlanControl.run(adminUser, path, publish);
                     break;
-                case "plan":
-                    PlanControl.run(adminUser, filePath, publish);
+                case DEPLOYMENT:
+                    DeploymentControl.run(adminUser, path, publish);
                     break;
-                case "deployment":
-                    DeploymentControl.run(adminUser, filePath, publish);
+                case BUILD_INCLUDE:
+                case DEPLOY_INCLUDE:
+                    LOGGER.info("File {} is a {} - not processing", path, bambooFile.getFileType());
                     break;
                 default:
-                    LOGGER.error("Error: unrecognised <command> " + remains[0]);
-                    printHelp(options);
-                    return;
+                    LOGGER.error("File {} is unknown ({}) - not processing", path, bambooFile.getFileType());
             }
+        }
+    }
+
+    private static BambooYamlFileModel readAndValidateYamlFile(String path) {
+        try {
+            BambooYamlFileModel bambooFile;
+
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+            bambooFile = mapper.readValue(path, BambooYamlFileModel.class);
+            Set<ConstraintViolation<BambooYamlFileModel>> violations = validator.validate(bambooFile);
+            if (!violations.isEmpty()) {
+                violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
+                throw new InvalidSyntaxException("Validation errors occurred - please see above");
+            }
+            return bambooFile;
+        } catch (JsonProcessingException e) {
+            throw new InvalidSyntaxException(e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading YAML file", e);
         }
     }
 
     private static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("reece-specs [options] <permissions|plan|deployment> <yaml file> ...",
-                "options:", options, "");
+        formatter.printHelp("reece-specs [options] <yaml file> ...","options:", options, "");
     }
 }

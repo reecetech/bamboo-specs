@@ -9,11 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 
-public class PermissionFileModel extends DomainModel {
-    @NotNull
-    @NotEmpty
-    public String bambooServer;
-
+public class PermissionFileModel extends BambooYamlFileModel {
     @NotNull
     @NotEmpty
     public Set<@Valid ProjectPermissionModel> projects;

@@ -1,5 +1,6 @@
 package au.com.reece.de.bamboospecs.models.deployment;
 
+import au.com.reece.de.bamboospecs.models.BambooYamlFileModel;
 import au.com.reece.de.bamboospecs.models.deployment.environment.EnvironmentModel;
 import au.com.reece.de.bamboospecs.models.IncludeEnvironmentsModel;
 import au.com.reece.de.bamboospecs.models.ReleaseNamingModel;
@@ -22,12 +23,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-public class DeploymentModel {
+public class DeploymentModel extends BambooYamlFileModel {
     public String yamlPath;
-
-    @NotNull
-    @NotEmpty
-    public String bambooServer;
 
     @NotNull
     @NotEmpty

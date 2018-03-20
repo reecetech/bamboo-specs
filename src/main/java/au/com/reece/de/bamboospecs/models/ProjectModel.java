@@ -17,12 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ProjectModel extends DomainModel {
+public class ProjectModel extends BambooYamlFileModel {
     public String yamlPath;
-
-    @NotNull
-    @NotEmpty
-    public String bambooServer;
 
     @NotNull
     @NotEmpty

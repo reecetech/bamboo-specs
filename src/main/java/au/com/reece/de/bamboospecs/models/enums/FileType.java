@@ -1,24 +1,25 @@
 package au.com.reece.de.bamboospecs.models.enums;
 
-import java.io.File;
+import javax.validation.constraints.NotNull;
 
 public enum FileType {
-    PERMISSIONS("permissions.yaml"),
-    PLAN("plan.yaml"),
-    DEPLOYMENT("deployment.yaml");
+    DEPLOYMENT("deployment"),
+    DEPLOY_INCLUDE("deployInclude"),
+    BUILD("build"),
+    BUILD_INCLUDE("buildInclude");
 
-    private final String fileType;
+    private final String fileTypeValue;
 
-    FileType(String s) {
-        this.fileType = s;
+    FileType(String fileTypeValue) {
+        this.fileTypeValue = fileTypeValue;
     }
 
-    public static FileType getFromFile(File file) {
-        for (FileType type : FileType.values()) {
-            if (type.fileType.equalsIgnoreCase(file.getName())) {
-                return type;
+    public static FileType fromString(@NotNull String type) {
+        for (FileType fileType : FileType.values()) {
+            if (fileType.fileTypeValue.equalsIgnoreCase(type)) {
+                return fileType;
             }
         }
-        throw new IllegalArgumentException("File " + file.getName() + " is not a known specification type");
+        throw new IllegalArgumentException("The type of spec file, " + type + ", is unknown");
     }
 }
