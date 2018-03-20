@@ -1,19 +1,22 @@
 package au.com.reece.de.bamboospecs.models;
 
-import au.com.reece.de.bamboospecs.models.enums.FileType;
+import au.com.reece.de.bamboospecs.models.enums.SpecFileType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class BambooYamlFileModel extends DomainModel {
     @NotNull
-    public String type;
+    @NotEmpty
+    public String specType;
 
     @NotNull
     @NotEmpty
     public String bambooServer;
 
-    public FileType getFileType() {
-        return FileType.fromString(this.type);
+    @JsonIgnore
+    public SpecFileType getFileType() {
+        return SpecFileType.fromString(this.specType);
     }
 }

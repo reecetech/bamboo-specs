@@ -6,6 +6,7 @@ import com.atlassian.bamboo.specs.util.FileUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.SimpleUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.apache.commons.cli.*;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
@@ -90,9 +92,12 @@ public class ReeceSpecs {
             BambooYamlFileModel bambooFile;
 
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+            bambooFile = mapper.readValue(new File(path), BambooYamlFileModel.class);
+
             Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-            bambooFile = mapper.readValue(path, BambooYamlFileModel.class);
             Set<ConstraintViolation<BambooYamlFileModel>> violations = validator.validate(bambooFile);
             if (!violations.isEmpty()) {
                 violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));

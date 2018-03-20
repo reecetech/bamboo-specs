@@ -33,7 +33,7 @@ public class RepositoryModel extends DomainModel {
     }
 
     Plan addToPlan(Plan plan) {
-        if (this.projectKey != null && !this.gitURL.isEmpty()) {
+        if (this.projectKey != null && !this.projectKey.isEmpty()) {
             if (this.repositorySlug == null || this.repositorySlug.isEmpty()) {
                 throw new RuntimeException("Invalid repository (projectKey AND repositorySlug)");
             }
