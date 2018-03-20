@@ -5,8 +5,8 @@ import javax.validation.constraints.NotNull;
 public enum FileType {
     DEPLOYMENT("deployment"),
     DEPLOY_INCLUDE("deployInclude"),
-    BUILD("build"),
-    BUILD_INCLUDE("buildInclude");
+    PLAN("plan"),
+    PLAN_INCLUDE("planInclude");
 
     private final String fileTypeValue;
 

@@ -145,7 +145,7 @@ removed (which would break the program).
 
 Plans have a lot more options. The required minumum is:
 
-    type: build
+    type: plan
     bambooServer: https://bamboo.reecenet.org/bamboo
     projectKey: BST
     projectName: Bamboo Spec Testing

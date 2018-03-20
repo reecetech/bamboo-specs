@@ -69,13 +69,13 @@ public class ReeceSpecs {
         for (String path : cmd.getArgList()) {
             BambooYamlFileModel bambooFile = readAndValidateYamlFile(path);
             switch (bambooFile.getFileType()) {
-                case BUILD:
+                case PLAN:
                     PlanControl.run(adminUser, path, publish);
                     break;
                 case DEPLOYMENT:
                     DeploymentControl.run(adminUser, path, publish);
                     break;
-                case BUILD_INCLUDE:
+                case PLAN_INCLUDE:
                 case DEPLOY_INCLUDE:
                     LOGGER.info("File {} is a {} - not processing", path, bambooFile.getFileType());
                     break;
