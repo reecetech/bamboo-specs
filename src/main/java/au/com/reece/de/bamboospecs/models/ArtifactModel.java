@@ -18,7 +18,9 @@ public class ArtifactModel extends DomainModel {
     @NotEmpty
     public String location;
 
+    public Boolean shared = false;
+
     public Artifact asArtifact() {
-        return new Artifact(this.name).copyPattern(this.pattern).location(this.location);
+        return new Artifact(this.name).copyPattern(this.pattern).location(this.location).shared(this.shared);
     }
 }
