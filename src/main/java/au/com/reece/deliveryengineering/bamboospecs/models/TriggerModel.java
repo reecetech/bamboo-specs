@@ -29,11 +29,7 @@ public class TriggerModel {
 
 
     static private LocalTime parseTimeNicely(String time) {
-        // LocalTime.parse can't handle a single-digit hour
-        if (time.length() == 4) {
-            time = "0".concat(time);
-        }
-        return LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
+        return LocalTime.parse(time, DateTimeFormatter.ofPattern("H:mm"));
     }
 
     public Trigger asTrigger() {
