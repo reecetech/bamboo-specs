@@ -239,6 +239,17 @@ Or perhaps trigger a deploy from a successful build:
     triggers:
     - type: AFTER_SUCCESSFUL_BUILD_PLAN
       description: Deploy main plan branch (master)
+      
+Or scheduled using a variety of periods:
+
+    triggers:
+    - type: SCHEDULED
+      description: Test every 4 hours
+      everyNumHours: 4
+      dailyAt: 5:00
+      weeklyAt: Saturday 12:59
+      montlyAt: 15 12:59
+      cron: "0 0/30 9-19 ? * MON-FRI"
 
 If the plan has dependent plans which are to be triggered when
 this plan completes they may be specified (as "dependencies"):
@@ -552,6 +563,10 @@ of the named environments may be included in your deployment project yaml like s
 
 
 ## Version History
+
+1.1.6
+
+    Added support for scheduled triggers.
 
 1.1.4
 
