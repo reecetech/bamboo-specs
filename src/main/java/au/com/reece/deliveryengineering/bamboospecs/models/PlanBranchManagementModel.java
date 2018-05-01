@@ -13,16 +13,23 @@ public class PlanBranchManagementModel {
 
     public boolean issueLinkingEnabled = true;
 
-    public int delayCleanAfterDelete = 7;
-    public int delayCleanAfterInactivity = 30;
+    public Integer delayCleanAfterDelete;
+    public Integer delayCleanAfterInactivity;
 
     public PlanBranchManagement asPlanBranchManagement() {
         // plan branch management - cleanup
+        if (this.delayCleanAfterDelete == null) {
+            this.delayCleanAfterDelete = 7;
+        }
+        BranchCleanup removedBranchCleanup = new BranchCleanup()
+            .whenRemovedFromRepositoryAfterDays(this.delayCleanAfterDelete);
+        if (this.delayCleanAfterInactivity != null) {
+            removedBranchCleanup.whenInactiveInRepositoryAfterDays(this.delayCleanAfterInactivity);
+        }
+
         PlanBranchManagement pbm = new PlanBranchManagement()
             .issueLinkingEnabled(this.issueLinkingEnabled)
-            .delete(new BranchCleanup()
-                .whenRemovedFromRepositoryAfterDays(this.delayCleanAfterDelete)
-                .whenInactiveInRepositoryAfterDays(this.delayCleanAfterInactivity));
+            .delete(removedBranchCleanup);
 
         switch (this.createStrategy) {
             case MANUALLY:

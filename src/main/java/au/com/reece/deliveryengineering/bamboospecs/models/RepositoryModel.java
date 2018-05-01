@@ -37,16 +37,19 @@ public class RepositoryModel extends DomainModel {
             if (this.repositorySlug == null || this.repositorySlug.isEmpty()) {
                 throw new RuntimeException("Invalid repository (projectKey AND repositorySlug)");
             }
-            return plan.planRepositories(new BitbucketServerRepository()
-                    .name(this.name)
-                    .server(new ApplicationLink().name("Stash"))
-                    .projectKey(this.projectKey)
-                    .repositorySlug(this.repositorySlug)
-                    // set some "default" options
-                    .repositoryViewer(new BitbucketServerRepositoryViewer())
-                    .shallowClonesEnabled(true)
-                    .remoteAgentCacheEnabled(false)
-            );
+            BitbucketServerRepository stash = new BitbucketServerRepository()
+                .name(this.name)
+                .server(new ApplicationLink().name("Stash"))
+                .projectKey(this.projectKey)
+                .repositorySlug(this.repositorySlug)
+                // set some "default" options
+                .repositoryViewer(new BitbucketServerRepositoryViewer())
+                .shallowClonesEnabled(true)
+                .remoteAgentCacheEnabled(false);
+            if (this.branch != null && !this.branch.isEmpty()) {
+                stash.branch(this.branch);
+            }
+            return plan.planRepositories(stash);
         } else if (this.gitURL != null && !this.gitURL.isEmpty()) {
             GitRepository git = new GitRepository();
             if (this.name == null || this.name.isEmpty()) {
