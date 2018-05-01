@@ -90,6 +90,10 @@ Create a permissions.yaml file:
       permissions:
       - users: [dooleyj]
         grant: [VIEW]
+    - plans: [SPAM-IT]
+      permissions:
+      - allLoggedInUsers: true
+        grant: [VIEW]
     deployments:
     - name: Diary Notes Python Shared Service
       permissions:
@@ -566,6 +570,12 @@ of the named environments may be included in your deployment project yaml like s
 
 
 ## Version History
+
+1.1.7
+
+    Bugfix: honor the branch name in repository settings.
+    Removed the defaulting of branch cleanup after 30 days.
+    Added ability to set permissions to all logged in users.
 
 1.1.6
 
