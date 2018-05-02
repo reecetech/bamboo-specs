@@ -90,6 +90,10 @@ Create a permissions.yaml file:
       permissions:
       - users: [dooleyj]
         grant: [VIEW]
+    - plans: [SPAM-IT]
+      permissions:
+      - allLoggedInUsers: true
+        grant: [VIEW]
     deployments:
     - name: Diary Notes Python Shared Service
       permissions:
@@ -184,6 +188,7 @@ you can use a locally (to this plan) defined repositories:
     - name: Bamboo Spec Test Project
       projectKey: SAN
       repositorySlug: bamboo-spec-test-project
+      branch: development
     - name: PACT Specification
       gitURL: https://github.com/pact-foundation/pact-specification.git
       branch: version-1.1
@@ -195,6 +200,8 @@ So the two types of repositories currently supported are:
    and `repositorySlug` from the repository URL like so:
 
     https://stash.reecenet.org/projects/<projectKey>/repos/<repositorySlug>/browse
+    
+   The "branch" is optional (default is "master").
 
 2. An arbitrary git repository identified by `gitURL`. It must specify a `path`
    that the repository will be cloned to, and optionally a `branch`.
@@ -216,8 +223,8 @@ pattern regular expression:
 The `issueLinkingEnabled` option enables automatic linking of the plan branch
 to the Jira issue related to the repository branch, which is enabled by default.
 Cleaning up plan branches is defaulted to 7 days after the repository branch is
-deleted, or after 30 days of inactivity in the repository branch. These options
-may be modified in the `branchManagement` section:
+deleted. The default is to never clean up branches that are simply inactive.
+These options may be modified in the `branchManagement` section:
 
     branchManagement:
       issueLinkingEnabled: false
@@ -563,6 +570,12 @@ of the named environments may be included in your deployment project yaml like s
 
 
 ## Version History
+
+1.1.7
+
+    Bugfix: honor the branch name in repository settings.
+    Removed the defaulting of branch cleanup after 30 days.
+    Added ability to set permissions to all logged in users.
 
 1.1.6
 
