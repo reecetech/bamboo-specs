@@ -412,6 +412,30 @@ Note that the container -> name property is required for detached containers. Th
 docker.port variable will provide the first exposed port for creating the service
 check URL.
 
+#### INJECT Tasks
+
+While running tasks you may write values to a properties file which the INJECT
+task makes available to other tasks. To specify the file, use:
+
+    - type: INJECT
+      description: Store variables for use in other tasks
+      namespace: inject
+      propertiesFile: inject-properties.ini
+      scope: RESULT
+
+The file must exist when this task is run and uses a 'key=value' format.
+You must provide a relative path to the property file. The values will be available
+in the "bamoboo.<your namespace>" variable namespace, so given this properties file:
+
+    key=value
+    version=1.2.3
+
+These values will be available in other tasks (scripts, etc) as the variables
+"${bamboo.inject.key}" and "${bamboo.inject.version}".
+
+The variables will be discarded at the end of the Job if the scope is "LOCAL" and
+retained for other Jobs if the scope is "RESULT" (the default).
+
 #### Artefact Download
 
 	- type: ARTEFACT_DOWNLAOD
@@ -570,6 +594,10 @@ of the named environments may be included in your deployment project yaml like s
 
 
 ## Version History
+
+1.1.8
+
+    Added INJECT task type.
 
 1.1.7
 

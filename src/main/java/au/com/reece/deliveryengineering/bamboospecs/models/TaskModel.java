@@ -4,6 +4,7 @@ import au.com.reece.deliveryengineering.bamboospecs.models.docker.DockerContaine
 import au.com.reece.deliveryengineering.bamboospecs.models.docker.DockerStartCheck;
 import au.com.reece.deliveryengineering.bamboospecs.models.docker.PortMapping;
 import au.com.reece.deliveryengineering.bamboospecs.models.docker.VolumeMapping;
+import au.com.reece.deliveryengineering.bamboospecs.models.enums.InjectScopeType;
 import au.com.reece.deliveryengineering.bamboospecs.models.enums.TaskType;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
 import com.atlassian.bamboo.specs.builders.task.*;
@@ -17,41 +18,41 @@ public class TaskModel extends DomainModel {
     @NotNull
     public TaskType type;
 
+    // Used by all task types
     @NotNull
     @NotEmpty
     public String description;
 
+    // Used by: SCRIPT
     public String body;
 
+    // Used by: JUNIT
     public String resultFrom;
 
+    // Used by: VCS
     public List<RepositoryModel> repositories;
-
     public boolean cleanCheckout = false;
-
     public boolean defaultRepository = false;
 
+    // Used by: DOCKER
     public String image;
-
     public boolean detach = false;
-
     public DockerStartCheck serviceStartCheck;
-
     public String environmentVariables;
+    public DockerContainer container;
+    public VolumeMapping[] volumeMappings;
+    public PortMapping[] portMappings;
+    public String cmdLineArguments;
 
-    // legacy attributes
+    // legacy attributes from DOCKER
     public String command;
-
     public String workingDirectory;
     // end legacy
 
-    public DockerContainer container;
-
-    public VolumeMapping[] volumeMappings;
-
-    public PortMapping[] portMappings;
-
-    public String cmdLineArguments;
+    // Used by: INJECT
+    public String propertiesFile;
+    public String namespace;
+    public InjectScopeType scope = InjectScopeType.RESULT;
 
     public Task asTask() {
         switch (this.type) {
@@ -67,9 +68,30 @@ public class TaskModel extends DomainModel {
                 return new CleanWorkingDirectoryTask();
             case ARTEFACT:
                 return getArtefactDownloadTask();
+            case INJECT:
+                return getInjectTask();
             default:
                 // shouldn't actually be possible, given we load via enum
                 throw new RuntimeException("Unexpected 'type' value from yaml " + this.type);
+        }
+    }
+
+    private Task getInjectTask() {
+        InjectVariablesTask task = new InjectVariablesTask().description(this.description);
+        if (this.namespace == null || this.namespace.isEmpty()) {
+            throw new RuntimeException("Missing 'namespace' value from yaml for INJECT");
+        }
+        if (this.propertiesFile == null || this.propertiesFile.isEmpty()) {
+            throw new RuntimeException("Missing 'propertiesFile' value from yaml for INJECT");
+        }
+        task.namespace(this.namespace).path(this.propertiesFile);
+        switch (this.scope) {
+            case LOCAL:
+                return task.scopeLocal();
+            case RESULT:
+                return task.scopeResult();
+            default:
+                throw new RuntimeException("Unexpected 'scope' value from yaml " + this.scope);
         }
     }
 
