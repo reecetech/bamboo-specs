@@ -20,6 +20,8 @@ public class PermissionModel extends DomainModel {
         return groups == null ? new HashSet<>() : groups;
     }
 
+    public boolean allLoggedInUsers = false;
+
     @NotNull
     @NotEmpty
     public Set<PermissionType> grant;
@@ -34,6 +36,10 @@ public class PermissionModel extends DomainModel {
 
         for (String group : this.getGroups()) {
             permissions.groupPermissions(group, permissionArray);
+        }
+
+        if (this.allLoggedInUsers) {
+            permissions.loggedInUserPermissions(permissionArray);
         }
     }
 }

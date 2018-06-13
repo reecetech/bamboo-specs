@@ -89,6 +89,10 @@ Create a permissions.yaml file:
       permissions:
       - users: [dooleyj]
         grant: [VIEW]
+    - plans: [SPAM-IT]
+      permissions:
+      - allLoggedInUsers: true
+        grant: [VIEW]
     deployments:
     - name: Diary Notes Python Shared Service
       permissions:
@@ -184,6 +188,7 @@ you can use a locally (to this plan) defined repositories:
     - name: Bamboo Spec Test Project
       projectKey: SAN
       repositorySlug: bamboo-spec-test-project
+      branch: development
     - name: PACT Specification
       gitURL: https://github.com/pact-foundation/pact-specification.git
       branch: version-1.1
@@ -195,6 +200,8 @@ So the two types of repositories currently supported are:
    and `repositorySlug` from the repository URL like so:
 
     https://stash.reecenet.org/projects/<projectKey>/repos/<repositorySlug>/browse
+    
+   The "branch" is optional (default is "master").
 
 2. An arbitrary git repository identified by `gitURL`. It must specify a `path`
    that the repository will be cloned to, and optionally a `branch`.
@@ -216,8 +223,8 @@ pattern regular expression:
 The `issueLinkingEnabled` option enables automatic linking of the plan branch
 to the Jira issue related to the repository branch, which is enabled by default.
 Cleaning up plan branches is defaulted to 7 days after the repository branch is
-deleted, or after 30 days of inactivity in the repository branch. These options
-may be modified in the `branchManagement` section:
+deleted. The default is to never clean up branches that are simply inactive.
+These options may be modified in the `branchManagement` section:
 
     branchManagement:
       issueLinkingEnabled: false
@@ -239,6 +246,17 @@ Or perhaps trigger a deploy from a successful build:
     triggers:
     - type: AFTER_SUCCESSFUL_BUILD_PLAN
       description: Deploy main plan branch (master)
+      
+Or scheduled using a variety of periods:
+
+    triggers:
+    - type: SCHEDULED
+      description: Test every 4 hours
+      everyNumHours: 4
+      dailyAt: 5:00
+      weeklyAt: Saturday 12:59
+      montlyAt: 15 12:59
+      cron: "0 0/30 9-19 ? * MON-FRI"
 
 If the plan has dependent plans which are to be triggered when
 this plan completes they may be specified (as "dependencies"):
@@ -393,6 +411,30 @@ Also supported is running docker containers in the background with port mappings
 Note that the container -> name property is required for detached containers. The
 docker.port variable will provide the first exposed port for creating the service
 check URL.
+
+#### INJECT Tasks
+
+While running tasks you may write values to a properties file which the INJECT
+task makes available to other tasks. To specify the file, use:
+
+    - type: INJECT
+      description: Store variables for use in other tasks
+      namespace: inject
+      propertiesFile: inject-properties.ini
+      scope: RESULT
+
+The file must exist when this task is run and uses a 'key=value' format.
+You must provide a relative path to the property file. The values will be available
+in the "bamoboo.<your namespace>" variable namespace, so given this properties file:
+
+    key=value
+    version=1.2.3
+
+These values will be available in other tasks (scripts, etc) as the variables
+"${bamboo.inject.key}" and "${bamboo.inject.version}".
+
+The variables will be discarded at the end of the Job if the scope is "LOCAL" and
+retained for other Jobs if the scope is "RESULT" (the default).
 
 #### Artefact Download
 
@@ -557,6 +599,20 @@ of the named environments may be included in your deployment project yaml like s
 2.0.0
 
     Added support for automatic parsing of plans added to the repository
+
+1.1.8
+
+    Added INJECT task type.
+
+1.1.7
+
+    Bugfix: honor the branch name in repository settings.
+    Removed the defaulting of branch cleanup after 30 days.
+    Added ability to set permissions to all logged in users.
+
+1.1.6
+
+    Added support for scheduled triggers.
 
 1.1.4
 
