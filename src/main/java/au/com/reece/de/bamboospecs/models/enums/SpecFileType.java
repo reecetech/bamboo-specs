@@ -6,7 +6,8 @@ public enum SpecFileType {
     DEPLOYMENT("deployment"),
     DEPLOY_INCLUDE("deployInclude"),
     PLAN("plan"),
-    PLAN_INCLUDE("planInclude");
+    PLAN_INCLUDE("planInclude"),
+    PERMISSIONS("permissions");
 
     private final String fileTypeValue;
 

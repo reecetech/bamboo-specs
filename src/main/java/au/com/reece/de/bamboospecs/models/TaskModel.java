@@ -11,7 +11,7 @@ import au.com.reece.deliveryengineering.bamboospecs.models.docker.DockerContaine
 import au.com.reece.deliveryengineering.bamboospecs.models.docker.DockerStartCheck;
 import au.com.reece.deliveryengineering.bamboospecs.models.docker.PortMapping;
 import au.com.reece.deliveryengineering.bamboospecs.models.docker.VolumeMapping;
-import au.com.reece.deliveryengineering.bamboospecs.models.enums.InjectScopeType;
+import au.com.reece.de.bamboospecs.models.enums.InjectScopeType;
 import au.com.reece.deliveryengineering.bamboospecs.models.enums.TaskType;
 >>>>>>> origin/master:src/main/java/au/com/reece/deliveryengineering/bamboospecs/models/TaskModel.java
 import com.atlassian.bamboo.specs.api.builders.task.Task;

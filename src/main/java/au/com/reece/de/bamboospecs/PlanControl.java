@@ -20,10 +20,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-public class PlanControl {
+public class PlanControl implements BambooController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlanControl.class);
 
-    static void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
+    public void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -57,7 +57,7 @@ public class PlanControl {
         }
     }
 
-    static void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {
+    public void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {
         run(adminUser, new File(filePath), publish);
     }
 }

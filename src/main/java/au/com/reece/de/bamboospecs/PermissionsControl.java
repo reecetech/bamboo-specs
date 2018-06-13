@@ -19,14 +19,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-public class PermissionsControl {
+public class PermissionsControl implements BambooController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PermissionsControl.class);
 
-    static void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {
+    public void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {
         run(adminUser, new File(filePath), publish);
     }
 
-    static void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
+    public void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
