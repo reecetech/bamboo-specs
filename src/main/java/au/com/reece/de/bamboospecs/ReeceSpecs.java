@@ -39,7 +39,6 @@ public class ReeceSpecs {
 
         boolean publish = determinePublishing(cmd);
 
-
         if (cmd.getArgList().isEmpty()) {
             LOGGER.error("Error: missing required <yaml file(s)>");
             printHelp(options);
@@ -88,7 +87,7 @@ public class ReeceSpecs {
         options.addOption("p", true, "Bamboo user's password");
         options.addOption("c", true, "Credentials file with Bamboo user login");
         options.addOption("h", false, "Display this help");
-        
+
         return options;
     }
 
