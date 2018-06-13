@@ -1,0 +1,12 @@
+project:
+  key: DE
+  plan:
+    key: BAMBOOSPECS
+    name: Bamboo Specs (build and publish artefact)
+stages:
+  - jobs:
+    - requirements:
+      - LINUX
+      - system.builder.mvn3.Maven 3
+      scripts:
+      - mvn clean deploy
