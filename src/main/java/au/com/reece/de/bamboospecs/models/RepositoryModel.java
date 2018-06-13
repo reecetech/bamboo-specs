@@ -33,11 +33,7 @@ public class RepositoryModel extends DomainModel {
     }
 
     Plan addToPlan(Plan plan) {
-<<<<<<< HEAD:src/main/java/au/com/reece/de/bamboospecs/models/RepositoryModel.java
         if (this.projectKey != null && !this.projectKey.isEmpty()) {
-=======
-        if (this.projectKey != null && this.gitURL == null) {
->>>>>>> origin/master:src/main/java/au/com/reece/deliveryengineering/bamboospecs/models/RepositoryModel.java
             if (this.repositorySlug == null || this.repositorySlug.isEmpty()) {
                 throw new RuntimeException("Invalid repository (projectKey AND repositorySlug)");
             }
