@@ -77,7 +77,7 @@ If you get this error when running the jar files, you need to add Reece's CA cer
 
 Create a permissions.yaml file:
 
-    type: permissions
+    specType: permissions
     bambooServer: https://bamboo.reecenet.org/bamboo
     projects:
     - plans: [BST-ST, SPAM-IT]
@@ -149,7 +149,7 @@ removed (which would break the program).
 
 Plans have a lot more options. The required minumum is:
 
-    type: plan
+    specType: plan
     bambooServer: https://bamboo.reecenet.org/bamboo
     projectKey: BST
     projectName: Bamboo Spec Testing
@@ -504,7 +504,7 @@ same sections, but do have a different preamble and structure.
 At the top of the file you need to identify the deployment by *name*, and then the
 build plan that it belongs to:
 
-    type: deployment
+    specType: deployment
     bambooServer: https://bamboo.reecenet.org/bamboo
     name: Diary Notes Python Shared Service
     buildProject: DNSS
@@ -614,7 +614,7 @@ of the named environments may be included in your deployment project yaml like s
 1.1.8
 
     Added INJECT task type.
-
+specType
 1.1.7
 
     Bugfix: honor the branch name in repository settings.
