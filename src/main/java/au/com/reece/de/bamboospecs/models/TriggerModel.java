@@ -26,6 +26,7 @@ public class TriggerModel {
     public String weeklyAt;
     public String monthlyAt;
     public String cron;
+    public String branch;
 
 
     static private LocalTime parseTimeNicely(String time) {
@@ -35,7 +36,12 @@ public class TriggerModel {
     public Trigger asTrigger() {
         switch (this.type) {
             case AFTER_SUCCESSFUL_BUILD_PLAN:
-                return new AfterSuccessfulBuildPlanTrigger().description(this.description);
+                AfterSuccessfulBuildPlanTrigger trigger = new AfterSuccessfulBuildPlanTrigger();
+                trigger.description(this.description);
+                if (this.branch != null) {
+                    trigger.triggerByBranch(this.branch);
+                }
+                return trigger;
             case AFTER_STASH_COMMIT:
                 return new BitbucketServerTrigger().description(this.description);
             case SCHEDULED:

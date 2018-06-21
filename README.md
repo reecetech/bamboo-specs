@@ -247,6 +247,13 @@ Or perhaps trigger a deploy from a successful build:
     - type: AFTER_SUCCESSFUL_BUILD_PLAN
       description: Deploy main plan branch (master)
       
+You may also trigger only off certain non-master branches:
+
+    triggers:
+    - type: AFTER_SUCCESSFUL_BUILD_PLAN
+      branch: development
+      description: Deploy development branch
+
 Or scheduled using a variety of periods:
 
     triggers:
@@ -599,6 +606,10 @@ of the named environments may be included in your deployment project yaml like s
 2.0.0
 
     Added support for automatic parsing of plans added to the repository
+
+1.1.9
+
+    Add ability to specify the branch to trigger after successful build on.
 
 1.1.8
 
