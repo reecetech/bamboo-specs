@@ -7,6 +7,5 @@ stages:
   - jobs:
     - requirements:
       - LINUX
-      - system.builder.mvn3.Maven 3
       scripts:
       - mvn clean deploy
