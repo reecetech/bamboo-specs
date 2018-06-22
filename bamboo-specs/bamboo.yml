@@ -5,5 +5,5 @@ project:
     name: Bamboo Specs (build and publish artefact)
 stages:
   - jobs:
-      scripts:
+    - scripts:
       - mvn clean deploy
