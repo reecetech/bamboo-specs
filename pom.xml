@@ -9,9 +9,9 @@
         <relativePath/>
     </parent>
 
-    <groupId>au.com.reece.deliveryengineering</groupId>
+    <groupId>au.com.reece.de</groupId>
     <artifactId>bamboo-specs-reece</artifactId>
-    <version>1.1.9</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -19,6 +19,19 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>reecetech Artifactory-snapshots</name>
+            <url>https://artifactory.reecenet.org:443/artifactory/libs-snapshot</url>
+        </snapshotRepository>
+        <repository>
+            <id>central</id>
+            <name>reecetech Artifactory-releases</name>
+            <url>https://artifactory.reecenet.org:443/artifactory/libs-release</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -34,19 +47,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.7.5</version>
+            <version>2.9.4</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.9.0</version>
-        </dependency>
-
-        <!-- string formatting with named arguments from StrSubstitutor of jakarta -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
+            <version>2.9.4</version>
         </dependency>
 
         <dependency>
@@ -74,7 +80,7 @@
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.el</artifactId>
-            <version>3.0.1-b08</version>
+            <version>3.0.1-b10</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.validator</groupId>
@@ -107,7 +113,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.1.0</version>
                 <executions>
                     <!-- Run shade goal on package phase -->
                     <execution>
@@ -119,14 +125,13 @@
                             <transformers>
                                 <!-- add Main-Class to manifest file -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>au.com.reece.deliveryengineering.bamboospecs.ReeceSpecs</mainClass>
+                                    <mainClass>au.com.reece.de.bamboospecs.ReeceSpecs</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 </project>
