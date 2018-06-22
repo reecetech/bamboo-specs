@@ -36,35 +36,35 @@ public class TriggerModel {
     public Trigger asTrigger() {
         switch (this.type) {
             case AFTER_SUCCESSFUL_BUILD_PLAN:
-                AfterSuccessfulBuildPlanTrigger trigger = new AfterSuccessfulBuildPlanTrigger();
-                trigger.description(this.description);
+                AfterSuccessfulBuildPlanTrigger buildTrigger = new AfterSuccessfulBuildPlanTrigger();
+                buildTrigger.description(this.description);
                 if (this.branch != null) {
-                    trigger.triggerByBranch(this.branch);
+                    buildTrigger.triggerByBranch(this.branch);
                 }
-                return trigger;
+                return buildTrigger;
             case AFTER_STASH_COMMIT:
                 return new BitbucketServerTrigger().description(this.description);
             case SCHEDULED:
-                ScheduledTrigger trigger = new ScheduledTrigger().description(this.description);
+                ScheduledTrigger scheduledTrigger = new ScheduledTrigger().description(this.description);
                 if (this.everyNumHours != null) {
-                    trigger.scheduleEvery(Integer.getInteger(this.everyNumHours), TimeUnit.HOURS);
+                    scheduledTrigger.scheduleEvery(Integer.getInteger(this.everyNumHours), TimeUnit.HOURS);
                 }
                 if (this.dailyAt != null) {
-                    trigger.scheduleOnceDaily(parseTimeNicely(dailyAt));
+                    scheduledTrigger.scheduleOnceDaily(parseTimeNicely(dailyAt));
                 }
                 if (this.weeklyAt != null) {
                     String[] parts = this.weeklyAt.split(" ");
                     String upperDay = parts[0].toUpperCase();
-                    trigger.scheduleWeekly(parseTimeNicely(parts[1]), DayOfWeek.valueOf(upperDay));
+                    scheduledTrigger.scheduleWeekly(parseTimeNicely(parts[1]), DayOfWeek.valueOf(upperDay));
                 }
                 if (this.monthlyAt != null) {
                     String[] parts = this.monthlyAt.split(" ");
-                    trigger.scheduleMonthly(parseTimeNicely(parts[1]), Integer.getInteger(parts[0]));
+                    scheduledTrigger.scheduleMonthly(parseTimeNicely(parts[1]), Integer.getInteger(parts[0]));
                 }
                 if (this.cron != null) {
-                    trigger.cronExpression(this.cron);
+                    scheduledTrigger.cronExpression(this.cron);
                 }
-                return trigger;
+                return scheduledTrigger;
             default:
                 throw new RuntimeException("Unexpected 'type' value from yaml " + this.type);
         }
