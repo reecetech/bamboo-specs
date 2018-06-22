@@ -5,8 +5,8 @@ import javax.validation.constraints.NotNull;
 public enum SpecFileType {
     DEPLOYMENT("deployment"),
     DEPLOY_INCLUDE("deployInclude"),
-    PLAN("plan"),
-    PLAN_INCLUDE("planInclude"),
+    BUILD("build"),
+    BUILD_INCLUDE("buildInclude"),
     PERMISSIONS("permissions");
 
     private final String fileTypeValue;

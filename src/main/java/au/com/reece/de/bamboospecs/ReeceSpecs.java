@@ -95,7 +95,7 @@ public class ReeceSpecs {
     private static BambooController getBambooController(String path, BambooYamlFileModel bambooFile) {
         BambooController controller;
         switch (bambooFile.getFileType()) {
-            case PLAN:
+            case BUILD:
                 controller = new PlanControl();
                 break;
             case DEPLOYMENT:
@@ -104,7 +104,7 @@ public class ReeceSpecs {
             case PERMISSIONS:
                 controller = new PermissionsControl();
                 break;
-            case PLAN_INCLUDE:
+            case BUILD_INCLUDE:
             case DEPLOY_INCLUDE:
                 controller = new NoOpController();
                 break;
