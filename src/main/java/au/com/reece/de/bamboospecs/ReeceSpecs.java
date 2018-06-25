@@ -96,7 +96,7 @@ public class ReeceSpecs {
         BambooController controller;
         switch (bambooFile.getFileType()) {
             case BUILD:
-                controller = new PlanControl();
+                controller = new BuildControl();
                 break;
             case DEPLOYMENT:
                 controller = new DeploymentControl();

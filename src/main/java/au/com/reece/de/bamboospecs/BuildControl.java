@@ -3,7 +3,7 @@
 
 package au.com.reece.de.bamboospecs;
 
-import au.com.reece.de.bamboospecs.models.ProjectModel;
+import au.com.reece.de.bamboospecs.models.BuildModel;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-public class PlanControl implements BambooController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlanControl.class);
+public class BuildControl implements BambooController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BuildControl.class);
 
     public void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
@@ -29,10 +29,10 @@ public class PlanControl implements BambooController {
 
         LOGGER.info("Parsing YAML {}", yamlFile.toPath());
 
-        ProjectModel yamlPlan;
+        BuildModel yamlPlan;
         try {
-            yamlPlan = mapper.readValue(yamlFile, ProjectModel.class);
-            Set<ConstraintViolation<ProjectModel>> violations = validator.validate(yamlPlan);
+            yamlPlan = mapper.readValue(yamlFile, BuildModel.class);
+            Set<ConstraintViolation<BuildModel>> violations = validator.validate(yamlPlan);
             if (!violations.isEmpty()) {
                 violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
                 return;
