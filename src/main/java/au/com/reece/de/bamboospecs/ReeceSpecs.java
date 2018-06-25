@@ -46,7 +46,13 @@ public class ReeceSpecs {
         }
 
         for (String path : cmd.getArgList()) {
-            BambooYamlFileModel bambooFile = readAndValidateYamlFile(path);
+            BambooYamlFileModel bambooFile;
+            try {
+                bambooFile = readAndValidateYamlFile(path);
+            } catch (InvalidSyntaxException e) {
+                LOGGER.error("Could not parse YAML file {}: {}", path, e.getMessage());
+                break;
+            }
             BambooController controller = getBambooController(path, bambooFile);
             controller.run(adminUser, path, publish);
         }
