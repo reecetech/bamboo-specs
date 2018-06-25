@@ -1,10 +1,14 @@
 bambooServer: https://bamboo.reecenet.org/bamboo
+specType: build
 projectKey: BST
 projectName: Bamboo Spec Testing
 planKey: ST
 planName: Spec Testing
+labels:
+- testing
+- label
 description: This is a test plan for bamboo specs
-linkedRepositories: [Bamboo Spec Test Project]
+linkedRepositories: [Bamboo Specs]
 notifications:
 - when: PLAN_COMPLETED
   recipientUsers: [patersoa]
@@ -37,6 +41,7 @@ stages:
     - type: VCS
       description: Checkout Default Repository
       cleanCheckout: true
+      defaultRepository: true
     - type: SCRIPT
       description: Build docker image
       body: |

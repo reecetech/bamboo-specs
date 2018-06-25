@@ -40,6 +40,8 @@ public class BuildModel extends BambooYamlFileModel {
     @NotEmpty
     public String description;
 
+    public List<String> labels;
+
     // TODO deprecate repository
     public RepositoryModel repository;
     public List<@Valid RepositoryModel> repositories;
@@ -118,4 +120,7 @@ public class BuildModel extends BambooYamlFileModel {
         );
     }
 
+    public Boolean hasLabels() {
+        return this.labels != null && !this.labels.isEmpty();
+    }
 }

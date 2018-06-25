@@ -10,6 +10,7 @@ import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,7 @@ import java.util.Set;
 
 public class BuildControl implements BambooController {
     private static final Logger LOGGER = LoggerFactory.getLogger(BuildControl.class);
+    public static final MediaType JSON_MEDIA_TYPE =MediaType.parse("application/json; charset=utf-8");
 
     public void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
@@ -52,8 +54,41 @@ public class BuildControl implements BambooController {
         Plan plan = yamlPlan.getPlan();
         if (publish) {
             bambooServer.publish(plan);
+            try {
+                publishLabels(yamlPlan, adminUser);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             LOGGER.info("YAML parsed OK");
+        }
+    }
+
+    private void publishLabels(BuildModel yamlPlan, UserPasswordCredentials adminUser) throws IOException {
+        if (yamlPlan.hasLabels()) {
+            OkHttpClient client = new OkHttpClient();
+
+            String url = String.format("%s/rest/api/latest/plan/%s-%s/label.json", yamlPlan.bambooServer, yamlPlan.projectKey, yamlPlan.planKey);
+
+            for (String label : yamlPlan.labels) {
+                // Friends don't let friends hand-write JSON
+                String json = String.format("{\"name\":\"%s\"}", label);
+
+                RequestBody body = RequestBody.create(JSON_MEDIA_TYPE, json);
+                String credentials = Credentials.basic(adminUser.getUsername(), adminUser.getUsername());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .addHeader("Authorization", credentials)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                if (!response.isSuccessful()) {
+                    throw new RuntimeException("Failed to publish labels. The HTTP request was unsuccessful due to the following: " + response.message());
+                } else {
+                    LOGGER.info("Added label {} to build {}-{}", label, yamlPlan.projectKey, yamlPlan.planKey);
+                }
+            }
         }
     }
 
