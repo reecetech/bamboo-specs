@@ -147,7 +147,7 @@ removed (which would break the program).
 
 ## Build and Test Plans
 
-Plans have a lot more options. The required minumum is:
+Plans have a lot more options. The required minimum is:
 
     specType: plan
     bambooServer: https://bamboo.reecenet.org/bamboo
@@ -173,6 +173,13 @@ pairs like so:
 Variables defined here (and others defined by Bamboo for you) may be reference
 in SCRIPT task body texts using `${bamboo.major_version_number}` or
 `${bamboo.target_name}` using the above example settings.
+
+You can also add labels to your build plan by simply adding a list of strings 
+you would like your build tagged with:
+
+    labels:
+       - awesome
+       - very_cool
 
 ### Source Repositories
 
