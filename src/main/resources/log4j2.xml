@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration packages="net.logstash.log4j2" status="off">
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="%-5p [%c] (%t) %m%ex%n"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="CONSOLE"/>
+        </Root>
+        <Logger name="org.hibernate" level="error"
+                additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
+    </Loggers>
+</Configuration>
