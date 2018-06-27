@@ -7,10 +7,10 @@
     </Appenders>
 
     <Loggers>
-        <Root level="info">
+        <Root level="error">
             <AppenderRef ref="CONSOLE"/>
         </Root>
-        <Logger name="org.hibernate" level="error"
+        <Logger name="au.com.reece" level="info"
                 additivity="false">
             <AppenderRef ref="CONSOLE"/>
         </Logger>
