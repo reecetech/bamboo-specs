@@ -75,7 +75,7 @@ public class BuildControl implements BambooController {
                 String json = String.format("{\"name\":\"%s\"}", label);
 
                 RequestBody body = RequestBody.create(JSON_MEDIA_TYPE, json);
-                String credentials = Credentials.basic(adminUser.getUsername(), adminUser.getUsername());
+                String credentials = Credentials.basic(adminUser.getUsername(), adminUser.getPassword());
                 Request request = new Request.Builder()
                         .url(url)
                         .post(body)
