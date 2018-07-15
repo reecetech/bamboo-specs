@@ -39,6 +39,9 @@ public class NotificationModel extends DomainModel {
             case DEPLOYMENT_FINISHED:
                 type = new DeploymentFinishedNotification();
                 break;
+            case DEPLOYMENT_STARTED_AND_FINISHED:
+                type = new DeploymentStartedAndFinishedNotification();
+                break;
             default:
                 // shouldn't actually be possible, given we load via enum
                 throw new RuntimeException("Unexpected 'when' value from yaml " + this.when);
