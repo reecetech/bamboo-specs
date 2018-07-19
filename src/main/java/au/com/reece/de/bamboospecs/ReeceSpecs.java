@@ -91,6 +91,10 @@ public class ReeceSpecs {
         JtwigModel model = JtwigModel.newModel(values);
 
         try {
+            File resultDirectory = new File("results");
+
+            resultDirectory.mkdir();
+            
             File destinationFile = new File("results/" + specResultName + ".xml");
             if (! destinationFile.createNewFile()) {
                 throw new RuntimeException("Failed to create file");
