@@ -75,8 +75,12 @@ public class ReeceSpecs {
 
     private static void handleOutcome(Exception exception, long time, String path) {
         Map<String, Object> values = new HashMap<>();
-        String specResultName = path.replaceAll("/", "_").replaceAll("-", "_");
-        values.put("time", time/1000.0);
+        String specResultName = path
+                .replaceAll(System.getProperty("user.dir"), "")
+                .replaceAll("/", "_")
+                .replaceAll("-", "_");
+
+        values.put("time", time / 1000.0);
         values.put("specName", specResultName);
 
         if (exception == null) {
@@ -94,12 +98,13 @@ public class ReeceSpecs {
             File resultDirectory = new File("results");
 
             resultDirectory.mkdir();
-            
+
             File destinationFile = new File("results/" + specResultName + ".xml");
-            if (! destinationFile.createNewFile()) {
+            if (!destinationFile.createNewFile()) {
                 throw new RuntimeException("Failed to create file");
             }
             template.render(model, new FileOutputStream(destinationFile));
+            LOGGER.info("Wrote file to {}", destinationFile.getAbsolutePath());
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
