@@ -1,6 +1,7 @@
 package au.com.reece.de.bamboospecs;
 
 import au.com.reece.de.bamboospecs.models.BambooYamlFileModel;
+import au.com.reece.de.bamboospecs.support.JUnitResultHelper;
 import com.atlassian.bamboo.specs.util.FileUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.SimpleUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
@@ -10,8 +11,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
-import org.jtwig.JtwigModel;
-import org.jtwig.JtwigTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +18,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class ReeceSpecs {
@@ -70,44 +66,7 @@ public class ReeceSpecs {
         } finally {
             stopWatch.stop();
         }
-        handleOutcome(exception, stopWatch.getTime(), path);
-    }
-
-    private static void handleOutcome(Exception exception, long time, String path) {
-        Map<String, Object> values = new HashMap<>();
-        String specResultName = path
-                .replaceAll(System.getProperty("user.dir"), "")
-                .replaceAll("/", "_")
-                .replaceAll("-", "_");
-
-        values.put("time", time / 1000.0);
-        values.put("specName", specResultName);
-
-        if (exception == null) {
-            values.put("successful", true);
-        } else {
-            values.put("successful", false);
-            values.put("failureMessage", exception.getMessage());
-            values.put("stacktrace", exception.getStackTrace());
-        }
-
-        JtwigTemplate template = JtwigTemplate.classpathTemplate("resultTemplate.twig");
-        JtwigModel model = JtwigModel.newModel(values);
-
-        try {
-            File resultDirectory = new File("results");
-
-            resultDirectory.mkdir();
-
-            File destinationFile = new File("results/" + specResultName + ".xml");
-            if (!destinationFile.createNewFile()) {
-                throw new RuntimeException("Failed to create file");
-            }
-            template.render(model, new FileOutputStream(destinationFile));
-            LOGGER.info("Wrote file to {}", destinationFile.getAbsolutePath());
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        JUnitResultHelper.handleOutcome(exception, stopWatch.getTime(), path);
     }
 
     private static boolean determinePublishing(CommandLine cmd) {
