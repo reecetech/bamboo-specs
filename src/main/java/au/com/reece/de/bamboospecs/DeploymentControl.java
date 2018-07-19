@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-public class DeploymentControl implements BambooController {
+public class DeploymentControl extends BambooController {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeploymentControl.class);
 
     public void run(UserPasswordCredentials adminUser, String filePath, boolean publish) {

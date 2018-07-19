@@ -1,15 +1,15 @@
 package au.com.reece.de.bamboospecs;
 
 import au.com.reece.de.bamboospecs.models.BambooYamlFileModel;
-import au.com.reece.de.bamboospecs.models.exception.InvalidSyntaxException;
+import au.com.reece.de.bamboospecs.support.JUnitResultHelper;
 import com.atlassian.bamboo.specs.util.FileUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.SimpleUserPasswordCredentials;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.apache.commons.cli.*;
+import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,17 +18,20 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 
 public class ReeceSpecs {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReeceSpecs.class);
 
     public static void main(final String[] args) throws Exception {
+        runSpecs(args);
+    }
+
+    private static void runSpecs(String[] args) throws ParseException {
         Options options = getCommandLineOptions();
 
         CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse( options, args);
+        CommandLine cmd = parser.parse(options, args);
 
         if (cmd.hasOption("h")) {
             printHelp(options);
@@ -40,22 +43,30 @@ public class ReeceSpecs {
         boolean publish = determinePublishing(cmd);
 
         if (cmd.getArgList().isEmpty()) {
-            LOGGER.error("Error: missing required <yaml file(s)>");
             printHelp(options);
-            return;
+            throw new RuntimeException("Error: missing required file(s)");
         }
 
         for (String path : cmd.getArgList()) {
-            BambooYamlFileModel bambooFile;
-            try {
-                bambooFile = readAndValidateYamlFile(path);
-            } catch (InvalidSyntaxException e) {
-                LOGGER.error("Could not parse YAML file {}: {}", path, e.getMessage());
-                break;
-            }
-            BambooController controller = getBambooController(path, bambooFile);
-            controller.run(adminUser, path, publish);
+            runFileProcess(adminUser, publish, path);
         }
+    }
+
+    private static void runFileProcess(UserPasswordCredentials adminUser, boolean publish, String path) {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        Exception exception = null;
+        try {
+            BambooYamlFileModel bambooFile;
+            bambooFile = readAndValidateYamlFile(path);
+            BambooController controller = BambooController.getBambooController(path, bambooFile);
+            controller.run(adminUser, path, publish);
+        } catch (Exception ex) {
+            exception = ex;
+        } finally {
+            stopWatch.stop();
+        }
+        JUnitResultHelper.handleOutcome(exception, stopWatch.getTime(), path);
     }
 
     private static boolean determinePublishing(CommandLine cmd) {
@@ -97,30 +108,8 @@ public class ReeceSpecs {
         return options;
     }
 
-    @NotNull
-    private static BambooController getBambooController(String path, BambooYamlFileModel bambooFile) {
-        BambooController controller;
-        switch (bambooFile.getFileType()) {
-            case BUILD:
-                controller = new BuildControl();
-                break;
-            case DEPLOYMENT:
-                controller = new DeploymentControl();
-                break;
-            case PERMISSIONS:
-                controller = new PermissionsControl();
-                break;
-            case BUILD_INCLUDE:
-            case DEPLOY_INCLUDE:
-                controller = new NoOpController();
-                break;
-            default:
-                throw new RuntimeException(String.format("File %s is unknown (%s) - not processing", path, bambooFile.getFileType()));
-        }
-        return controller;
-    }
-
     private static BambooYamlFileModel readAndValidateYamlFile(String path) {
+
         try {
             BambooYamlFileModel bambooFile;
 
@@ -133,19 +122,18 @@ public class ReeceSpecs {
 
             Set<ConstraintViolation<BambooYamlFileModel>> violations = validator.validate(bambooFile);
             if (!violations.isEmpty()) {
-                violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
-                throw new InvalidSyntaxException("Validation errors occurred - please see above");
+                StringBuilder builder = new StringBuilder();
+                violations.forEach(x -> builder.append(String.format("%s: %s%n", x.getPropertyPath(), x.getMessage())));
+                throw new RuntimeException(String.format("Validation errors occurred:%n%s", builder.toString()));
             }
             return bambooFile;
-        } catch (JsonProcessingException e) {
-            throw new InvalidSyntaxException(e);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error reading YAML file", e);
         }
     }
 
     private static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("reece-specs [options] <yaml file> ...","options:", options, "");
+        formatter.printHelp("reece-specs [options] <yaml file> ...", "options:", options, "");
     }
 }

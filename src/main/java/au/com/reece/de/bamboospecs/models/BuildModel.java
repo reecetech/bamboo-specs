@@ -92,7 +92,7 @@ public class BuildModel extends BambooYamlFileModel {
             for (String key : this.variables.keySet()) {
                 variables.add(new Variable(key, this.variables.get(key)));
             }
-            plan.variables(variables.toArray(new Variable[variables.size()]));
+            plan.variables(variables.toArray(new Variable[0]));
         }
 
         this.stages.forEach(x -> x.yamlPath = this.yamlPath);
