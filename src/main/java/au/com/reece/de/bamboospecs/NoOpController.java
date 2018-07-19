@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-public class NoOpController implements BambooController {
+public class NoOpController extends BambooController {
     private static final Logger LOGGER = LoggerFactory.getLogger(NoOpController.class);
 
     @Override

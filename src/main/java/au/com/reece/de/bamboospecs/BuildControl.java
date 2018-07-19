@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-public class BuildControl implements BambooController {
+public class BuildControl extends BambooController {
     private static final Logger LOGGER = LoggerFactory.getLogger(BuildControl.class);
     public static final MediaType JSON_MEDIA_TYPE =MediaType.parse("application/json; charset=utf-8");
 
