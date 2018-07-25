@@ -610,6 +610,14 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
+2.1.1
+
+    Fix a defect whereby runs fail if the file already exists for the output
+
+2.1.0
+
+    Added support for outputting (in JUnit format) results
+
 2.0.1
 
     Added support for labeling plans
