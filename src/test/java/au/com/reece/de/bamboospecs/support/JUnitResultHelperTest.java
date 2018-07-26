@@ -45,6 +45,18 @@ public class JUnitResultHelperTest {
         assertThat(xmlDiff.hasDifferences(), is(false));
     }
 
+    @Test
+    public void handleOutcomeFileExists() throws IOException {
+        JUnitResultHelper.handleOutcome(null, 1000, "alastair/test/plan.yaml");
+
+        JUnitResultHelper.handleOutcome(null, 1000, "alastair/test/plan.yaml");
+
+        File destination = new File("results");
+        assertThat(destination.exists(), is(true));
+
+        assertThat(destination.listFiles().length, is(2));
+    }
+
     @NotNull
     private String getResultFile() throws IOException {
         File resultFile = new File("results/alastair_test_plan.yaml.xml");

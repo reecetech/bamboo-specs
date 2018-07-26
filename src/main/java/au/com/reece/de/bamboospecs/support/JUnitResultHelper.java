@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,8 +32,15 @@ public class JUnitResultHelper {
             resultDirectory.mkdir();
 
             File destinationFile = new File("results/" + specResultName + ".xml");
+
+            if (destinationFile.exists()) {
+                String resultFileName = "results/" + specResultName + LocalTime.now().toString() + ".xml";
+                LOGGER.warn("Destination XML file already exists - creating as {}", resultFileName);
+                destinationFile = new File(resultFileName);
+            }
+
             if (!destinationFile.createNewFile()) {
-                throw new RuntimeException("Failed to create file");
+                throw new RuntimeException("Failed to create file " + destinationFile.getAbsolutePath());
             }
             template.render(model, new FileOutputStream(destinationFile));
             LOGGER.debug("Wrote JUnit XML to {}", destinationFile.getAbsolutePath());
