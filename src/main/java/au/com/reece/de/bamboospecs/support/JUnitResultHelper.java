@@ -40,13 +40,11 @@ public class JUnitResultHelper {
             }
 
             if (!destinationFile.createNewFile()) {
-                LOGGER.warn("Failed to write output XML");
-                throw new RuntimeException("Failed to create file");
+                throw new RuntimeException("Failed to create file " + destinationFile.getAbsolutePath());
             }
             template.render(model, new FileOutputStream(destinationFile));
             LOGGER.debug("Wrote JUnit XML to {}", destinationFile.getAbsolutePath());
         } catch (Exception ex) {
-            LOGGER.warn("Failed to write output XML");
             throw new RuntimeException(ex);
         }
     }
