@@ -38,7 +38,7 @@ public class BuildControl extends BambooController {
                 violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
                 return;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error reading YAML file: " + e.getMessage(), e);
         }
 
