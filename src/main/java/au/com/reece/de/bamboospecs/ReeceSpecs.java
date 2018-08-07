@@ -22,12 +22,22 @@ import java.util.Set;
 
 public class ReeceSpecs {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReeceSpecs.class);
+    private final JUnitResultHelper resultHelper;
 
     public static void main(final String[] args) throws Exception {
-        runSpecs(args);
+        ReeceSpecs specs = new ReeceSpecs();
+        specs.runSpecs(args);
     }
 
-    private static void runSpecs(String[] args) throws ParseException {
+    private ReeceSpecs() {
+        this(new JUnitResultHelper());
+    }
+
+    ReeceSpecs(JUnitResultHelper resultHelper) {
+        this.resultHelper = resultHelper;
+    }
+
+    private void runSpecs(String[] args) throws ParseException {
         Options options = getCommandLineOptions();
 
         CommandLineParser parser = new DefaultParser();
@@ -52,7 +62,7 @@ public class ReeceSpecs {
         }
     }
 
-    private static void runFileProcess(UserPasswordCredentials adminUser, boolean publish, String path) {
+    void runFileProcess(UserPasswordCredentials adminUser, boolean publish, String path) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         Exception exception = null;
@@ -66,7 +76,7 @@ public class ReeceSpecs {
         } finally {
             stopWatch.stop();
         }
-        JUnitResultHelper.handleOutcome(exception, stopWatch.getTime(), path);
+        resultHelper.handleOutcome(exception, stopWatch.getTime(), path);
     }
 
     private static boolean determinePublishing(CommandLine cmd) {

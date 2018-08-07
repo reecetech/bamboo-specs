@@ -16,16 +16,18 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class JUnitResultHelperTest {
+    private JUnitResultHelper testInstance;
 
     @Before
     public void setUp() throws Exception {
         File resultsDirectory = new File("results");
         FileUtils.deleteDirectory(resultsDirectory);
+        testInstance = new JUnitResultHelper();
     }
 
     @Test
     public void handleOutcome_passedTest() throws IOException {
-        JUnitResultHelper.handleOutcome(null, 1000, "alastair/test/plan.yaml");
+        testInstance.handleOutcome(null, 1000, "alastair/test/plan.yaml");
 
         String result = getResultFile();
 
@@ -47,9 +49,9 @@ public class JUnitResultHelperTest {
 
     @Test
     public void handleOutcomeFileExists() throws IOException {
-        JUnitResultHelper.handleOutcome(null, 1000, "alastair/test/plan.yaml");
+        testInstance.handleOutcome(null, 1000, "alastair/test/plan.yaml");
 
-        JUnitResultHelper.handleOutcome(null, 1000, "alastair/test/plan.yaml");
+        testInstance.handleOutcome(null, 1000, "alastair/test/plan.yaml");
 
         File destination = new File("results");
         assertThat(destination.exists(), is(true));
@@ -69,7 +71,7 @@ public class JUnitResultHelperTest {
     public void handleOutcome_failedTest() throws IOException {
         RuntimeException exception = new RuntimeException("Oopsie doodle!");
 
-        JUnitResultHelper.handleOutcome(exception, 1000, "alastair/test/plan.yaml");
+        testInstance.handleOutcome(exception, 1000, "alastair/test/plan.yaml");
 
         String result = getResultFile();
 
