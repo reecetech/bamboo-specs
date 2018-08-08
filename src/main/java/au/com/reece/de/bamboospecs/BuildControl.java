@@ -7,7 +7,6 @@ import au.com.reece.de.bamboospecs.models.BuildModel;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import okhttp3.*;
@@ -39,11 +38,8 @@ public class BuildControl extends BambooController {
                 violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
                 return;
             }
-        } catch (JsonProcessingException e) {
-            LOGGER.error(e.getMessage());
-            return;
-        } catch (IOException e) {
-            throw new RuntimeException("Error reading YAML file", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error reading YAML file: " + e.getMessage(), e);
         }
 
         // set the file path to the yaml file for includes

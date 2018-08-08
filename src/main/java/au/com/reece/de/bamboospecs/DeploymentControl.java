@@ -3,7 +3,6 @@ package au.com.reece.de.bamboospecs;
 import au.com.reece.de.bamboospecs.models.deployment.DeploymentModel;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
@@ -35,11 +34,8 @@ public class DeploymentControl extends BambooController {
                 violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
                 return;
             }
-        } catch (JsonProcessingException e) {
-            LOGGER.error(e.getMessage());
-            return;
-        } catch (IOException e) {
-            throw new RuntimeException("Error reading YAML file", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error reading YAML file: " + e.getMessage(), e);
         }
 
         // set the file path to the yaml file for includes

@@ -15,7 +15,7 @@ import java.util.Map;
 public class JUnitResultHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(JUnitResultHelper.class);
 
-    public static void handleOutcome(Exception exception, long time, String path) {
+    public void handleOutcome(Exception exception, long time, String path) {
         String specResultName = path
                 .replaceAll(System.getProperty("user.dir"), "")
                 .replaceAll("/", "_")
