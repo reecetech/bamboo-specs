@@ -47,7 +47,7 @@ public class TriggerModel {
             case SCHEDULED:
                 ScheduledTrigger scheduledTrigger = new ScheduledTrigger().description(this.description);
                 if (this.everyNumHours != null) {
-                    scheduledTrigger.scheduleEvery(Integer.getInteger(this.everyNumHours), TimeUnit.HOURS);
+                    scheduledTrigger.scheduleEvery(Integer.parseInt(this.everyNumHours), TimeUnit.HOURS);
                 }
                 if (this.dailyAt != null) {
                     scheduledTrigger.scheduleOnceDaily(parseTimeNicely(dailyAt));

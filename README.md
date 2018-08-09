@@ -610,6 +610,10 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
+2.1.3
+
+    Fix a bug in Integer parsing for scheduled tasks
+
 2.1.2
 
     Fix a defect where YAML syntax errors did not result in 'failing' specs files
