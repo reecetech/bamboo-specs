@@ -301,7 +301,7 @@ Notifications on plan completion are supported:
       
 At least one of the notification targets is required: `slack`,
 `recipientGroups` or `recipientUsers`. The `when` values are `PLAN_COMPLETED`,
-`PLAN_FAILED`, `DEPLOYMENT_FAILED` and `DEPLOYMENT_FINISHED` which mirror the options of the
+`PLAN_FAILED`, `STATUS_CHANGED`, DEPLOYMENT_FAILED` and `DEPLOYMENT_FINISHED` which mirror the options of the
 same name in the Bamboo UI.
 
 ### Stages, Jobs and Tasks
