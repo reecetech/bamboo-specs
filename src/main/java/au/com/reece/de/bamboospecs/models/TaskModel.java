@@ -62,6 +62,8 @@ public class TaskModel extends DomainModel {
                 return getScriptTask();
             case JUNIT:
                 return getJunitTask();
+            case TESTNG:
+                return getTestngTask();
             case DOCKER:
                 return getDockerTask();
             case CLEAN:
@@ -123,6 +125,15 @@ public class TaskModel extends DomainModel {
             throw new RuntimeException("Missing 'resultFrom' value from yaml for JUNIT");
         }
         return new TestParserTask(TestParserTaskProperties.TestType.JUNIT)
+                .description(this.description)
+                .resultDirectories(this.resultFrom);
+    }
+
+    private Task getTestngTask() {
+        if (this.resultFrom == null) {
+            throw new RuntimeException("Missing 'resultFrom' value from yaml for TESTNG");
+        }
+        return new TestParserTask(TestParserTaskProperties.TestType.TESTNG)
                 .description(this.description)
                 .resultDirectories(this.resultFrom);
     }

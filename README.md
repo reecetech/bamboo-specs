@@ -610,6 +610,14 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
+2.1.5
+
+    Add support for TestNG final tasks
+
+2.1.4
+
+    Add support for build status change notifications
+
 2.1.3
 
     Fix a bug in Integer parsing for scheduled tasks
