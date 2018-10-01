@@ -620,6 +620,11 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
+2.2.1
+
+    Add support for running in a Docker container
+
+
 2.2.0
 
     Add support for ARTIFACTORY upload tasks

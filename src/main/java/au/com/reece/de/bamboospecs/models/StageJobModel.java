@@ -1,5 +1,6 @@
 package au.com.reece.de.bamboospecs.models;
 
+import com.atlassian.bamboo.specs.api.builders.docker.DockerConfiguration;
 import com.atlassian.bamboo.specs.api.builders.plan.Job;
 import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
 import com.atlassian.bamboo.specs.api.builders.plan.configuration.AllOtherPluginsConfiguration;
@@ -43,6 +44,8 @@ public class StageJobModel extends DomainModel {
 
     public List<@Valid TaskModel> finalTasks;
 
+    public String dockerContainer;
+
     public Job asJob() {
         if (this.include != null) {
             Path includedYaml = Paths.get(this.yamlPath, this.include);
@@ -83,6 +86,10 @@ public class StageJobModel extends DomainModel {
         Requirement[] requirements = this.requirements.stream().map(RequirementModel::asRequirement)
                 .collect(Collectors.toList()).toArray(new Requirement[]{});
         job.requirements(requirements);
+
+        if (!"".equalsIgnoreCase(this.dockerContainer)) {
+            job.dockerConfiguration(new DockerConfiguration().image(this.dockerContainer));
+        }
 
         return job;
     }
