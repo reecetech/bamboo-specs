@@ -1,18 +1,22 @@
 package au.com.reece.de.bamboospecs.models;
 
 import au.com.reece.de.bamboospecs.models.docker.DockerContainer;
+import au.com.reece.de.bamboospecs.models.docker.DockerStartCheck;
 import au.com.reece.de.bamboospecs.models.docker.PortMapping;
 import au.com.reece.de.bamboospecs.models.docker.VolumeMapping;
-import au.com.reece.de.bamboospecs.models.docker.DockerStartCheck;
-import au.com.reece.de.bamboospecs.models.enums.TaskType;
 import au.com.reece.de.bamboospecs.models.enums.InjectScopeType;
+import au.com.reece.de.bamboospecs.models.enums.TaskType;
+import com.atlassian.bamboo.specs.api.builders.AtlassianModule;
+import com.atlassian.bamboo.specs.api.builders.task.AnyTask;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TaskModel extends DomainModel {
     @NotNull
@@ -54,6 +58,9 @@ public class TaskModel extends DomainModel {
     public String namespace;
     public InjectScopeType scope = InjectScopeType.RESULT;
 
+    // Used by: ARTIFACTORY
+    public String uploadSpec;
+
     public Task asTask() {
         switch (this.type) {
             case VCS:
@@ -72,10 +79,51 @@ public class TaskModel extends DomainModel {
                 return getArtefactDownloadTask();
             case INJECT:
                 return getInjectTask();
+            case ARTIFACTORY:
+                return getArtifactoryTask();
             default:
                 // shouldn't actually be possible, given we load via enum
                 throw new RuntimeException("Unexpected 'type' value from yaml " + this.type);
         }
+    }
+
+    private Task getArtifactoryTask() {
+        if (this.uploadSpec == null || "".equalsIgnoreCase(this.uploadSpec)) {
+            throw new RuntimeException("Missing 'uploadSpec' value from yaml for ARTIFACTORY");
+        }
+
+        Map<String, String> configurationMap = new HashMap<>();
+        configurationMap.put("artifactory.generic.publishBuildInfo", "true");
+        configurationMap.put("bintrayConfiguration", "");
+        configurationMap.put("bintray.licenses", "");
+        configurationMap.put("bintray.repository", "");
+        configurationMap.put("artifactory.generic.username", "bamboo");
+        configurationMap.put("artifactory.generic.specSourceChoice", "jobConfiguration");
+        configurationMap.put("artifactory.generic.resolveRepo", "");
+        configurationMap.put("artifactory.generic.deployPattern", "");
+        configurationMap.put("artifactory.generic.envVarsExcludePatterns", "*password*,*secret*,*security*,*key*");
+        configurationMap.put("bintray.signMethod", "false");
+        configurationMap.put("builder.artifactoryGenericBuilder.artifactoryServerId", "0");
+        configurationMap.put("bintray.subject", "");
+        configurationMap.put("artifactory.generic.file", "");
+        configurationMap.put("artifactory.generic.useSpecsChoice", "specs");
+        configurationMap.put("bintray.packageName", "");
+        configurationMap.put("artifactory.generic.includeEnvVars", "true");
+        configurationMap.put("artifactory.generic.artifactSpecs", "");
+        configurationMap.put("artifactory.generic.password", "bamboo");
+        configurationMap.put("bintray.mavenSync", "");
+        configurationMap.put("artifactory.generic.jobConfiguration", this.uploadSpec);
+        configurationMap.put("baseUrl", "https://bamboo.reecenet.org/bamboo");
+        configurationMap.put("artifactory.generic.envVarsIncludePatterns", "*");
+        configurationMap.put("artifactory.generic.artifactoryServerId", "0");
+        configurationMap.put("artifactory.generic.resolvePattern", "");
+        configurationMap.put("bintray.vcsUrl", "");
+        configurationMap.put("builder.artifactoryGenericBuilder.deployableRepo", "Informix");
+        configurationMap.put("bintray.gpgPassphrase", "");
+
+        return new AnyTask(new AtlassianModule("org.jfrog.bamboo.bamboo-artifactory-plugin:artifactoryGenericTask"))
+                .description(this.description)
+                .configuration(configurationMap);
     }
 
     private Task getInjectTask() {
