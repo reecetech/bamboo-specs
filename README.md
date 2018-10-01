@@ -450,6 +450,16 @@ These values will be available in other tasks (scripts, etc) as the variables
 The variables will be discarded at the end of the Job if the scope is "LOCAL" and
 retained for other Jobs if the scope is "RESULT" (the default).
 
+#### ARTIFACTORY Tasks
+
+This task is used to deploy a generic artefact to Artifactory
+
+    - type: ARTIFACTORY
+      uploadSpec: |
+        { * JSON upload spec here * }
+     
+For reference on building the 'upload spec', please consult the Artifactory documentation:  https://www.jfrog.com/confluence/display/RTF/Using+File+Specs
+
 #### Artefact Download
 
 	- type: ARTEFACT_DOWNLAOD
@@ -609,6 +619,10 @@ of the named environments may be included in your deployment project yaml like s
 
 
 ## Version History
+
+2.2.0
+
+    Add support for ARTIFACTORY upload tasks
 
 2.1.5
 
