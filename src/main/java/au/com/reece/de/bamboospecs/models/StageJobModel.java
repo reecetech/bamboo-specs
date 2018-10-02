@@ -87,7 +87,7 @@ public class StageJobModel extends DomainModel {
                 .collect(Collectors.toList()).toArray(new Requirement[]{});
         job.requirements(requirements);
 
-        if (!"".equalsIgnoreCase(this.dockerContainer)) {
+        if (this.dockerContainer != null && !"".equalsIgnoreCase(this.dockerContainer)) {
             job.dockerConfiguration(new DockerConfiguration().image(this.dockerContainer));
         }
 
