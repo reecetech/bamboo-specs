@@ -18,7 +18,7 @@ public class PlanBranchManagementModel {
     public PlanBranchManagement asPlanBranchManagement() {
         // plan branch management - cleanup
         if (this.delayCleanAfterDelete == null) {
-            this.delayCleanAfterDelete = 7;
+            this.delayCleanAfterDelete = 0;
         }
         BranchCleanup removedBranchCleanup = new BranchCleanup()
             .whenRemovedFromRepositoryAfterDays(this.delayCleanAfterDelete);
