@@ -3,6 +3,7 @@ package au.com.reece.de.bamboospecs.models;
 import com.atlassian.bamboo.specs.api.builders.docker.DockerConfiguration;
 import com.atlassian.bamboo.specs.api.builders.plan.Job;
 import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
+import com.atlassian.bamboo.specs.api.builders.plan.artifact.ArtifactSubscription;
 import com.atlassian.bamboo.specs.api.builders.plan.configuration.AllOtherPluginsConfiguration;
 import com.atlassian.bamboo.specs.api.builders.requirement.Requirement;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
@@ -40,6 +41,8 @@ public class StageJobModel extends DomainModel {
 
     public List<@Valid ArtifactModel> artifacts;
 
+    public List<@Valid ArtifactSubscriptionModel> artifactSubscriptions;
+
     public List<@Valid TaskModel> tasks;
 
     public List<@Valid TaskModel> finalTasks;
@@ -71,6 +74,13 @@ public class StageJobModel extends DomainModel {
             Artifact[] artifacts = this.artifacts.stream().map(ArtifactModel::asArtifact)
                     .collect(Collectors.toList()).toArray(new Artifact[]{});
             job.artifacts(artifacts);
+        }
+
+        if (this.artifactSubscriptions != null) {
+            ArtifactSubscription[] subsriptions = this.artifactSubscriptions.stream()
+                    .map(ArtifactSubscriptionModel::asArtifactSubscription)
+                    .collect(Collectors.toList()).toArray(new ArtifactSubscription[]{});
+            job.artifactSubscriptions(subsriptions);
         }
 
         Task[] tasks = this.tasks.stream().map(TaskModel::asTask)

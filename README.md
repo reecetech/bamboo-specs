@@ -328,6 +328,10 @@ Stages and jobs may be defined:
         - name: Coverage Report
           pattern: "**"
           location: htmlcov
+        - name: Docker Image
+          pattern: built-image.docker
+          location: .
+          shared: true
 
 The job key is arbitrary and unique inside a plan. Requirements and artifacts are optional.
 
@@ -340,23 +344,39 @@ in the list above with the same name. I recommend adding the requirement through
 and using the "View plan as Bamboo Specs" option under Plan Configuration Actions menu to
 determine the actual string to use in the requirements list in YAML.
 
-The job may then have a list of tasks:
+Artifacts must be `shared: true` if you wish to use them in other jobs. You must
+then subscribe to the artifact from the other job using `artifactSubscriptions`:
 
-    tasks:
-    - type: VCS
-      description: Checkout Default Repository
-      cleanCheckout: true
-    - type: SCRIPT
-      description: Build docker image
-      body: |
-        set -ex
-        scripts/test_image.sh bamboo/${bamboo.target_name}
-    - type: SCRIPT
-      description: Run tests
-      body: |
-        set -ex
-        scripts/run_tests.sh
-      
+    stages:
+    - name: Second Stage
+      jobs:
+      - name: Run More Tests
+        artifactSubscriptions:
+        - name: Docker Image
+          destination: .
+
+A job may then have a list of tasks:
+
+    stages:
+    - name: Default Stage
+      jobs:
+      - name: Run Tests
+        ...
+        tasks:
+        - type: VCS
+          description: Checkout Default Repository
+          cleanCheckout: true
+        - type: SCRIPT
+          description: Build docker image
+          body: |
+            set -ex
+            scripts/test_image.sh bamboo/${bamboo.target_name}
+        - type: SCRIPT
+          description: Run tests
+          body: |
+            set -ex
+            scripts/run_tests.sh
+
 Here you can see we refer to the bamboo variable we defined way up above so that
 the script body may be the same across multiple projects.
 
