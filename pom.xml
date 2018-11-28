@@ -5,13 +5,13 @@
     <parent>
         <groupId>com.atlassian.bamboo</groupId>
         <artifactId>bamboo-specs-parent</artifactId>
-        <version>6.5.0</version>
+        <version>6.7.1</version>
         <relativePath/>
     </parent>
 
     <groupId>au.com.reece.de</groupId>
     <artifactId>bamboo-specs-reece</artifactId>
-    <version>2.3.0</version>
+    <version>2.3.1</version>
     <packaging>jar</packaging>
 
     <properties>
