@@ -60,7 +60,7 @@ public class RepositoryModel extends DomainModel {
                         .filterFilePatternRegex(triggerPattern)
                 );
             }
-            
+
             return plan.planRepositories(stash);
         } else if (this.gitURL != null && !this.gitURL.isEmpty()) {
             GitRepository git = new GitRepository();

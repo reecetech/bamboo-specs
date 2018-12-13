@@ -196,6 +196,7 @@ you can use a locally (to this plan) defined repositories:
       projectKey: SAN
       repositorySlug: bamboo-spec-test-project
       branch: development
+      triggerPattern: /files/i/care/about/*
     - name: PACT Specification
       gitURL: https://github.com/pact-foundation/pact-specification.git
       branch: version-1.1
@@ -206,9 +207,9 @@ So the two types of repositories currently supported are:
 1. A repository in the Reece Stash instance. It's identified by the `projectKey`
    and `repositorySlug` from the repository URL like so:
 
-    https://stash.reecenet.org/projects/<projectKey>/repos/<repositorySlug>/browse
+    https://stash.reecenet.org/projects/\<projectKey\>/repos/\<repositorySlug\>/browse
     
-   The "branch" is optional (default is "master").
+   The "branch" is optional (default is "master"). Additionally, you can specify a 'trigger pattern' that will cause the build to fire only if the changed files match the pattern (a regex).
 
 2. An arbitrary git repository identified by `gitURL`. It must specify a `path`
    that the repository will be cloned to, and optionally a `branch`.
@@ -639,6 +640,18 @@ of the named environments may be included in your deployment project yaml like s
 
 
 ## Version History
+
+2.3.2
+
+    Add support for triggering plans based on regex
+
+2.3.1
+
+    Upgrade to Bamboo 6.7.1
+  
+2.3.0
+
+    ???
 
 2.2.1
 
