@@ -2,11 +2,13 @@ package au.com.reece.de.bamboospecs.models;
 
 import com.atlassian.bamboo.specs.api.builders.applink.ApplicationLink;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
+import com.atlassian.bamboo.specs.api.builders.repository.VcsChangeDetection;
 import com.atlassian.bamboo.specs.api.builders.repository.VcsRepositoryIdentifier;
 import com.atlassian.bamboo.specs.builders.repository.bitbucket.server.BitbucketServerRepository;
 import com.atlassian.bamboo.specs.builders.repository.git.GitRepository;
 import com.atlassian.bamboo.specs.builders.repository.viewer.BitbucketServerRepositoryViewer;
 import com.atlassian.bamboo.specs.builders.task.CheckoutItem;
+import com.google.common.base.Strings;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -25,6 +27,8 @@ public class RepositoryModel extends DomainModel {
     public String path;
 
     public String branch;
+
+    public String triggerPattern;
 
     public CheckoutItem asCheckoutItem() {
         CheckoutItem vcs = new CheckoutItem().repository(new VcsRepositoryIdentifier().name(this.name));
@@ -49,6 +53,14 @@ public class RepositoryModel extends DomainModel {
             if (this.branch != null && !this.branch.isEmpty()) {
                 stash.branch(this.branch);
             }
+
+            if (!Strings.isNullOrEmpty(triggerPattern)) {
+                stash.changeDetection(new VcsChangeDetection()
+                        .filterFilePatternOption(VcsChangeDetection.FileFilteringOption.INCLUDE_ONLY)
+                        .filterFilePatternRegex(triggerPattern)
+                );
+            }
+            
             return plan.planRepositories(stash);
         } else if (this.gitURL != null && !this.gitURL.isEmpty()) {
             GitRepository git = new GitRepository();
