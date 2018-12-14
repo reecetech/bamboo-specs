@@ -138,7 +138,8 @@ public class ReeceSpecs {
             }
             return bambooFile;
         } catch (Exception e) {
-            throw new RuntimeException("Error reading YAML file", e);
+            LOGGER.error("Exception: {}", e);
+            throw new RuntimeException("Error reading YAML file: " + e.getMessage());
         }
     }
 
