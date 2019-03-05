@@ -11,7 +11,6 @@ import com.atlassian.bamboo.specs.api.builders.task.AnyTask;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
