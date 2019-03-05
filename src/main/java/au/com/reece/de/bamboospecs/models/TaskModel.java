@@ -38,6 +38,9 @@ public class TaskModel extends DomainModel {
     public boolean cleanCheckout = false;
     public boolean defaultRepository = false;
 
+    // Used by: DOCKER and SCRIPT
+    public String workingDirectory;
+
     // Used by: DOCKER
     public String image;
     public boolean detach = false;
@@ -50,7 +53,6 @@ public class TaskModel extends DomainModel {
 
     // legacy attributes from DOCKER
     public String command;
-    public String workingDirectory;
     // end legacy
 
     // Used by: INJECT
@@ -165,7 +167,11 @@ public class TaskModel extends DomainModel {
         if (this.body == null) {
             throw new RuntimeException("Missing 'body' value from yaml for SCRIPT");
         }
-        return new ScriptTask().description(this.description).inlineBody(this.body);
+        ScriptTask scriptTask = new ScriptTask().description(this.description).inlineBody(this.body);
+        if (this.workingDirectory != null) {
+            scriptTask.workingSubdirectory(this.workingDirectory);
+        }
+        return scriptTask;
     }
 
     private Task getJunitTask() {

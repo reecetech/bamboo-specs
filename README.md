@@ -408,6 +408,15 @@ If you wish to force a clean checkout of the repositories on or off use `cleanCh
 
 These are pretty simple, just bash scripts that contain a body to run.
 
+If you have multiple repositories be setup, then you will need subWorkingDirectory to support your script tasks.
+Here is the example
+
+    - type: SCRIPT
+      description: Run unit tests
+      body: |
+       echo "Do your actions here."
+      workingDirectory: your_sub_directory
+
 #### DOCKER Tasks
 
 Currently only the *run* docker task is supported. It requires the *image* property
