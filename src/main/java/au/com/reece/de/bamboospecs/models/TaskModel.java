@@ -11,6 +11,7 @@ import com.atlassian.bamboo.specs.api.builders.task.AnyTask;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -165,7 +166,11 @@ public class TaskModel extends DomainModel {
         if (this.body == null) {
             throw new RuntimeException("Missing 'body' value from yaml for SCRIPT");
         }
-        return new ScriptTask().description(this.description).inlineBody(this.body);
+        ScriptTask scriptTask = new ScriptTask().description(this.description).inlineBody(this.body);
+        if (this.workingDirectory != null) {
+            scriptTask.workingSubdirectory(workingDirectory);
+        }
+        return scriptTask;
     }
 
     private Task getJunitTask() {
