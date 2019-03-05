@@ -167,7 +167,7 @@ public class TaskModel extends DomainModel {
         }
         ScriptTask scriptTask = new ScriptTask().description(this.description).inlineBody(this.body);
         if (this.workingDirectory != null) {
-            scriptTask.workingSubdirectory(workingDirectory);
+            scriptTask.workingSubdirectory(this.workingDirectory);
         }
         return scriptTask;
     }
