@@ -41,11 +41,17 @@ The commands all accept multiple yaml files to process:
 
     java -jar target/bamboo-specs-reece-2.0.0.jar configs/plan-*.yaml
 
+## Authorizing Bamboo to access Stash
+
+Visit this URL: https://bamboo.reecenet.org/bamboo/admin/configureLinkedRepositories!doDefault.action 
+
+and then click `Add Repository` and select `BitBucket Server/Stash`. If you haven't authorized it already, you will be prompted to enter your credentials. 
+
 ## Java SSL keystore fix
 
-If you get this error when running the jar files, you need to add Reece's CA cert to your java keystore:
+If you get this error (or anything mentioning a certificate) when running the jar files, you need to add Reece's CA cert to your java keystore:
 
-    Caused by: javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPath
+  INFO [BambooServer] An error occurred while publishing plan AS-BK8SD
 
     On Ubuntu:
     ----------
@@ -65,13 +71,16 @@ If you get this error when running the jar files, you need to add Reece's CA cer
     
     On macOS:
     ------------
+    Download the certificates `reecenet-ca.crt` and `reecenet-intermediate.crt` from https://stash.reecenet.org/projects/DBI/repos/rhel7_java_base/browse and place them under `/tmp`.
+
     Find the Java home:
     $ /usr/libexec/java_home
-    Then import the cert:
-    $ cd /Library/Java/JavaVirtualMachines/jdk-9.jdk/Contents/Home/lib/security
-    $ sudo cp cacerts cacerts.orig
-    $ sudo keytool -importcert -file your_cert_file_here -keystore cacerts -alias vicpjdt01.reecenet.org
 
+    Then import the cert:
+    $ cd /Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/jre/lib/security
+    $ sudo cp cacerts cacerts.orig
+    $ sudo keytool -trustcacerts -keystore cacerts -noprompt -alias reecenet-base -importcert -file /tmp/reecenet-ca.crt -storepass changeit
+    $ sudo keytool -trustcacerts -keystore cacerts -noprompt -alias reecenet-intermediate -importcert -file /tmp/reecenet-intermediate.crt -storepass changeit 
 
 ## Controlling Permissions
 
