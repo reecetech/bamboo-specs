@@ -5,7 +5,6 @@ package au.com.reece.de.bamboospecs;
 
 import au.com.reece.de.bamboospecs.models.BuildModel;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
-import com.atlassian.bamboo.specs.api.exceptions.BambooSpecsPublishingException;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.util.UserPasswordCredentials;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,8 +49,7 @@ public class BuildControl extends BambooController {
 
         Plan plan = yamlPlan.getPlan();
         if (publish) {
-            publishPlanWithRetry(bambooServer, plan);
-
+            bambooServer.publish(plan);
             try {
                 publishLabels(yamlPlan, adminUser);
             } catch (IOException e) {
@@ -60,27 +58,6 @@ public class BuildControl extends BambooController {
         } else {
             LOGGER.info("YAML parsed OK");
         }
-    }
-
-    private void publishPlanWithRetry(BambooServer bambooServer, Plan plan) {
-        int tries = 0;
-        do {
-            try {
-                tries += 1;
-                bambooServer.publish(plan);
-                break;
-            } catch (BambooSpecsPublishingException e) {
-                // Bamboo is stupid. It gets confused by HTTP 302
-                if (!e.getMessage().contains("HTTP 302") || tries >= 4) {
-                    throw e;
-                }
-                try {
-                    Thread.sleep(5_000);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        } while (true);
     }
 
     private void publishLabels(BuildModel yamlPlan, UserPasswordCredentials adminUser) throws IOException {
