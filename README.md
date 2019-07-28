@@ -662,6 +662,10 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
+2.3.3
+
+    Retry when receiving HTTP 302 from Bamboo
+
 2.3.2
 
     Add support for triggering plans based on regex, enable/disable shallow cloning
