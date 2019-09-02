@@ -662,6 +662,10 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
+2.3.4
+
+    Add a label to 'specs-built' plans for identification/analysis purposes
+
 2.3.3
 
     Retry when receiving HTTP 302 from Bamboo
