@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class DependencyModel extends DomainModel {
-    public boolean requiresPassing = true;
+    public final boolean requiresPassing = true;
 
     public Set<String> plans;
 
-    public boolean none = false;
+    public final boolean none = false;
 
     public void addToPlan(Plan plan) {
         ArrayList<PlanIdentifier> children = new ArrayList<>();
@@ -33,6 +33,6 @@ public class DependencyModel extends DomainModel {
         plan.dependencies(new Dependencies()
                 .configuration(new DependenciesConfiguration()
                         .requireAllStagesPassing(this.requiresPassing))
-                .childPlans(children.toArray(new PlanIdentifier[children.size()])));
+                .childPlans(children.toArray(new PlanIdentifier[0])));
     }
 }

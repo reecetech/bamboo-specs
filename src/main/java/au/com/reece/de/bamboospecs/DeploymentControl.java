@@ -12,7 +12,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 
 public class DeploymentControl extends BambooController {

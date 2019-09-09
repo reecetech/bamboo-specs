@@ -30,7 +30,7 @@ public class RepositoryModel extends DomainModel {
 
     public String triggerPattern;
 
-    public boolean shallowClone = true;
+    public final boolean shallowClone = true;
 
     public CheckoutItem asCheckoutItem() {
         CheckoutItem vcs = new CheckoutItem().repository(new VcsRepositoryIdentifier().name(this.name));
@@ -38,20 +38,20 @@ public class RepositoryModel extends DomainModel {
         return vcs;
     }
 
-    Plan addToPlan(Plan plan) {
+    void addToPlan(Plan plan) {
         if (this.projectKey != null && !this.projectKey.isEmpty()) {
             if (this.repositorySlug == null || this.repositorySlug.isEmpty()) {
                 throw new RuntimeException("Invalid repository (projectKey AND repositorySlug)");
             }
             BitbucketServerRepository stash = new BitbucketServerRepository()
-                .name(this.name)
-                .server(new ApplicationLink().name("Stash"))
-                .projectKey(this.projectKey)
-                .repositorySlug(this.repositorySlug)
-                // set some "default" options
-                .repositoryViewer(new BitbucketServerRepositoryViewer())
-                .shallowClonesEnabled(shallowClone)
-                .remoteAgentCacheEnabled(false);
+                    .name(this.name)
+                    .server(new ApplicationLink().name("Stash"))
+                    .projectKey(this.projectKey)
+                    .repositorySlug(this.repositorySlug)
+                    // set some "default" options
+                    .repositoryViewer(new BitbucketServerRepositoryViewer())
+                    .shallowClonesEnabled(shallowClone)
+                    .remoteAgentCacheEnabled(false);
             if (this.branch != null && !this.branch.isEmpty()) {
                 stash.branch(this.branch);
             }
@@ -63,7 +63,7 @@ public class RepositoryModel extends DomainModel {
                 );
             }
 
-            return plan.planRepositories(stash);
+            plan.planRepositories(stash);
         } else if (this.gitURL != null && !this.gitURL.isEmpty()) {
             GitRepository git = new GitRepository();
             if (this.name == null || this.name.isEmpty()) {
@@ -73,7 +73,7 @@ public class RepositoryModel extends DomainModel {
             if (this.branch != null) {
                 git.branch(this.branch);
             }
-            return plan.planRepositories(git);
+            plan.planRepositories(git);
         }
         throw new RuntimeException("Invalid repository (missing projectKey or gitURL)");
     }

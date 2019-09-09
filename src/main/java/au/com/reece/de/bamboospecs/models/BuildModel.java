@@ -50,7 +50,7 @@ public class BuildModel extends BambooYamlFileModel {
     public Map<String, String> variables;
 
     // branch management has sensible defaults
-    public PlanBranchManagementModel branchManagement = new PlanBranchManagementModel();
+    public final PlanBranchManagementModel branchManagement = new PlanBranchManagementModel();
 
     @NotNull
     public List<@Valid NotificationModel> notifications;

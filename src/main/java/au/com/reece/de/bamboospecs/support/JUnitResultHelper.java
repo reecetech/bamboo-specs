@@ -29,7 +29,9 @@ public class JUnitResultHelper {
         try {
             File resultDirectory = new File("results");
 
-            resultDirectory.mkdir();
+            if (!resultDirectory.mkdir()) {
+                throw new RuntimeException("Failed to create directory at path " + resultDirectory.getAbsolutePath());
+            }
 
             File destinationFile = new File("results/" + specResultName + ".xml");
 

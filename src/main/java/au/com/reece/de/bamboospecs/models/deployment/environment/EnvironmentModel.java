@@ -53,13 +53,13 @@ public class EnvironmentModel {
         }
 
         if (this.notifications != null) {
-            Notification notifications[] = this.notifications.stream().map(NotificationModel::asNotification)
+            Notification[] notifications = this.notifications.stream().map(NotificationModel::asNotification)
                     .collect(Collectors.toList()).toArray(new Notification[]{});
             environment.notifications(notifications);
         }
 
         if (this.requirements != null) {
-            Requirement requirements[] = this.requirements.stream().map(RequirementModel::asRequirement)
+            Requirement[] requirements = this.requirements.stream().map(RequirementModel::asRequirement)
                     .collect(Collectors.toList()).toArray(new Requirement[]{});
             environment.requirements(requirements);
         }
@@ -69,7 +69,7 @@ public class EnvironmentModel {
             for (String key : this.variables.keySet()) {
                 variables.add(new Variable(key, this.variables.get(key)));
             }
-            environment.variables(variables.toArray(new Variable[variables.size()]));
+            environment.variables(variables.toArray(new Variable[0]));
         }
         return environment;
     }

@@ -35,15 +35,15 @@ public class TaskModel extends DomainModel {
 
     // Used by: VCS
     public List<RepositoryModel> repositories;
-    public boolean cleanCheckout = false;
-    public boolean defaultRepository = false;
+    public final boolean cleanCheckout = false;
+    public final boolean defaultRepository = false;
 
     // Used by: DOCKER and SCRIPT
     public String workingDirectory;
 
     // Used by: DOCKER
     public String image;
-    public boolean detach = false;
+    public final boolean detach = false;
     public DockerStartCheck serviceStartCheck;
     public String environmentVariables;
     public DockerContainer container;
@@ -58,7 +58,7 @@ public class TaskModel extends DomainModel {
     // Used by: INJECT
     public String propertiesFile;
     public String namespace;
-    public InjectScopeType scope = InjectScopeType.RESULT;
+    public final InjectScopeType scope = InjectScopeType.RESULT;
 
     // Used by: ARTIFACTORY
     public String uploadSpec;

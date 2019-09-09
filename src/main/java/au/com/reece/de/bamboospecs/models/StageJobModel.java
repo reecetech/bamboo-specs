@@ -77,10 +77,10 @@ public class StageJobModel extends DomainModel {
         }
 
         if (this.artifactSubscriptions != null) {
-            ArtifactSubscription[] subsriptions = this.artifactSubscriptions.stream()
+            ArtifactSubscription[] subscriptions = this.artifactSubscriptions.stream()
                     .map(ArtifactSubscriptionModel::asArtifactSubscription)
                     .collect(Collectors.toList()).toArray(new ArtifactSubscription[]{});
-            job.artifactSubscriptions(subsriptions);
+            job.artifactSubscriptions(subscriptions);
         }
 
         Task[] tasks = this.tasks.stream().map(TaskModel::asTask)
