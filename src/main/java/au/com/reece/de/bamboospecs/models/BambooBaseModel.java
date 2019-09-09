@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package au.com.reece.de.bamboospecs.models.enums;
+package au.com.reece.de.bamboospecs.models;
 
-public enum InjectScopeType {
-    LOCAL, RESULT
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+public abstract class BambooBaseModel {
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

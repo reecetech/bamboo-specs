@@ -1,9 +1,23 @@
+/*
+ * Copyright 2019 Reece Pty Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package au.com.reece.de.bamboospecs.models.deployment;
 
-import au.com.reece.de.bamboospecs.models.BambooYamlFileModel;
+import au.com.reece.de.bamboospecs.models.common.BambooYamlFileModel;
 import au.com.reece.de.bamboospecs.models.deployment.environment.EnvironmentModel;
-import au.com.reece.de.bamboospecs.models.IncludeEnvironmentsModel;
-import au.com.reece.de.bamboospecs.models.ReleaseNamingModel;
+import au.com.reece.de.bamboospecs.models.deployment.environment.IncludeEnvironmentsModel;
 import com.atlassian.bamboo.specs.api.builders.Variable;
 import com.atlassian.bamboo.specs.api.builders.deployment.Deployment;
 import com.atlassian.bamboo.specs.api.builders.deployment.Environment;
@@ -108,7 +122,7 @@ public class DeploymentModel extends BambooYamlFileModel {
             this.permissions.environment.addToPermissions(permissions);
             for (EnvironmentModel e : this.collectedEnvironments) {
                 bambooServer.publish(new EnvironmentPermissions(this.name).environmentName(e.environment)
-                    .permissions(permissions));
+                        .permissions(permissions));
             }
         }
     }
