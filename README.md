@@ -1,5 +1,7 @@
 # Bamboo Plan and Deployment Configuration
 
+[![Build Status](https://travis-ci.org/reecetech/bamboo-specs.svg?branch=master)](https://travis-ci.org/reecetech/bamboo-specs)
+
 This project provides a tool that uses YAML files to specify
 how Bamboo plans and deployment projects should be configured.
 
