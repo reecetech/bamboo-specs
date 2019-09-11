@@ -44,7 +44,7 @@ public class JUnitResultHelper {
         try {
             File resultDirectory = new File("results");
 
-            if (!resultDirectory.mkdir()) {
+            if (!resultDirectory.exists() && !resultDirectory.mkdir()) {
                 throw new RuntimeException("Failed to create directory at path " + resultDirectory.getAbsolutePath());
             }
 
