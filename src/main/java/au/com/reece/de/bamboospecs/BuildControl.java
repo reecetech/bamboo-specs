@@ -19,6 +19,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -35,6 +36,16 @@ public class BuildControl extends BambooController {
         BuildModel yamlPlan;
         try {
             yamlPlan = mapper.readValue(yamlFile, BuildModel.class);
+
+            String[] invalidDescriptionChars = {"\"", "&", "'", "<", ">", "\\"};   
+            for (String s: invalidDescriptionChars) {
+                if (yamlPlan.description.contains(s)) {
+                    LOGGER.info("Plan description cannot contain any of these characters: {}", Arrays.toString(invalidDescriptionChars));
+                    LOGGER.info("Plan description currently: {}", yamlPlan.description);
+                    System.exit(127);
+                }
+            }
+
             Set<ConstraintViolation<BuildModel>> violations = validator.validate(yamlPlan);
             if (!violations.isEmpty()) {
                 violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
