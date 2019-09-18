@@ -6,4 +6,4 @@ project:
 stages:
   - jobs:
     - scripts:
-      - mvn clean deploy
+      - mvn clean deploy -Preece-distribute
