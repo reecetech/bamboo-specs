@@ -481,7 +481,7 @@ task makes available to other tasks. To specify the file, use:
 
 The file must exist when this task is run and uses a 'key=value' format.
 You must provide a relative path to the property file. The values will be available
-in the "bamboo.<your namespace>" variable namespace, so given this properties file:
+in the "bamoboo.<your namespace>" variable namespace, so given this properties file:
 
     key=value
     version=1.2.3
@@ -665,6 +665,10 @@ of the named environments may be included in your deployment project yaml like s
 3.0.0
 
     Initial public release
+
+2.3.6
+
+    Revert 2.3.5
 
 2.3.5
 

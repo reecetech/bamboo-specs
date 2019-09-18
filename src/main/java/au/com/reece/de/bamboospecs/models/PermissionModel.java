@@ -20,14 +20,14 @@ public class PermissionModel extends DomainModel {
         return groups == null ? new HashSet<>() : groups;
     }
 
-    public final boolean allLoggedInUsers = false;
+    public boolean allLoggedInUsers = false;
 
     @NotNull
     @NotEmpty
     public Set<PermissionType> grant;
 
     public void addToPermissions(Permissions permissions) {
-        PermissionType[] permissionArray = this.grant.toArray(new PermissionType[0]);
+        PermissionType[] permissionArray = this.grant.toArray(new PermissionType[this.grant.size()]);
 
         // Set user grant first
         for (String user : this.getUsers()) {

@@ -12,7 +12,7 @@ public class ReleaseNamingModel {
     @NotEmpty
     public String pattern;
 
-    public final boolean autoIncrement = false;
+    public boolean autoIncrement = false;
 
     public String[] autoIncrementVariables;
 

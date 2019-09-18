@@ -51,7 +51,7 @@ public class DeploymentModel extends BambooYamlFileModel {
 
     public IncludeEnvironmentsModel includeEnvironments;
 
-    private final ArrayList<EnvironmentModel> collectedEnvironments = new ArrayList<>();
+    private ArrayList<EnvironmentModel> collectedEnvironments = new ArrayList<>();
 
     public DeploymentPermissionsModel permissions;
 
@@ -78,7 +78,7 @@ public class DeploymentModel extends BambooYamlFileModel {
             for (String key : this.variables.keySet()) {
                 variables.add(new Variable(key, this.variables.get(key)));
             }
-            Variable[] var_array = variables.toArray(new Variable[0]);
+            Variable[] var_array = variables.toArray(new Variable[variables.size()]);
             for (Environment environment : environments) {
                 environment.variables(var_array);
             }
@@ -103,7 +103,7 @@ public class DeploymentModel extends BambooYamlFileModel {
             this.permissions.project.addToPermissions(permissions);
             bambooServer.publish(new DeploymentPermissions(this.name).permissions(permissions));
 
-            // now the per-environment permissions
+            // now the per-evironment permissions
             permissions = new Permissions();
             this.permissions.environment.addToPermissions(permissions);
             for (EnvironmentModel e : this.collectedEnvironments) {

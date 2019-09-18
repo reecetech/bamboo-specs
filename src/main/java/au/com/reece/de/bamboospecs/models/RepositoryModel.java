@@ -30,7 +30,7 @@ public class RepositoryModel extends DomainModel {
 
     public String triggerPattern;
 
-    public final boolean shallowClone = true;
+    public boolean shallowClone = true;
 
     public CheckoutItem asCheckoutItem() {
         CheckoutItem vcs = new CheckoutItem().repository(new VcsRepositoryIdentifier().name(this.name));
@@ -38,7 +38,7 @@ public class RepositoryModel extends DomainModel {
         return vcs;
     }
 
-    void addToPlan(Plan plan) {
+    Plan addToPlan(Plan plan) {
         if (this.projectKey != null && !this.projectKey.isEmpty()) {
             if (this.repositorySlug == null || this.repositorySlug.isEmpty()) {
                 throw new RuntimeException("Invalid repository (projectKey AND repositorySlug)");
@@ -63,7 +63,7 @@ public class RepositoryModel extends DomainModel {
                 );
             }
 
-            plan.planRepositories(stash);
+            return plan.planRepositories(stash);
         } else if (this.gitURL != null && !this.gitURL.isEmpty()) {
             GitRepository git = new GitRepository();
             if (this.name == null || this.name.isEmpty()) {
@@ -73,9 +73,9 @@ public class RepositoryModel extends DomainModel {
             if (this.branch != null) {
                 git.branch(this.branch);
             }
-            plan.planRepositories(git);
-        } else {
-            throw new RuntimeException("Invalid repository (missing projectKey or gitURL)");
+            return plan.planRepositories(git);
         }
+        throw new RuntimeException("Invalid repository (missing projectKey or gitURL)");
+
     }
 }

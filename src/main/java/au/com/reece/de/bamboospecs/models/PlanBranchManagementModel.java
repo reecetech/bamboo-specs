@@ -6,11 +6,11 @@ import com.atlassian.bamboo.specs.api.builders.plan.branches.PlanBranchManagemen
 
 public class PlanBranchManagementModel {
 
-    public final PlanBranchCreateStrategy createStrategy = PlanBranchCreateStrategy.MANUALLY;
+    public PlanBranchCreateStrategy createStrategy = PlanBranchCreateStrategy.MANUALLY;
 
     public String branchPattern;
 
-    public final boolean issueLinkingEnabled = true;
+    public boolean issueLinkingEnabled = true;
 
     public Integer delayCleanAfterDelete;
     public Integer delayCleanAfterInactivity;
