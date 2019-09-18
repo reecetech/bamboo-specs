@@ -1,13 +1,13 @@
 # Bamboo Plan and Deployment Configuration
 
+[![Build Status](https://travis-ci.org/reecetech/bamboo-specs.svg?branch=master)](https://travis-ci.org/reecetech/bamboo-specs)
+
 This project provides a tool that uses YAML files to specify
 how Bamboo plans and deployment projects should be configured.
 
 ## Sample configuration files
 
-See the bamboo-configs repository for sample files:
-
-    https://stash.reecenet.org/projects/DE/repos/bamboo-configs
+See the `specifications` directory for sample files (patersoa TODO: add more examples)
 
 ## Credentials and Authentication
 
@@ -43,15 +43,15 @@ The commands all accept multiple yaml files to process:
 
 ## Authorizing Bamboo to access Stash
 
-Visit this URL: https://bamboo.reecenet.org/bamboo/admin/configureLinkedRepositories!doDefault.action 
+Visit this URL: `https://${bamboo-server}/bamboo/admin/configureLinkedRepositories!doDefault.action` 
 
 and then click `Add Repository` and select `BitBucket Server/Stash`. If you haven't authorized it already, you will be prompted to enter your credentials. 
 
 ## Java SSL keystore fix
 
-If you get this error (or anything mentioning a certificate) when running the jar files, you need to add Reece's CA cert to your java keystore:
+If you get this error (or anything mentioning a certificate) when running the jar files, you need to add your corporate CA cert to your Java keystore:
 
-  INFO [BambooServer] An error occurred while publishing plan AS-BK8SD
+  `INFO [BambooServer] An error occurred while publishing plan AS-BK8SD`
 
     On Ubuntu:
     ----------
@@ -481,7 +481,7 @@ task makes available to other tasks. To specify the file, use:
 
 The file must exist when this task is run and uses a 'key=value' format.
 You must provide a relative path to the property file. The values will be available
-in the "bamoboo.<your namespace>" variable namespace, so given this properties file:
+in the "bamboo.<your namespace>" variable namespace, so given this properties file:
 
     key=value
     version=1.2.3
@@ -662,6 +662,14 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
+3.0.0
+
+    Initial public release
+
+2.3.5
+
+    Various cleanup, typo corrections, etc.
+
 2.3.4
 
     Add a label to 'specs-built' plans for identification/analysis purposes
@@ -730,7 +738,7 @@ of the named environments may be included in your deployment project yaml like s
 1.1.8
 
     Added INJECT task type.
-specType
+
 1.1.7
 
     Bugfix: honor the branch name in repository settings.
@@ -745,9 +753,16 @@ specType
 
     Added support for arbitrary git repositories in test plans.
 
+1.1.1 - 1.1.3
+
+    ???
+
 1.1.0
 
     Clarified docker container configuration by splitting various aspects into sub-groups in the
     YAML, allowing clear distinction between the two environmentVariables settings. Also, clean up
     the config around detached containers.
 
+1.0.0
+
+    Initial release

@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package au.com.reece.de.bamboospecs.models;
+package au.com.reece.de.bamboospecs.models.common;
 
-import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
+import au.com.reece.de.bamboospecs.models.BambooBaseModel;
+import au.com.reece.de.bamboospecs.models.enums.SpecFileType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-public class ArtifactModel extends BambooBaseModel {
+public class BambooYamlFileModel extends BambooBaseModel {
     @NotNull
     @NotEmpty
-    public String name;
-
-    @NotNull
-    @NotEmpty
-    public String pattern;
+    public String specType;
 
     @NotNull
     @NotEmpty
-    public String location;
+    public String bambooServer;
 
-    public final Boolean shared = false;
-
-    public Artifact asArtifact() {
-        return new Artifact(this.name).copyPattern(this.pattern).location(this.location).shared(this.shared);
+    @JsonIgnore
+    public SpecFileType getFileType() {
+        return SpecFileType.fromString(this.specType);
     }
 }
