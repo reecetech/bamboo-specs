@@ -30,7 +30,6 @@ import com.atlassian.bamboo.specs.api.builders.trigger.Trigger;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
