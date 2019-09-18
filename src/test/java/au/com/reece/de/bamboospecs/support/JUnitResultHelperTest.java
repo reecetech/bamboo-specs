@@ -1,18 +1,3 @@
-/*
- * Copyright 2019 Reece Pty Ltd
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package au.com.reece.de.bamboospecs.support;
 
 import org.apache.commons.io.FileUtils;
@@ -20,9 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.xmlunit.builder.DiffBuilder;
-import org.xmlunit.diff.ComparisonResult;
-import org.xmlunit.diff.ComparisonType;
-import org.xmlunit.diff.Diff;
+import org.xmlunit.diff.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +13,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Objects;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
