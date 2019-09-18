@@ -54,8 +54,12 @@ public class BuildControl extends BambooController {
 
             Set<ConstraintViolation<BuildModel>> violations = validator.validate(yamlPlan);
             if (!violations.isEmpty()) {
-                violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
-                throw new RuntimeException("The YAML file (" + yamlFile.getName() + ") failed validation. See above message(s)");
+                String allErrors = "";
+                for (ConstraintViolation violation: violations) {
+                    allErrors += violation.getPropertyPath() + ": " + violation.getMessage();
+                    LOGGER.error("{}: {}", violation.getPropertyPath(), violation.getMessage());
+                }
+                throw new RuntimeException("The YAML file (" + yamlFile.getName() + ") failed validation. See message(s): " + allErrors);
             }
         } catch (Exception e) {
             throw new RuntimeException("Error reading YAML file: " + e.getMessage(), e);
