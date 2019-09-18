@@ -89,7 +89,8 @@ public class RepositoryModel extends BambooBaseModel {
                 git.branch(this.branch);
             }
             plan.planRepositories(git);
+        } else {
+            throw new RuntimeException("Invalid repository (missing projectKey or gitURL)");
         }
-        throw new RuntimeException("Invalid repository (missing projectKey or gitURL)");
     }
 }
