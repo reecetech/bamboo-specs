@@ -51,10 +51,17 @@ public class BuildControl extends BambooController {
         BuildModel yamlPlan;
         try {
             yamlPlan = mapper.readValue(yamlFile, BuildModel.class);
+
             Set<ConstraintViolation<BuildModel>> violations = validator.validate(yamlPlan);
             if (!violations.isEmpty()) {
-                violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
-                return;
+                StringBuilder allErrors = new StringBuilder();
+
+                violations.forEach(violation -> {
+                    allErrors.append(violation.getPropertyPath()).append(": ").append(violation.getMessage());
+                    LOGGER.error("{}: {}", violation.getPropertyPath(), violation.getMessage());
+                });
+
+                throw new RuntimeException("The YAML file (" + yamlFile.getName() + ") failed validation. See message(s): " + allErrors);
             }
         } catch (Exception e) {
             throw new RuntimeException("Error reading YAML file: " + e.getMessage(), e);

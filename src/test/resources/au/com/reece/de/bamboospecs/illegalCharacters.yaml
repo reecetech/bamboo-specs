@@ -1,0 +1,40 @@
+specType: build
+bambooServer: https://bamboo.reecenet.org/bamboo
+projectKey: DE
+projectName: Delivery Engineering
+planKey: JAYPHELLO
+labels:
+  - Delivery-Engineering
+planName: jayp - Hello World
+description: build & test jayp hello world application
+repositories:
+  - name: reece.tech
+    projectKey: jayp
+    repositorySlug: jayp-app
+    branch: master
+branchManagement:
+  createStrategy: ON_NEW_BRANCH
+variables:
+triggers:
+  - type: AFTER_STASH_COMMIT
+    description: Trigger from Stash changes
+notifications:
+  - when: PLAN_COMPLETED
+    recipientUsers: [jayp]
+stages:
+  - name: Build test image
+    jobs:
+      - name: Build test image
+        description: Build test image
+        key: BUILDTEST
+        requirements: []
+        tasks:
+          - type: CLEAN
+            description: Clean working directory
+          - type: VCS
+            description: Git Checkout
+            defaultRepository: true
+          - type: SCRIPT
+            description: Build test image
+            body: |
+              docker build -t jayp-testing:deleteme --target testing .

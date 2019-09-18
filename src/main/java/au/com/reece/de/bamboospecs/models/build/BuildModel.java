@@ -17,6 +17,7 @@ package au.com.reece.de.bamboospecs.models.build;
 
 import au.com.reece.de.bamboospecs.models.*;
 import au.com.reece.de.bamboospecs.models.common.BambooYamlFileModel;
+import au.com.reece.de.bamboospecs.validation.NoIllegalCharacters;
 import com.atlassian.bamboo.specs.api.builders.Variable;
 import com.atlassian.bamboo.specs.api.builders.notification.Notification;
 import com.atlassian.bamboo.specs.api.builders.plan.Plan;
@@ -55,6 +56,7 @@ public class BuildModel extends BambooYamlFileModel {
 
     @NotNull
     @NotEmpty
+    @NoIllegalCharacters
     public String description;
 
     public List<String> labels;
