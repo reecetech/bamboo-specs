@@ -11,7 +11,7 @@
 
     <groupId>au.com.reece.de</groupId>
     <artifactId>bamboo-specs-reece</artifactId>
-    <version>2.3.5</version>
+    <version>2.3.6</version>
     <packaging>jar</packaging>
     <name>Reece Bamboo Specs Runner</name>
     <description>Take YAML, transform to Bamboo Java, send to Bamboo</description>
