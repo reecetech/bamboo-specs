@@ -11,9 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.Objects;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -50,7 +48,7 @@ public class JUnitResultHelperTest {
     }
 
     @Test
-    public void handleOutcomeFileExists() {
+    public void handleOutcomeFileExists() throws IOException {
         testInstance.handleOutcome(null, 1000, "alastair/test/plan.yaml");
 
         testInstance.handleOutcome(null, 1000, "alastair/test/plan.yaml");
@@ -58,7 +56,7 @@ public class JUnitResultHelperTest {
         File destination = new File("results");
         assertThat(destination.exists(), is(true));
 
-        assertThat(Objects.requireNonNull(destination.listFiles()).length, is(2));
+        assertThat(destination.listFiles().length, is(2));
     }
 
     @NotNull

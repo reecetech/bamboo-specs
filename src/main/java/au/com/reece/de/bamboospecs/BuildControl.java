@@ -24,7 +24,7 @@ import java.util.Set;
 
 public class BuildControl extends BambooController {
     private static final Logger LOGGER = LoggerFactory.getLogger(BuildControl.class);
-    private static final MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
 
     public void run(UserPasswordCredentials adminUser, File yamlFile, boolean publish) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
