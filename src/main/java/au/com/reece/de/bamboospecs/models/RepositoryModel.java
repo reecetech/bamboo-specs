@@ -1,18 +1,3 @@
-/*
- * Copyright 2019 Reece Pty Ltd
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package au.com.reece.de.bamboospecs.models;
 
 import com.atlassian.bamboo.specs.api.builders.applink.ApplicationLink;
@@ -28,7 +13,7 @@ import com.google.common.base.Strings;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-public class RepositoryModel extends BambooBaseModel {
+public class RepositoryModel extends DomainModel {
     @NotNull
     @NotEmpty
     public String name;
@@ -45,7 +30,7 @@ public class RepositoryModel extends BambooBaseModel {
 
     public String triggerPattern;
 
-    public final boolean shallowClone = true;
+    public boolean shallowClone = true;
 
     public CheckoutItem asCheckoutItem() {
         CheckoutItem vcs = new CheckoutItem().repository(new VcsRepositoryIdentifier().name(this.name));
@@ -53,20 +38,20 @@ public class RepositoryModel extends BambooBaseModel {
         return vcs;
     }
 
-    public void addToPlan(Plan plan) {
+    Plan addToPlan(Plan plan) {
         if (this.projectKey != null && !this.projectKey.isEmpty()) {
             if (this.repositorySlug == null || this.repositorySlug.isEmpty()) {
                 throw new RuntimeException("Invalid repository (projectKey AND repositorySlug)");
             }
             BitbucketServerRepository stash = new BitbucketServerRepository()
-                    .name(this.name)
-                    .server(new ApplicationLink().name("Stash"))
-                    .projectKey(this.projectKey)
-                    .repositorySlug(this.repositorySlug)
-                    // set some "default" options
-                    .repositoryViewer(new BitbucketServerRepositoryViewer())
-                    .shallowClonesEnabled(shallowClone)
-                    .remoteAgentCacheEnabled(false);
+                .name(this.name)
+                .server(new ApplicationLink().name("Stash"))
+                .projectKey(this.projectKey)
+                .repositorySlug(this.repositorySlug)
+                // set some "default" options
+                .repositoryViewer(new BitbucketServerRepositoryViewer())
+                .shallowClonesEnabled(shallowClone)
+                .remoteAgentCacheEnabled(false);
             if (this.branch != null && !this.branch.isEmpty()) {
                 stash.branch(this.branch);
             }
@@ -78,7 +63,7 @@ public class RepositoryModel extends BambooBaseModel {
                 );
             }
 
-            plan.planRepositories(stash);
+            return plan.planRepositories(stash);
         } else if (this.gitURL != null && !this.gitURL.isEmpty()) {
             GitRepository git = new GitRepository();
             if (this.name == null || this.name.isEmpty()) {
@@ -88,9 +73,8 @@ public class RepositoryModel extends BambooBaseModel {
             if (this.branch != null) {
                 git.branch(this.branch);
             }
-            plan.planRepositories(git);
-        } else {
-            throw new RuntimeException("Invalid repository (missing projectKey or gitURL)");
+            return plan.planRepositories(git);
         }
+        throw new RuntimeException("Invalid repository (missing projectKey or gitURL)");
     }
 }

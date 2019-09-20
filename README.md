@@ -662,10 +662,6 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
-3.0.0
-
-    Initial public release
-
 2.3.5
 
     Various cleanup, typo corrections, etc.

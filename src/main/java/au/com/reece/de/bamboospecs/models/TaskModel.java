@@ -1,18 +1,3 @@
-/*
- * Copyright 2019 Reece Pty Ltd
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package au.com.reece.de.bamboospecs.models;
 
 import au.com.reece.de.bamboospecs.models.docker.DockerContainer;
@@ -33,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TaskModel extends BambooBaseModel {
+public class TaskModel extends DomainModel {
     @NotNull
     public TaskType type;
 
@@ -50,15 +35,15 @@ public class TaskModel extends BambooBaseModel {
 
     // Used by: VCS
     public List<RepositoryModel> repositories;
-    public final boolean cleanCheckout = false;
-    public final boolean defaultRepository = false;
+    public boolean cleanCheckout = false;
+    public boolean defaultRepository = false;
 
     // Used by: DOCKER and SCRIPT
     public String workingDirectory;
 
     // Used by: DOCKER
     public String image;
-    public final boolean detach = false;
+    public boolean detach = false;
     public DockerStartCheck serviceStartCheck;
     public String environmentVariables;
     public DockerContainer container;
@@ -73,7 +58,7 @@ public class TaskModel extends BambooBaseModel {
     // Used by: INJECT
     public String propertiesFile;
     public String namespace;
-    public final InjectScopeType scope = InjectScopeType.RESULT;
+    public InjectScopeType scope = InjectScopeType.RESULT;
 
     // Used by: ARTIFACTORY
     public String uploadSpec;
