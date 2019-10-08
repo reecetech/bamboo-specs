@@ -27,6 +27,7 @@ import com.atlassian.bamboo.specs.api.builders.task.AnyTask;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
+import com.google.common.base.Strings;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -53,6 +54,7 @@ public class TaskModel extends DomainModel {
     public List<RepositoryModel> repositories;
     public boolean cleanCheckout = false;
     public boolean defaultRepository = false;
+    public String cloneDirectory;
 
     // Used by: DOCKER and SCRIPT
     public String workingDirectory;
@@ -166,7 +168,11 @@ public class TaskModel extends DomainModel {
     private Task getVersionControlTask() {
         VcsCheckoutTask task = new VcsCheckoutTask().description(this.description);
         if (this.defaultRepository) {
-            task.checkoutItems(new CheckoutItem().defaultRepository());
+            if (!Strings.isNullOrEmpty(this.cloneDirectory)) {
+                task.checkoutItems(new CheckoutItem().defaultRepository().path(this.cloneDirectory));
+            } else {
+                task.checkoutItems(new CheckoutItem().defaultRepository());
+            }
         }
         if (this.repositories != null) {
             for (RepositoryModel vcs : this.repositories) {

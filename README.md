@@ -662,6 +662,14 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
+2.3.7
+
+    Add support for checking out into a different directory
+
+2.3.6
+
+    Add Apache license
+
 2.3.5
 
     Various cleanup, typo corrections, etc.
