@@ -1,9 +1,0 @@
-project:
-  key: DE
-  plan:
-    key: BAMBOOSPECS
-    name: Bamboo Specs (build and publish artefact)
-stages:
-  - jobs:
-    - scripts:
-      - mvn clean deploy -Preece-distribute
