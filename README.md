@@ -662,6 +662,10 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
+2.3.8
+
+    Upgrade Bamboo to 6.10.4
+
 2.3.7
 
     Add support for checking out into a different directory
