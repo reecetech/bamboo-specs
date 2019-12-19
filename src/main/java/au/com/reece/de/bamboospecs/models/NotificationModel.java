@@ -86,7 +86,7 @@ public class NotificationModel extends DomainModel {
                 recipients.add(new UserRecipient(name));
         }
 
-        if (this.responsibleUser) {
+        if (this.responsibleUser != null && this.responsibleUser) {
             recipients.add(new ResponsibleRecipient());
         }
 
