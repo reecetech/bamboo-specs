@@ -37,6 +37,8 @@ public class NotificationModel extends DomainModel {
 
     public String[] recipientUsers;
 
+    public Boolean responsibleUser;
+
     public Notification asNotification() {
         Notification notification = new Notification();
         ArrayList<NotificationRecipient> recipients = new ArrayList<>();
@@ -70,8 +72,8 @@ public class NotificationModel extends DomainModel {
 
         if (this.slack != null) {
             recipients.add(new AnyNotificationRecipient(
-                new AtlassianModule("com.atlassian.bamboo.plugins.bamboo-slack:recipient.slack"))
-                .recipientString(slack));
+                    new AtlassianModule("com.atlassian.bamboo.plugins.bamboo-slack:recipient.slack"))
+                    .recipientString(slack));
         }
 
         if (this.recipientGroups != null) {
@@ -82,6 +84,10 @@ public class NotificationModel extends DomainModel {
         if (this.recipientUsers != null) {
             for (String name : this.recipientUsers)
                 recipients.add(new UserRecipient(name));
+        }
+
+        if (this.responsibleUser) {
+            recipients.add(new ResponsibleRecipient());
         }
 
         if (recipients.size() == 0) {
