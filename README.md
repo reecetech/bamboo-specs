@@ -311,9 +311,10 @@ Notifications on plan completion are supported:
       slack: https://hooks.slack.com/services/...the rest of the URL...|#cyborg-dev
       recipientGroups: [Cyborg_Team]
       recipientUsers: [dooleyj, poultonj]
+      responsibleUser: "true"
       
 At least one of the notification targets is required: `slack`,
-`recipientGroups` or `recipientUsers`. The `when` values are `PLAN_COMPLETED`,
+`recipientGroups`, `responsibleUser` or `recipientUsers`. The `when` values are `PLAN_COMPLETED`,
 `PLAN_FAILED`, `STATUS_CHANGED`, DEPLOYMENT_FAILED` and `DEPLOYMENT_FINISHED` which mirror the options of the
 same name in the Bamboo UI.
 
@@ -661,6 +662,10 @@ of the named environments may be included in your deployment project yaml like s
 
 
 ## Version History
+
+2.3.9
+
+    Add support for 'responsible user' notification
 
 2.3.8
 
