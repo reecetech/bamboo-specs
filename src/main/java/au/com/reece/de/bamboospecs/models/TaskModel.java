@@ -118,12 +118,12 @@ public class TaskModel extends DomainModel {
             throw new RuntimeException("Missing 'reportPath' value from yaml for CUCUMBER_REPORT");
         }
 
-        Map<String, String> configurations = new HashMap<>();
-        configurations.put("testPattern", reportPath);
+        Map<String, String> configuration = new HashMap<>();
+        configuration.put("testPattern", reportPath);
 
         return new AnyTask(new AtlassianModule("com.hindsighttesting.behave.cucumber-bamboo-plugin:cucumberReportTask"))
                 .description(description)
-                .configuration(configurations);
+                .configuration(configuration);
     }
 
     private Task getArtifactoryTask() {
