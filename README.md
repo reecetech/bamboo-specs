@@ -493,6 +493,14 @@ These values will be available in other tasks (scripts, etc) as the variables
 The variables will be discarded at the end of the Job if the scope is "LOCAL" and
 retained for other Jobs if the scope is "RESULT" (the default).
 
+#### CUCUMBER_REPORT Tasks
+
+This task is used to showing the cucumber test json report.
+
+    - type: CUCUMBER_REPORT
+      description: Cucumber JSON test report
+      reportPath: "test/cucumber./reports/json/*.json"
+
 #### ARTIFACTORY Tasks
 
 This task is used to deploy a generic artefact to Artifactory
@@ -662,6 +670,9 @@ of the named environments may be included in your deployment project yaml like s
 
 
 ## Version History
+2.3.10
+
+    Add support for cucumber test JSON report task
 
 2.3.9
 
