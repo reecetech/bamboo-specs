@@ -27,3 +27,10 @@ hs_err_pid*
 ### Idea
 .idea/
 *.iml
+
+### jenv
+.java-version
+
+### others
+bin
+.settings

@@ -28,6 +28,7 @@ import com.atlassian.bamboo.specs.api.builders.task.Task;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
 import com.google.common.base.Strings;
+import org.parboiled.common.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -81,6 +82,9 @@ public class TaskModel extends DomainModel {
     // Used by: ARTIFACTORY
     public String uploadSpec;
 
+    // Used by: CUCUMBER_REPORT
+    public String reportPath;
+
     public Task asTask() {
         switch (this.type) {
             case VCS:
@@ -101,10 +105,25 @@ public class TaskModel extends DomainModel {
                 return getInjectTask();
             case ARTIFACTORY:
                 return getArtifactoryTask();
+            case CUCUMBER_REPORT:
+                return getCucumberReportTask();
             default:
                 // shouldn't actually be possible, given we load via enum
                 throw new RuntimeException("Unexpected 'type' value from yaml " + this.type);
         }
+    }
+
+    private Task getCucumberReportTask() {
+        if (StringUtils.isEmpty(reportPath)) {
+            throw new RuntimeException("Missing 'reportPath' value from yaml for CUCUMBER_REPORT");
+        }
+
+        Map<String, String> configuration = new HashMap<>();
+        configuration.put("testPattern", reportPath);
+
+        return new AnyTask(new AtlassianModule("com.hindsighttesting.behave.cucumber-bamboo-plugin:cucumberReportTask"))
+                .description(description)
+                .configuration(configuration);
     }
 
     private Task getArtifactoryTask() {
