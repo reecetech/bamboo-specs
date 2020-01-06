@@ -670,6 +670,10 @@ of the named environments may be included in your deployment project yaml like s
 
 
 ## Version History
+2.3.11
+
+    Add support for submodules in repo settings
+
 2.3.10
 
     Add support for cucumber test JSON report task
