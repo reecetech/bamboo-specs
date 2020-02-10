@@ -28,6 +28,7 @@ import com.atlassian.bamboo.specs.api.builders.task.Task;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
 import com.google.common.base.Strings;
+import org.apache.commons.collections.CollectionUtils;
 import org.parboiled.common.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
@@ -85,6 +86,9 @@ public class TaskModel extends DomainModel {
     // Used by: CUCUMBER_REPORT
     public String reportPath;
 
+    // Used by: SPECIFIC_ARTEFACTS
+    public List<DownloadArtifactModel> artifacts;
+
     public Task asTask() {
         switch (this.type) {
             case VCS:
@@ -101,6 +105,8 @@ public class TaskModel extends DomainModel {
                 return new CleanWorkingDirectoryTask();
             case ARTEFACT:
                 return getArtefactDownloadTask();
+            case SPECIFIC_ARTEFACTS:
+                return getSpecificArtefactsDownloadTask();
             case INJECT:
                 return getInjectTask();
             case ARTIFACTORY:
@@ -235,6 +241,20 @@ public class TaskModel extends DomainModel {
 
     private Task getArtefactDownloadTask() {
         return new ArtifactDownloaderTask().artifacts(new DownloadItem().allArtifacts(true));
+    }
+
+    private Task getSpecificArtefactsDownloadTask() {
+        if (CollectionUtils.isEmpty(artifacts)) {
+            throw new RuntimeException("Missing 'artifacts' value from yaml for SPECIFIC_ARTEFACTS");
+        }
+
+        // convert model to download item.
+        DownloadItem[] items = artifacts.stream()
+                .map(DownloadArtifactModel::asDownloadItem)
+                .toArray(DownloadItem[]::new);
+
+        // create the task with specific download items.
+        return new ArtifactDownloaderTask().description(description).artifacts(items);
     }
 
     private Task getDockerTask() {

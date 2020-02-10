@@ -34,3 +34,6 @@ hs_err_pid*
 ### others
 bin
 .settings
+.classpath
+.project
+.factorypath
