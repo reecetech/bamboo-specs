@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
-package au.com.reece.de.bamboospecs.models.enums;
+package au.com.reece.de.bamboospecs.models;
 
-public enum TaskType {
-    VCS, SCRIPT, DOCKER, CLEAN, ARTEFACT, SPECIFIC_ARTEFACTS, INJECT, JUNIT, TESTNG, ARTIFACTORY, CUCUMBER_REPORT
+import com.atlassian.bamboo.specs.builders.task.DownloadItem;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+public class DownloadArtifactModel extends DomainModel {
+
+    @NotNull
+    @NotEmpty
+    public String name;
+
+    @NotNull
+    @NotEmpty
+    public String path;
+
+    public DownloadItem asDownloadItem() {
+        return new DownloadItem().artifact(name).path(path);
+    }
 }

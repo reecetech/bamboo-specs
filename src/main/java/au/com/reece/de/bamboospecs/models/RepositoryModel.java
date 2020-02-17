@@ -48,6 +48,8 @@ public class RepositoryModel extends DomainModel {
 
     public boolean shallowClone = true;
 
+    public boolean submodules = false;  
+  
     public CheckoutItem asCheckoutItem() {
         CheckoutItem vcs = new CheckoutItem().repository(new VcsRepositoryIdentifier().name(this.name));
         if (this.path != null && !this.path.isEmpty()) vcs.path(this.path);
@@ -67,6 +69,7 @@ public class RepositoryModel extends DomainModel {
                 // set some "default" options
                 .repositoryViewer(new BitbucketServerRepositoryViewer())
                 .shallowClonesEnabled(shallowClone)
+                .submodulesEnabled(submodules)
                 .remoteAgentCacheEnabled(false);
             if (this.branch != null && !this.branch.isEmpty()) {
                 stash.branch(this.branch);
