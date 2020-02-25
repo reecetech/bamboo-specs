@@ -58,6 +58,8 @@ public class BuildModel extends BambooYamlFileModel {
     @NoIllegalCharacters
     public String description;
 
+    public Integer maximumConcurrentBuilds;
+
     public List<String> labels;
 
     // TODO deprecate repository
@@ -132,8 +134,11 @@ public class BuildModel extends BambooYamlFileModel {
 
     private void addPluginConfiguration(Plan plan) {
         // this is the basic configuration needed
+        if (maximumConcurrentBuilds == null) {
+            maximumConcurrentBuilds = 1;
+        }
         plan.pluginConfigurations(
-            new ConcurrentBuilds().useSystemWideDefault(false),
+            new ConcurrentBuilds().useSystemWideDefault(false).maximumNumberOfConcurrentBuilds(maximumConcurrentBuilds),
             new AllOtherPluginsConfiguration()
         );
     }
