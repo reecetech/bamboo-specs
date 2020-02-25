@@ -165,6 +165,7 @@ Plans have a lot more options. The required minimum is:
     planKey: ST
     planName: Spec Testing
     description: This is a test plan for bamboo specs
+    maximumConcurrentBuilds: 1
     
 If the Plan or Project do not exist in Bamboo they will be created, so please
 double-check that the `projectKey` and `planKey` are correct.
@@ -683,9 +684,15 @@ of the named environments may be included in your deployment project yaml like s
 
 
 ## Version History
+
+2.3.13
+
+    Add support for customising maximum concurrent builds
+
 2.3.12
 
     Add support for SPECIFIC_ARTEFACTS type which supports optional artifact download
+
 2.3.11
 
     Add support for submodules in repo settings
@@ -693,6 +700,14 @@ of the named environments may be included in your deployment project yaml like s
 2.3.10
 
     Add support for cucumber test JSON report task
+
+2.3.9
+
+    Add support for 'responsible user' notification
+
+2.3.8
+
+    Upgrade Bamboo to 6.10.4
 
 2.3.9
 
