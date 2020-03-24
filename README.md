@@ -685,6 +685,10 @@ of the named environments may be included in your deployment project yaml like s
 
 ## Version History
 
+2.3.14
+
+    Log errors to STDOUT
+
 2.3.13
 
     Add support for customising maximum concurrent builds

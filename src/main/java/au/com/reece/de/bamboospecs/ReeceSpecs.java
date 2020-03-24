@@ -89,6 +89,7 @@ public class ReeceSpecs {
             controller.run(adminUser, path, publish);
         } catch (Exception ex) {
             exception = ex;
+            LOGGER.error("An exception occurred: {}", ex.getMessage());
         } finally {
             stopWatch.stop();
         }
