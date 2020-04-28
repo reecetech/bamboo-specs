@@ -1,0 +1,17 @@
+specType: deployment
+bambooServer: https://bamboo.reecenet.org/bamboo
+name: Branch Service (development - K8S Specs)
+description: Deployment for Branch Service
+buildProject: BRANCHSHRDSRV
+buildPlan: BRANCHK8SDEV
+releaseNaming:
+  pattern: 0.0.1-${bamboo.buildNumber}
+variables:
+  application_name: branch-service
+includeEnvironments:
+  from: ../include/deployment-environments.yaml
+  environments: [
+    trstst03,
+    trstst04,
+    trstst05
+  ]

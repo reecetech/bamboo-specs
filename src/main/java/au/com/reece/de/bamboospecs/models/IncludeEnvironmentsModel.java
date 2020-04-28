@@ -38,7 +38,9 @@ public class IncludeEnvironmentsModel {
         Path includedYaml = Paths.get(yamlPath, this.from);
         EnvironmentsModel included = EnvironmentsModel.readYAML(includedYaml.toString());
         for (String name : this.environments) {
-            environments.add(included.get(name));
+            EnvironmentModel environmentModel = included.get(name);
+            environmentModel.yamlPath = yamlPath;
+            environments.add(environmentModel);
         }
     }
 }

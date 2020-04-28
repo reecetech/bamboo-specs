@@ -1,0 +1,55 @@
+- type: CLEAN
+  description: Clean working directory
+- type: ARTEFACT
+  description: Download Helm chart
+- type: VCS
+  description: Git Checkout
+  repositories:
+    - name: oyster-scripts
+      path: oyster-scripts
+- type: SCRIPT
+  description: Create AWS Resources
+  body: |
+    echo "GIT Branch: ${bamboo.planRepository.1.branch}"
+
+    if [ "${bamboo_aws_resources}" == true ] || [ "${bamboo_planRepository_1_branch}" == "feature/aws-messaging" ]; then
+        echo "Unzip cloudformation templates"
+        unzip cloudformation.zip
+
+        echo "INFO: Getting credentials for '${bamboo_aws_account}' account"
+        source aws-get-creds ${bamboo_aws_account}
+
+        echo "INFO: Ensure '${bamboo_application_name}-${bamboo_stack_namespace}' is created and up-to-date"
+        docker pull -q artifactory.reecenet.org:6555/utilities/hermitcrab
+        docker run --rm --user "$(id -u):$(id -g)" --env-file "${AWSACCESSTEMP}" \
+          --volume "$(pwd)/cloudformation/${bamboo_application_name}.yaml:/cfn/stack.template" \
+          artifactory.reecenet.org:6555/utilities/hermitcrab \
+            ${bamboo_application_name}-${bamboo_stack_namespace} up \
+              --template /cfn/stack.template \
+              --tags-input "{Name: ${bamboo_application_name}-${bamboo_stack_namespace}, CostCentre: ${bamboo_stack_cost_centre}, Environment: ${bamboo_stack_environment}, Owner: ${bamboo_stack_owner}}" \
+              --override Namespace=${bamboo_stack_namespace} \
+              --override AppSupportEnvironment=${bamboo_app_support_environment} 
+    fi
+- type: SCRIPT
+  description: Rotate AWS API Keys
+  body: |
+    if [ "${bamboo_aws_resources}" == true ] || [ "${bamboo_planRepository_1_branch}" == "feature/aws-messaging" ]; then
+        echo "Rotate AWS API Keys"
+        set -u
+        oyster-scripts/tools/aws-api-key-rotation.sh \
+          -a "core-nonprod" \
+          -u "${bamboo_application_name}-${bamboo_stack_namespace}" \
+          -c "${bamboo_k8s_cluster}" \
+          -n "${bamboo_stack_namespace}"
+    fi
+- type: SCRIPT
+  description: Rolling Deployment
+  body: |
+    set -eux
+    chart_version=$(zgrep -m 1 -a 'version:' ./*.tgz | awk '{print $2}')
+    oyster-scripts/oyster.sh deploy \
+      -c "${bamboo_k8s_cluster}" \
+      -n "${bamboo_deploy_environment}" \
+      -a "${bamboo_application_name}" \
+      -v "${chart_version}" \
+      -t 1200

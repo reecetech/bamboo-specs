@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package au.com.reece.de.bamboospecs.models.deployment;
 
 import au.com.reece.de.bamboospecs.models.BambooYamlFileModel;
-import au.com.reece.de.bamboospecs.models.deployment.environment.EnvironmentModel;
 import au.com.reece.de.bamboospecs.models.IncludeEnvironmentsModel;
 import au.com.reece.de.bamboospecs.models.ReleaseNamingModel;
+import au.com.reece.de.bamboospecs.models.deployment.environment.EnvironmentModel;
 import com.atlassian.bamboo.specs.api.builders.Variable;
 import com.atlassian.bamboo.specs.api.builders.deployment.Deployment;
 import com.atlassian.bamboo.specs.api.builders.deployment.Environment;
@@ -36,10 +35,9 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 
 public class DeploymentModel extends BambooYamlFileModel {
+
     public String yamlPath;
 
     @NotNull
@@ -67,7 +65,7 @@ public class DeploymentModel extends BambooYamlFileModel {
 
     public IncludeEnvironmentsModel includeEnvironments;
 
-    private ArrayList<EnvironmentModel> collectedEnvironments = new ArrayList<>();
+    private final ArrayList<EnvironmentModel> collectedEnvironments = new ArrayList<>();
 
     public DeploymentPermissionsModel permissions;
 
@@ -77,30 +75,40 @@ public class DeploymentModel extends BambooYamlFileModel {
                 .releaseNaming(this.releaseNaming.asReleaseNaming());
 
         // collect all the environments
+        collectAllEnvironments();
+
+        // convert to array of Bamboo Environment
+        Environment[] environments = this.collectedEnvironments.stream()
+                .map(EnvironmentModel::asEnvironment)
+                .toArray(Environment[]::new);
+
+        // attach our "global" variables
+        attachVariablesToEnvironments(environments);
+
+        return deployment.environments(environments);
+    }
+
+    private void collectAllEnvironments() {
         if (this.environments != null) {
+            this.environments.forEach(environmentModel -> environmentModel.yamlPath = this.yamlPath);
             this.collectedEnvironments.addAll(this.environments);
         }
         if (this.includeEnvironments != null) {
             this.includeEnvironments.addEnvironments(this.collectedEnvironments, this.yamlPath);
         }
+    }
 
-        // convert to array of Bamboo Environment
-        Environment[] environments = this.collectedEnvironments.stream().map(EnvironmentModel::asEnvironment)
-                .collect(Collectors.toList()).toArray(new Environment[]{});
-
-        // attach our "global" variables
+    private void attachVariablesToEnvironments(Environment[] environments) {
         if (this.variables != null) {
             ArrayList<Variable> variables = new ArrayList<>();
             for (String key : this.variables.keySet()) {
                 variables.add(new Variable(key, this.variables.get(key)));
             }
-            Variable[] var_array = variables.toArray(new Variable[variables.size()]);
+            Variable[] var_array = variables.toArray(new Variable[0]);
             for (Environment environment : environments) {
                 environment.variables(var_array);
             }
         }
-
-        return deployment.environments(environments);
     }
 
     public void publish(BambooServer bambooServer, UserPasswordCredentials adminUser) {
@@ -119,12 +127,11 @@ public class DeploymentModel extends BambooYamlFileModel {
             this.permissions.project.addToPermissions(permissions);
             bambooServer.publish(new DeploymentPermissions(this.name).permissions(permissions));
 
-            // now the per-evironment permissions
+            // now the per-environment permissions
             permissions = new Permissions();
             this.permissions.environment.addToPermissions(permissions);
             for (EnvironmentModel e : this.collectedEnvironments) {
-                bambooServer.publish(new EnvironmentPermissions(this.name).environmentName(e.environment)
-                    .permissions(permissions));
+                bambooServer.publish(new EnvironmentPermissions(this.name).environmentName(e.environment).permissions(permissions));
             }
         }
     }

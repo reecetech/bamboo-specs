@@ -1,0 +1,106 @@
+specType: deployment
+bambooServer: https://bamboo.reecenet.org/bamboo
+name: Cloudformation Deployment - Branch Service
+description: Deployment Plan for Branch Service Cloudformation Templates
+buildProject: BRANCHSHRDSRV
+buildPlan: BRANCHCFBUILD
+releaseNaming:
+  pattern: 1.0.${bamboo.buildNumber}
+environments:
+  - environment: trsdev02
+    description: Product & Pricing Dev AU
+    requirements:
+      - name: pegasus
+    notifications:
+      - when: DEPLOYMENT_FAILED
+        slack: https://hooks.slack.com/services/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
+    variables:
+      application_name: branch-service
+      k8s_cluster: non-production-internal-cluster
+      aws_account: core-nonprod
+      app_support_environment: nonprod
+      stack_environment: test
+      stack_namespace: trsdev02
+      stack_cost_centre: 3963
+      stack_owner: Inventory
+    triggers:
+    tasks:
+      - type: CLEAN
+        description: Clean working directory
+      - type: ARTEFACT
+        description: Download Cloudformation Templates
+      - type: VCS
+        description: Git Checkout
+        repositories:
+          - name: oyster-scripts
+            path: oyster-scripts
+      - type: SCRIPT
+        description: Install cloudformation templates to AWS
+        body: |
+          echo "Unzip cloudformation templates"
+          unzip cloudformation.zip
+
+          echo "INFO: Getting credentials for '${bamboo.aws_account}' account"
+          source aws-get-creds ${bamboo_aws_account}
+
+          echo "INFO: Ensure '${bamboo_application_name}-${bamboo_stack_namespace}' is created and up-to-date"
+          docker pull -q artifactory.reecenet.org:6555/utilities/hermitcrab
+          docker run --rm --user "$(id -u):$(id -g)" --env-file "${AWSACCESSTEMP}" \
+            --volume "$(pwd)/cloudformation/${bamboo_application_name}.yaml:/cfn/stack.template" \
+            artifactory.reecenet.org:6555/utilities/hermitcrab \
+              ${bamboo_application_name}-${bamboo_stack_namespace} up \
+                --template /cfn/stack.template \
+                --tags-input "{Name: ${bamboo_application_name}-${bamboo_stack_namespace}, CostCentre: ${bamboo_stack_cost_centre}, Environment: ${bamboo_stack_environment}, Owner: ${bamboo_stack_owner}}" \
+                --override Namespace=${bamboo_stack_namespace} \
+                --override AppSupportEnvironment=${bamboo_app_support_environment} 
+      - type: SCRIPT
+        description: Rotate AWS API Keys
+        body: |
+          echo "Rotate AWS API Keys"
+          set -u
+          oyster-scripts/tools/aws-api-key-rotation.sh \
+            -a "${bamboo_aws_account}" \
+            -u "${bamboo_application_name}-${bamboo_stack_namespace}" \
+            -c "${bamboo_k8s_cluster}" \
+            -n "${bamboo_stack_namespace}"
+          
+  - environment: trstst02
+    description: Product & Pricing Test AU
+    requirements:
+      - name: pegasus
+    notifications:
+      - when: DEPLOYMENT_FAILED
+        slack: https://hooks.slack.com/services/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
+    variables:
+      application_name: branch-service
+      k8s_cluster: non-production-internal-cluster
+      aws_account: core-nonprod
+      app_support_environment: nonprod
+      stack_environment: test
+      stack_namespace: trstst02
+      stack_cost_centre: 3963
+      stack_owner: Inventory
+    triggers:
+    includedTasks: ../include/cloudformation-deploy-tasks.yaml
+
+  - environment: trstst04
+    description: Product & Pricing Test AU
+    requirements:
+      - name: pegasus
+    notifications:
+      - when: DEPLOYMENT_FAILED
+        slack: https://hooks.slack.com/services/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
+    variables:
+      application_name: branch-service
+      k8s_cluster: non-production-internal-cluster
+      aws_account: core-nonprod
+      app_support_environment: nonprod
+      stack_environment: test
+      stack_namespace: trstst04
+      stack_cost_centre: 3963
+      stack_owner: Inventory
+    triggers:
+    includedTasks: ../include/cloudformation-deploy-tasks.yaml
+    tasks:
+      - type: CLEAN
+        description: Clean working directory

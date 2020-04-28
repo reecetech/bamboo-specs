@@ -1,0 +1,27 @@
+specType: deployment
+bambooServer: https://bamboo.reecenet.org/bamboo
+name: Cloudformation Deployment - Branch Service
+description: Deployment Plan for Branch Service Cloudformation Templates
+buildProject: BRANCHSHRDSRV
+buildPlan: BRANCHCFBUILD
+releaseNaming:
+  pattern: 1.0.${bamboo.buildNumber}
+environments:
+  - environment: trstst02
+    description: Product & Pricing Test AU
+    requirements:
+      - name: pegasus
+    notifications:
+      - when: DEPLOYMENT_FAILED
+        slack: https://hooks.slack.com/services/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
+    variables:
+      application_name: branch-service
+      k8s_cluster: non-production-internal-cluster
+      aws_account: core-nonprod
+      app_support_environment: nonprod
+      stack_environment: test
+      stack_namespace: trstst02
+      stack_cost_centre: 3963
+      stack_owner: Inventory
+    triggers:
+    includedTasks: ../include/cloudformation-deploy-tasks-missing-property.yaml

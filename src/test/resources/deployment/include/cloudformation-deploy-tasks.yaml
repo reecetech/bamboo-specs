@@ -1,0 +1,38 @@
+- type: CLEAN
+  description: Clean working directory
+- type: ARTEFACT
+  description: Download Cloudformation Templates
+- type: VCS
+  description: Git Checkout
+  repositories:
+    - name: oyster-scripts
+      path: oyster-scripts
+- type: SCRIPT
+  description: Install cloudformation templates to AWS
+  body: |
+    echo "Unzip cloudformation templates"
+    unzip cloudformation.zip
+
+    echo "INFO: Getting credentials for '${bamboo.aws_account}' account"
+    source aws-get-creds ${bamboo_aws_account}
+
+    echo "INFO: Ensure '${bamboo_application_name}-${bamboo_stack_namespace}' is created and up-to-date"
+    docker pull -q artifactory.reecenet.org:6555/utilities/hermitcrab
+    docker run --rm --user "$(id -u):$(id -g)" --env-file "${AWSACCESSTEMP}" \
+      --volume "$(pwd)/cloudformation/${bamboo_application_name}.yaml:/cfn/stack.template" \
+      artifactory.reecenet.org:6555/utilities/hermitcrab \
+        ${bamboo_application_name}-${bamboo_stack_namespace} up \
+          --template /cfn/stack.template \
+          --tags-input "{Name: ${bamboo_application_name}-${bamboo_stack_namespace}, CostCentre: ${bamboo_stack_cost_centre}, Environment: ${bamboo_stack_environment}, Owner: ${bamboo_stack_owner}}" \
+          --override Namespace=${bamboo_stack_namespace} \
+          --override AppSupportEnvironment=${bamboo_app_support_environment} 
+- type: SCRIPT
+  description: Rotate AWS API Keys
+  body: |
+    echo "Rotate AWS API Keys"
+    set -u
+    oyster-scripts/tools/aws-api-key-rotation.sh \
+      -a "${bamboo_aws_account}" \
+      -u "${bamboo_application_name}-${bamboo_stack_namespace}" \
+      -c "${bamboo_k8s_cluster}" \
+      -n "${bamboo_stack_namespace}"
