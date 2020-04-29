@@ -1,0 +1,74 @@
+environments:
+  - environment: trstst03
+    description: Inventory Test AU
+    requirements:
+      - name: pegasus
+    notifications:
+      - when: DEPLOYMENT_FAILED
+        slack: https://hooks.slack.com/services/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
+    variables:
+      k8s_cluster: non-production-internal-cluster
+      aws_account: core-nonprod
+      app_support_environment: nonprod
+      stack_environment: test
+      stack_namespace: trstst03
+      stack_cost_centre: 3963
+      stack_owner: Inventory
+      stack_app_support_email: inventar.testing@reece.com.au
+    # Path is relative to the root yaml file  
+    includedTasks: ../include/deployment-tasks.yaml
+    triggers:
+      - type: AFTER_SUCCESSFUL_BUILD_PLAN
+        description: Deploy development branch
+
+  - environment: trstst04
+    description: Inventory Test NZ
+    requirements:
+      - name: pegasus
+    notifications:
+      - when: DEPLOYMENT_FAILED
+        slack: https://hooks.slack.com/services/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
+    variables:
+      k8s_cluster: non-production-internal-cluster
+    tasks:
+      - type: CLEAN
+        description: Clean working directory
+      - type: ARTEFACT
+        description: Download Helm chart
+      - type: VCS
+        description: Git Checkout
+        repositories:
+          - name: oyster-scripts
+            path: oyster-scripts
+      - type: SCRIPT
+        description: Rolling Deployment
+        body: |
+          set -eux
+          chart_version=$(zgrep -m 1 -a 'version:' ./*.tgz | awk '{print $2}')
+          oyster-scripts/oyster.sh deploy \
+            -c "${bamboo_k8s_cluster}" \
+            -n "${bamboo_deploy_environment}" \
+            -a "${bamboo_application_name}" \
+            -v "${chart_version}" \
+            -t 1200
+    triggers:
+      - type: AFTER_SUCCESSFUL_BUILD_PLAN
+        description: Deploy development branch
+        
+  - environment: trstst05
+    description: Inventory UAT NZ
+    requirements:
+      - name: pegasus
+    notifications:
+      - when: DEPLOYMENT_FAILED
+        slack: https://hooks.slack.com/services/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
+    variables:
+      k8s_cluster: non-production-internal-cluster
+    tasks:
+      - type: CLEAN
+        description: Clean working directory
+    # Path is relative to the root yaml file  
+    includedTasks: ../include/deployment-tasks.yaml
+    triggers:
+      - type: AFTER_SUCCESSFUL_BUILD_PLAN
+        description: Deploy development branch

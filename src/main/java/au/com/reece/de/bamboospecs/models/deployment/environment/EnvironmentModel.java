@@ -26,16 +26,33 @@ import com.atlassian.bamboo.specs.api.builders.notification.Notification;
 import com.atlassian.bamboo.specs.api.builders.requirement.Requirement;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
 import com.atlassian.bamboo.specs.api.builders.trigger.Trigger;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EnvironmentModel {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EnvironmentModel.class);
+
+    public String yamlPath;
+
     @NotNull
     @NotEmpty
     public String environment;
@@ -56,10 +73,13 @@ public class EnvironmentModel {
 
     public Map<String, String> variables;
 
+    public String includedTasks;
+
     public Environment asEnvironment() {
-        Task[] tasks = this.tasks.stream().map(TaskModel::asTask)
-                .collect(Collectors.toList()).toArray(new Task[]{});
-        Environment environment = new Environment(this.environment).tasks(tasks)
+        List<Task> tasks = addTasks();
+
+        Environment environment = new Environment(this.environment)
+                .tasks(tasks.toArray(new Task[0]))
                 .description(this.description);
 
         if (this.triggers != null) {
@@ -85,8 +105,44 @@ public class EnvironmentModel {
             for (String key : this.variables.keySet()) {
                 variables.add(new Variable(key, this.variables.get(key)));
             }
-            environment.variables(variables.toArray(new Variable[variables.size()]));
+            environment.variables(variables.toArray(new Variable[0]));
         }
         return environment;
+    }
+
+    private List<Task> addTasks() {
+        List<Task> tasks = new ArrayList<>();
+        if (this.tasks != null) {
+            tasks.addAll(this.tasks.stream().map(TaskModel::asTask).collect(Collectors.toList()));
+        }
+        if (this.includedTasks != null) {
+            Path includedYaml = Paths.get(this.yamlPath, this.includedTasks);
+            tasks.addAll(EnvironmentModel.tasksFromYAML(includedYaml.toString()));
+        }
+        return tasks;
+    }
+
+    private static List<Task> tasksFromYAML(String filename) {
+        LOGGER.info("Parsing tasks YAML {}", filename);
+
+        File yaml = new File(filename);
+
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        TaskModel[] included;
+        try {
+            included = mapper.readValue(yaml, TaskModel[].class);
+            for (TaskModel task : included) {
+                Set<ConstraintViolation<TaskModel>> violations = validator.validate(task);
+                if (!violations.isEmpty()) {
+                    violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
+                    throw new RuntimeException("Error parsing included task from " + filename);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error parsing included tasks from " + filename, e);
+        }
+        return Arrays.stream(included).map(TaskModel::asTask).collect(Collectors.toList());
     }
 }

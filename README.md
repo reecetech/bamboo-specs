@@ -682,8 +682,53 @@ of the named environments may be included in your deployment project yaml like s
         POS2 UAT AU, POS2 UAT NZ
       ]
 
+### Using included tasks inside environments
+
+If you have multiple environments specified and all or some of them are using the same set of tasks
+you can make use of `includedTasks`. Specify the set of tasks in a separate yaml file and then specify the reference 
+in the environment. Note you can have both the `tasks` and `includedTasks` property specified, the `tasks` will be added first,
+then the included tasks.
+
+Specify tasks in separate yaml file:
+
+    - type: CLEAN
+      description: Clean working directory
+    - type: ARTEFACT
+      description: Download Helm chart
+    - type: VCS
+      description: Git Checkout
+      repositories:
+        - name: oyster-scripts
+          path: oyster-scripts
+
+Use included tasks like this:
+
+    - environment: trstst05
+      description: Inventory UAT NZ
+      requirements:
+        - name: pegasus
+      notifications:
+        - when: DEPLOYMENT_FAILED
+          slack: https://hooks.slack.com/services/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
+      variables:
+        k8s_cluster: non-production-internal-cluster
+      tasks:
+        - type: CLEAN
+          description: Clean working directory
+      # Path is relative to the root yaml file  
+      includedTasks: ../include/deployment-tasks.yaml
+      triggers:
+        - type: AFTER_SUCCESSFUL_BUILD_PLAN
+          description: Deploy development branch
+
+Note that the path for the included tasks is relative to the root yaml file, in this case the actual deployment template yaml.
 
 ## Version History
+
+2.3.15
+
+    Add support to include tasks for multiple deployment environments to reduce the repeating task entries in the environments specified inside a deployment template.
+    Works for both inline environments and included environments inside the deployment template.
 
 2.3.14
 

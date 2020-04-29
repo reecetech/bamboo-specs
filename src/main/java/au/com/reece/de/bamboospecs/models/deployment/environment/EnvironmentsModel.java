@@ -52,7 +52,6 @@ public class EnvironmentsModel {
 
         File yaml = new File(filename);
 
-
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
