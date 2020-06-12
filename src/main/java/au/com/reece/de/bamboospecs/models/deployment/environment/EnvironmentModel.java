@@ -113,6 +113,7 @@ public class EnvironmentModel {
     private List<Task> addTasks() {
         List<Task> tasks = new ArrayList<>();
         if (this.tasks != null) {
+            this.tasks.forEach(x -> x.yamlPath = yamlPath);
             tasks.addAll(this.tasks.stream().map(TaskModel::asTask).collect(Collectors.toList()));
         }
         if (this.includedTasks != null) {
