@@ -27,23 +27,38 @@ import com.atlassian.bamboo.specs.api.builders.task.AnyTask;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Strings;
 import org.apache.commons.collections.CollectionUtils;
 import org.parboiled.common.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class TaskModel extends DomainModel {
-    @NotNull
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskModel.class);
+
+    public String include;
+
+    public String yamlPath;
+
     public TaskType type;
 
     // Used by all task types
-    @NotNull
-    @NotEmpty
     public String description;
 
     // Used by: SCRIPT
@@ -80,9 +95,6 @@ public class TaskModel extends DomainModel {
     public String namespace;
     public InjectScopeType scope = InjectScopeType.RESULT;
 
-    // Used by: ARTIFACTORY
-    public String uploadSpec;
-
     // Used by: CUCUMBER_REPORT
     public String reportPath;
 
@@ -90,32 +102,35 @@ public class TaskModel extends DomainModel {
     public List<DownloadArtifactModel> artifacts;
 
     public Task asTask() {
-        switch (this.type) {
-            case VCS:
-                return getVersionControlTask();
-            case SCRIPT:
-                return getScriptTask();
-            case JUNIT:
-                return getJunitTask();
-            case TESTNG:
-                return getTestngTask();
-            case DOCKER:
-                return getDockerTask();
-            case CLEAN:
-                return new CleanWorkingDirectoryTask();
-            case ARTEFACT:
-                return getArtefactDownloadTask();
-            case SPECIFIC_ARTEFACTS:
-                return getSpecificArtefactsDownloadTask();
-            case INJECT:
-                return getInjectTask();
-            case ARTIFACTORY:
-                return getArtifactoryTask();
-            case CUCUMBER_REPORT:
-                return getCucumberReportTask();
-            default:
-                // shouldn't actually be possible, given we load via enum
-                throw new RuntimeException("Unexpected 'type' value from yaml " + this.type);
+        if (include != null && !include.isEmpty()) {
+            Path includedYaml = Paths.get(this.yamlPath, this.include);
+            return TaskModel.fromYAML(includedYaml.toString()).asTask();
+        } else {
+            switch (this.type) {
+                case VCS:
+                    return getVersionControlTask();
+                case SCRIPT:
+                    return getScriptTask();
+                case JUNIT:
+                    return getJunitTask();
+                case TESTNG:
+                    return getTestngTask();
+                case DOCKER:
+                    return getDockerTask();
+                case CLEAN:
+                    return new CleanWorkingDirectoryTask();
+                case ARTEFACT:
+                    return getArtefactDownloadTask();
+                case SPECIFIC_ARTEFACTS:
+                    return getSpecificArtefactsDownloadTask();
+                case INJECT:
+                    return getInjectTask();
+                case CUCUMBER_REPORT:
+                    return getCucumberReportTask();
+                default:
+                    // shouldn't actually be possible, given we load via enum
+                    throw new RuntimeException("Unexpected 'type' value from yaml " + this.type);
+            }
         }
     }
 
@@ -130,45 +145,6 @@ public class TaskModel extends DomainModel {
         return new AnyTask(new AtlassianModule("com.hindsighttesting.behave.cucumber-bamboo-plugin:cucumberReportTask"))
                 .description(description)
                 .configuration(configuration);
-    }
-
-    private Task getArtifactoryTask() {
-        if (this.uploadSpec == null || "".equalsIgnoreCase(this.uploadSpec)) {
-            throw new RuntimeException("Missing 'uploadSpec' value from yaml for ARTIFACTORY");
-        }
-
-        Map<String, String> configurationMap = new HashMap<>();
-        configurationMap.put("artifactory.generic.publishBuildInfo", "true");
-        configurationMap.put("bintrayConfiguration", "");
-        configurationMap.put("bintray.licenses", "");
-        configurationMap.put("bintray.repository", "");
-        configurationMap.put("artifactory.generic.username", "bamboo");
-        configurationMap.put("artifactory.generic.specSourceChoice", "jobConfiguration");
-        configurationMap.put("artifactory.generic.resolveRepo", "");
-        configurationMap.put("artifactory.generic.deployPattern", "");
-        configurationMap.put("artifactory.generic.envVarsExcludePatterns", "*password*,*secret*,*security*,*key*");
-        configurationMap.put("bintray.signMethod", "false");
-        configurationMap.put("builder.artifactoryGenericBuilder.artifactoryServerId", "0");
-        configurationMap.put("bintray.subject", "");
-        configurationMap.put("artifactory.generic.file", "");
-        configurationMap.put("artifactory.generic.useSpecsChoice", "specs");
-        configurationMap.put("bintray.packageName", "");
-        configurationMap.put("artifactory.generic.includeEnvVars", "true");
-        configurationMap.put("artifactory.generic.artifactSpecs", "");
-        configurationMap.put("artifactory.generic.password", "bamboo");
-        configurationMap.put("bintray.mavenSync", "");
-        configurationMap.put("artifactory.generic.jobConfiguration", this.uploadSpec);
-        configurationMap.put("baseUrl", "https://bamboo.reecenet.org/bamboo");
-        configurationMap.put("artifactory.generic.envVarsIncludePatterns", "*");
-        configurationMap.put("artifactory.generic.artifactoryServerId", "0");
-        configurationMap.put("artifactory.generic.resolvePattern", "");
-        configurationMap.put("bintray.vcsUrl", "");
-        configurationMap.put("builder.artifactoryGenericBuilder.deployableRepo", "Informix");
-        configurationMap.put("bintray.gpgPassphrase", "");
-
-        return new AnyTask(new AtlassianModule("org.jfrog.bamboo.bamboo-artifactory-plugin:artifactoryGenericTask"))
-                .description(this.description)
-                .configuration(configurationMap);
     }
 
     private Task getInjectTask() {
@@ -305,5 +281,28 @@ public class TaskModel extends DomainModel {
             }
         }
         return docker;
+    }
+
+    public static TaskModel fromYAML(String filename) {
+        LOGGER.info("Parsing task model YAML {}", filename);
+
+        File yaml = new File(filename);
+
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        TaskModel included;
+        try {
+            included = mapper.readValue(yaml, TaskModel.class);
+            Set<ConstraintViolation<TaskModel>> violations = validator.validate(included);
+            if (!violations.isEmpty()) {
+                violations.forEach(x -> LOGGER.error("{}: {}", x.getPropertyPath(), x.getMessage()));
+                throw new RuntimeException("Error parsing included task from " + filename);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error parsing included task from " + filename, e);
+        }
+
+        return included;
     }
 }

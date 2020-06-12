@@ -725,6 +725,14 @@ Note that the path for the included tasks is relative to the root yaml file, in 
 
 ## Version History
 
+2.3.17
+
+    Add support for including tasks, remove support for Artifactory
+
+2.3.16
+
+    Upgrade to Bamboo 7.0.4
+
 2.3.15
 
     Add support to include tasks for multiple deployment environments to reduce the repeating task entries in the environments specified inside a deployment template.
