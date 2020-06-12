@@ -106,6 +106,9 @@ public class TaskModel extends DomainModel {
             Path includedYaml = Paths.get(this.yamlPath, this.include);
             return TaskModel.fromYAML(includedYaml.toString()).asTask();
         } else {
+            if (description == null || description.isEmpty()) {
+                throw new RuntimeException("Tasks must have a description");
+            }
             switch (this.type) {
                 case VCS:
                     return getVersionControlTask();
@@ -300,7 +303,7 @@ public class TaskModel extends DomainModel {
                 throw new RuntimeException("Error parsing included task from " + filename);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error parsing included task from " + filename, e);
+            throw new RuntimeException("Error parsing included task from " + filename + "due to error " + e.getMessage(), e);
         }
 
         return included;
