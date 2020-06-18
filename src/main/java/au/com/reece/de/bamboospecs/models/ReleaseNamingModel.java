@@ -30,11 +30,14 @@ public class ReleaseNamingModel {
 
     public boolean autoIncrement = false;
 
+    public boolean retainNamingStrategyForBranches = false;
+
     public String[] autoIncrementVariables;
 
     public ReleaseNaming asReleaseNaming() {
         ReleaseNaming releaseNaming = new ReleaseNaming(this.pattern);
         releaseNaming = releaseNaming.autoIncrement(this.autoIncrement);
+        releaseNaming.applicableToBranches(retainNamingStrategyForBranches);
 
         if (this.autoIncrementVariables != null) {
             releaseNaming = releaseNaming.variablesToAutoIncrement(this.autoIncrementVariables);
