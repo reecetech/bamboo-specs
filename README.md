@@ -597,6 +597,7 @@ You should also define the release naming scheme:
 
     releaseNaming:
       pattern: ${bamboo.version_major_number}.${bamboo.buildNumber}
+      retainNamingStrategyForBranches: false
       
 If you would like to set variables across all environments you can set variables in
 the preamble:
@@ -724,6 +725,11 @@ Use included tasks like this:
 Note that the path for the included tasks is relative to the root yaml file, in this case the actual deployment template yaml.
 
 ## Version History
+
+2.3.18
+
+    Add support for retaining the release naming strategy for branches.
+    Commonly known as The Checkbox of Salvation.
 
 2.3.17
 
