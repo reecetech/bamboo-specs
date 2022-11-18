@@ -5,7 +5,7 @@ environments:
       - name: pegasus
     notifications:
       - when: DEPLOYMENT_FAILED
-        slack: https://hooks.slack.com/services/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
+        slack: https://hooks.slack.com/services/
     variables:
       k8s_cluster: non-production-internal-cluster
       aws_account: core-nonprod
